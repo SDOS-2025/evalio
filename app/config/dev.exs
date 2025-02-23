@@ -2,7 +2,7 @@ import Config
 
 # Configure your database
 config :evalio_app, EvalioApp.Repo,
-  username: "postgres",
+  username: "ananyasachdev",
   password: "postgres",
   hostname: "localhost",
   database: "evalio_app_dev",
