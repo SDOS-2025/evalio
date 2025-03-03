@@ -1,6 +1,8 @@
 defmodule EvalioAppWeb.Router do
   use EvalioAppWeb, :router
 
+  import Phoenix.LiveView.Router
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -17,7 +19,8 @@ defmodule EvalioAppWeb.Router do
   scope "/", EvalioAppWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    # get "/", PageController, :home
+    live "/", PageLive, :index
   end
 
   # Other scopes may use custom stacks.

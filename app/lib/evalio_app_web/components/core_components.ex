@@ -226,7 +226,7 @@ defmodule EvalioAppWeb.CoreComponents do
 
   slot :inner_block, required: true
 
-  def button(assigns) do
+  def button_core(assigns) do
     ~H"""
     <button
       type={@type}

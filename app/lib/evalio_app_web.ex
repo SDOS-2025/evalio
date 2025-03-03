@@ -55,6 +55,7 @@ defmodule EvalioAppWeb do
       use Phoenix.LiveView,
         layout: {EvalioAppWeb.Layouts, :app}
 
+      import PetalComponents
       unquote(html_helpers())
     end
   end
@@ -89,12 +90,14 @@ defmodule EvalioAppWeb do
       import Phoenix.HTML
       # Core UI components
       import EvalioAppWeb.CoreComponents
+      import EvalioAppWeb.Gettext
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
-
+      
       # Routes generation with the ~p sigil
       unquote(verified_routes())
+      use PetalComponents
     end
   end
 
