@@ -31,15 +31,21 @@ defmodule EvalioAppWeb.PageLive do
       </div>
     <% end %>
 
+
     <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <%= for note <- @notes do %>
-        <.card variant="outline">
-          <.card_content heading={note.title}>
+      <%= for {note, index} <- Enum.with_index(@notes) do %>
+        <.card class="mt-4 flex flex-col justify-between p-4">
+          <.card_content heading={note.title} class="flex-grow">
             <p><%= note.content %></p>
           </.card_content>
+
+          <div class="mt-4 flex justify-end">
+            <.button label="Delete" color="red" phx-click="delete_note" phx-value-index={index} />
+          </div>
         </.card>
       <% end %>
     </div>
+
     """
   end
 
@@ -54,7 +60,6 @@ defmodule EvalioAppWeb.PageLive do
     new_note = %{title: title, content: content}
     notes = [new_note | socket.assigns.notes]
 
-
     IO.puts("All Notes:")
     Enum.each(notes, fn note ->
       IO.puts("Title: #{note.title}, Content: #{note.content}")
@@ -67,6 +72,23 @@ defmodule EvalioAppWeb.PageLive do
      |> assign(:title, "")
      |> assign(:content, "")}
   end
+
+  def handle_event("delete_note", %{"index" => index}, socket) do
+    notes = Enum.with_index(socket.assigns.notes) # Add index to notes list
+             |> Enum.reject(fn {_note, i} -> Integer.to_string(i) == index end) # Remove the note at the given index
+             |> Enum.map(fn {note, _i} -> note end) # Extract the note back
+
+    IO.puts("Note Deleted! All Notes:")
+    Enum.each(notes, fn note ->
+      IO.puts("Title: #{note.title}, Content: #{note.content}")
+    end)
+
+    {:noreply, assign(socket, :notes, notes)}
+  end
+
+
+
+
 
 
 end
