@@ -20,7 +20,7 @@ defmodule EvalioAppWeb.Router do
     pipe_through :browser
 
     # get "/", PageController, :home
-    live "/", PageLive, :index
+    live "/", NotesLive, :index
   end
 
   # Other scopes may use custom stacks.
