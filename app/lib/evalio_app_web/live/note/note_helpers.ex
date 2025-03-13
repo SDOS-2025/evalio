@@ -21,4 +21,19 @@ defmodule EvalioAppWeb.NoteHelpers do
 
     assign(socket, :notes, notes)
   end
+
+  def edit_note(socket, index, new_title, new_content) do
+    notes =
+      socket.assigns.notes
+      |> Enum.with_index()
+      |> Enum.map(fn {note, i} ->
+        if Integer.to_string(i) == index do
+          %{title: new_title, content: new_content} # Update note
+        else
+          note
+        end
+      end)
+
+    assign(socket, :notes, notes)
+  end
 end

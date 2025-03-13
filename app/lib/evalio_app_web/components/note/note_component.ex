@@ -10,6 +10,7 @@ defmodule EvalioAppWeb.NoteComponent do
           <p><%= @note.content %></p>
         </.card_content>
         <div class="mt-4 flex justify-end">
+          <.button label="Edit" color="blue" phx-click="edit_note" phx-value-index={@index} />
           <.button label="Delete" color="red" phx-click="delete_note" phx-value-index={@index} />
         </div>
       </.card>
