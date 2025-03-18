@@ -5,7 +5,7 @@ defmodule EvalioAppWeb.NoteFormComponent do
 
   def render(assigns) do
     ~H"""
-    <div class="mt-4 max-w-md">
+    <div class="absolute top-[10px] right-0">
       <.form phx-submit="save_note">
         <PetalComponents.Input.input name="title" label="Title" placeholder="Note Title" value={@title} />
         <PetalComponents.Input.input name="content" label="Content" placeholder="Write your note here..." value={@content} />

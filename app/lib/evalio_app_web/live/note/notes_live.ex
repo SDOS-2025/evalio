@@ -69,21 +69,15 @@ defmodule EvalioAppWeb.NotesLive do
       />
     <% end %>
 
-    <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <%= for {note, index} <- Enum.with_index(@notes) do %>
-<<<<<<< Updated upstream
-        <.live_component
-          module={NoteComponent}
-          id={"note-#{index}"}
-          note={note}
-          index={index}
-          phx-click="edit_note"
-          phx-value-index={index}
-        />
-=======
-        <.live_component module={NoteCard} id={"note-#{index}"} note={note} index={index} />
->>>>>>> Stashed changes
-      <% end %>
+    <!-- Container for Note Cards -->
+    <div class="absolute top-[170px] left-0 w-2/3">
+      <.container max_width="full" class="max-h-[calc(100vh-170px)] overflow-y-auto p-4 border border-gray-300 rounded-lg">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <%= for {note, index} <- Enum.with_index(@notes) do %>
+            <.live_component module={NoteCard} id={"note-#{index}"} note={note} index={index} />
+          <% end %>
+        </div>
+      </.container>
     </div>
     """
   end
