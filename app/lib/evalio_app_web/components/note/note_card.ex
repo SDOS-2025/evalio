@@ -14,7 +14,7 @@ defmodule EvalioAppWeb.NoteCard do
               <!-- Toggle Button (if needed) -->
             </div>
             <!-- Delete Button -->
-            <button phx-click="delete_note" phx-value-index={@index} class="text-red-500">
+            <button phx-click="delete_note" phx-value-index={@index} phx-target={@myself} class="text-red-500">
               <HeroiconsV1.Outline.trash class="w-5 h-5 cursor-pointer" />
             </button>
           </div>
@@ -26,5 +26,10 @@ defmodule EvalioAppWeb.NoteCard do
       </.card>
     </div>
     """
+  end
+  @impl true
+  def handle_event("delete_note", %{"index" => index}, socket) do
+    send(self(), {:delete_note, index})  # Send event to parent (NoteContainer)
+    {:noreply, socket}
   end
 end

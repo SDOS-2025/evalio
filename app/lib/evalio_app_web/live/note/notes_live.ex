@@ -4,9 +4,8 @@ defmodule EvalioAppWeb.NotesLive do
   import PetalComponents
 
   alias EvalioAppWeb.NoteHelpers
-  alias EvalioAppWeb.NoteComponent
   alias EvalioAppWeb.NoteFormComponent
-  alias EvalioAppWeb.NoteCard
+  alias EvalioAppWeb.NoteContainer
 
   @impl true
   def mount(_params, _session, socket) do
@@ -22,34 +21,38 @@ defmodule EvalioAppWeb.NotesLive do
   def handle_event("save_note", %{"title" => title, "content" => content}, socket) do
     case socket.assigns.editing_index do
       nil ->
-        # Add new note
-        updated_socket = NoteHelpers.add_note(socket, title, content)
-        {:noreply, updated_socket}
+        id = System.unique_integer([:positive])  # Generate a unique ID
+        new_note = %{id: id, title: title, content: content}
+        updated_notes = [new_note | socket.assigns.notes]
+        {:noreply, assign(socket, notes: updated_notes, show_form: false)}
 
       index ->
-        # Edit existing note
-        updated_socket = NoteHelpers.edit_note(socket, index, title, content)
-        {:noreply, assign(updated_socket, editing_index: nil, show_form: false)}
+        updated_notes =
+          Enum.with_index(socket.assigns.notes)
+          |> Enum.map(fn {note, idx} ->
+            if idx == String.to_integer(index), do: %{note | title: title, content: content}, else: note
+          end)
+
+        {:noreply, assign(socket, notes: updated_notes, editing_index: nil, show_form: false)}
     end
   end
 
   @impl true
   def handle_event("edit_note", %{"index" => index}, socket) do
-    # Find the note to edit
     note = Enum.at(socket.assigns.notes, String.to_integer(index))
-
-    {:noreply,
-     assign(socket,
-       show_form: true,
-       editing_index: index,
-       title: note.title,
-       content: note.content
-     )}
+    {:noreply, assign(socket, show_form: true, editing_index: index, title: note.title, content: note.content)}
   end
 
   @impl true
   def handle_event("delete_note", %{"index" => index}, socket) do
-    {:noreply, NoteHelpers.delete_note(socket, index)}
+    updated_notes = List.delete_at(socket.assigns.notes, String.to_integer(index))
+    {:noreply, assign(socket, notes: updated_notes)}
+  end
+
+  @impl true
+  def handle_info({:delete_note, index}, socket) do
+    updated_notes = Enum.reject(socket.assigns.notes, fn note -> note.id == String.to_integer(index) end)
+    {:noreply, assign(socket, notes: updated_notes)}
   end
 
   @impl true
@@ -69,16 +72,7 @@ defmodule EvalioAppWeb.NotesLive do
       />
     <% end %>
 
-    <!-- Container for Note Cards -->
-    <div class="absolute top-[170px] left-0 w-2/3">
-      <.container max_width="full" class="max-h-[calc(100vh-170px)] overflow-y-auto p-4 border border-gray-300 rounded-lg">
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          <%= for {note, index} <- Enum.with_index(@notes) do %>
-            <.live_component module={NoteCard} id={"note-#{index}"} note={note} index={index} />
-          <% end %>
-        </div>
-      </.container>
-    </div>
+    <.live_component module={NoteContainer} id="note-container" notes={@notes} />
     """
   end
 end
