@@ -24,6 +24,7 @@ module.exports = {
         danger: colors.red,
         warning: colors.yellow,
         info: colors.sky,
+        one: colors.cyan,
 
         // Options: slate, gray, zinc, neutral, stone
         gray: colors.gray,

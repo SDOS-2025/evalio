@@ -6,6 +6,7 @@ defmodule EvalioAppWeb.NotesLive do
   alias EvalioAppWeb.NoteHelpers
   alias EvalioAppWeb.NoteComponent
   alias EvalioAppWeb.NoteFormComponent
+  alias EvalioAppWeb.NoteCard
 
   @impl true
   def mount(_params, _session, socket) do
@@ -70,6 +71,7 @@ defmodule EvalioAppWeb.NotesLive do
 
     <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <%= for {note, index} <- Enum.with_index(@notes) do %>
+<<<<<<< Updated upstream
         <.live_component
           module={NoteComponent}
           id={"note-#{index}"}
@@ -78,6 +80,9 @@ defmodule EvalioAppWeb.NotesLive do
           phx-click="edit_note"
           phx-value-index={index}
         />
+=======
+        <.live_component module={NoteCard} id={"note-#{index}"} note={note} index={index} />
+>>>>>>> Stashed changes
       <% end %>
     </div>
     """

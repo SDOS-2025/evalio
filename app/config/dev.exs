@@ -2,8 +2,8 @@ import Config
 
 # Configure your database
 config :evalio_app, EvalioApp.Repo,
-  username: "ananyasachdev",
-  password: "postgres",
+  username: "evaliouser123",
+  password: "evaliopass123",
   hostname: "localhost",
   database: "evalio_app_dev",
   stacktrace: true,
@@ -18,7 +18,7 @@ config :evalio_app, EvalioApp.Repo,
 # to bundle .js and .css sources.
 config :evalio_app, EvalioAppWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
-  # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
+  # Change to `ip : {0, 0, 0, 0}` to allow access from other machines.
   http: [ip: {127, 0, 0, 1}, port: 4000],
   check_origin: false,
   code_reloader: true,
