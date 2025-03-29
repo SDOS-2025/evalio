@@ -6,7 +6,8 @@ defmodule EvalioAppWeb.NotesLive do
   alias EvalioAppWeb.NoteHelpers
   alias EvalioAppWeb.NoteFormComponent
   alias EvalioAppWeb.NoteContainer
-
+  alias EvalioAppWeb.HomePage.SortMenu
+  alias EvalioAppWeb.HomePage.FilterMenu
   @impl true
   def mount(_params, _session, socket) do
     {:ok, assign(socket, show_form: false, title: "", content: "", notes: [], editing_index: nil)}
@@ -61,7 +62,7 @@ defmodule EvalioAppWeb.NotesLive do
     <div class="flex justify-start">
       <.button color="primary" label="New Note" phx-click="toggle_form" />
     </div>
-
+    <.live_component module={SortMenu} id="sort-menu" />
     <%= if @show_form do %>
       <.live_component
         module={NoteFormComponent}
