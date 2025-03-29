@@ -20,10 +20,6 @@ defmodule EvalioAppWeb.NotesLive do
     {:noreply, assign(socket, show_form: true, form: build_form())}
   end
 
-  # @impl true
-  # def handle_event("toggle_edit", _params, socket) do
-  #   {:noreply, assign(socket, editing: !socket.assigns.editing)}
-  # end
 
   @impl true
   def handle_event("save_note", %{"title" => title, "content" => content}, socket) do
@@ -79,35 +75,38 @@ defmodule EvalioAppWeb.NotesLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="flex justify-start">
-      <.button color="primary" label="New Note" phx-click="toggle_form" />
-    </div>
+    <div class="relative">
+      <div class="flex justify-start">
+        <.button color="primary" label="New Note" phx-click="toggle_form" />
+      </div>
 
-    <%= if @show_form do %>
-      <.live_component
-        module={NoteCard}
-        id="note-form"
-        form={@form}
-        editing_index={@editing_index}
-        editing={true}
-      />
-    <% end %>
+      <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <%= for {note, index} <- Enum.with_index(@notes) do %>
+        <.live_component
+          module={NoteCard}
+          id={"note-#{index}"}
+          note={note}
+          index={index}
+          editing={note.editing}
+        />
+      <% end %>
+      </div>
 
-    <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-    <%= for {note, index} <- Enum.with_index(@notes) do %>
-      <.live_component
-        module={NoteCard}
-        id={"note-#{index}"}
-        note={note}
-        index={index}
-        editing={note.editing}
-      />
-    <% end %>
+      <div>
+          <.live_component module={SidePanel} id="side-panel" />
+      </div>
 
-    </div>
-
-    <div>
-        <.live_component module={SidePanel} id="side-panel" />
+      <%= if @show_form do %>
+        <div class="fixed inset-0 z-50">
+          <.live_component
+            module={NoteCard}
+            id="note-form"
+            form={@form}
+            editing_index={@editing_index}
+            editing={true}
+          />
+        </div>
+      <% end %>
     </div>
     """
   end
