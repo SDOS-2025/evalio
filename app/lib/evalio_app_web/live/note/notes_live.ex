@@ -12,7 +12,7 @@ defmodule EvalioAppWeb.NotesLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, show_form: false, notes: [], editing_index: nil)}
+    {:ok, assign(socket, show_form: false, notes: [], editing_id: nil)}
   end
 
   @impl true
@@ -20,35 +20,32 @@ defmodule EvalioAppWeb.NotesLive do
     {:noreply, assign(socket, show_form: true, form: build_form())}
   end
 
-
   @impl true
   def handle_event("save_note", %{"title" => title, "content" => content}, socket) do
     note = Note.new(title, content)
 
-    case socket.assigns.editing_index do
+    case socket.assigns.editing_id do
       nil ->
         # Add new note
         updated_socket = NoteHelpers.add_note(socket, note)
         {:noreply, assign(updated_socket, form: build_form())}
 
-      index ->
+      id ->
         # Edit existing note
-        updated_socket = NoteHelpers.edit_note(socket, index, note)
+        updated_socket = NoteHelpers.edit_note(socket, id, note)
         updated_socket = assign(updated_socket,
           show_form: false,
-          editing_index: nil,
+          editing_id: nil,
           form: build_form()
         )
         {:noreply, updated_socket}
     end
   end
 
-
-
   @impl true
-  def handle_event("edit_note", %{"index" => index}, socket) do
+  def handle_event("edit_note", %{"id" => id}, socket) do
     # Find the note to edit
-    note = Enum.at(socket.assigns.notes, String.to_integer(index))
+    note = Enum.find(socket.assigns.notes, &(&1.id == id))
 
     # Build form with existing note data
     form = build_form(%{"title" => note.title, "content" => note.content})
@@ -57,7 +54,7 @@ defmodule EvalioAppWeb.NotesLive do
      assign(socket,
        show_form: true,
        editing: true,
-       editing_index: index,
+       editing_id: id,
        form: form
      )}
   end
@@ -68,8 +65,8 @@ defmodule EvalioAppWeb.NotesLive do
   end
 
   @impl true
-  def handle_event("delete_note", %{"index" => index}, socket) do
-    {:noreply, NoteHelpers.delete_note(socket, index)}
+  def handle_event("delete_note", %{"id" => id}, socket) do
+    {:noreply, NoteHelpers.delete_note(socket, id)}
   end
 
   @impl true
@@ -81,20 +78,20 @@ defmodule EvalioAppWeb.NotesLive do
       </div>
 
       <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <%= for {note, index} <- Enum.with_index(@notes) do %>
+      <%= for note <- @notes do %>
         <.live_component
           module={NoteCard}
-          id={"note-#{index}"}
+          id={"note-#{note.id}"}
           note={note}
-          index={index}
           editing={note.editing}
         />
       <% end %>
       </div>
 
-      <div>
-          <.live_component module={SidePanel} id="side-panel" />
-      </div>
+      <.live_component
+        module={EvalioAppWeb.SidePanel}
+        id="side-panel"
+      />
 
       <%= if @show_form do %>
         <div class="fixed inset-0 z-50">
@@ -102,7 +99,7 @@ defmodule EvalioAppWeb.NotesLive do
             module={NoteCard}
             id="note-form"
             form={@form}
-            editing_index={@editing_index}
+            editing_id={@editing_id}
             editing={true}
           />
         </div>

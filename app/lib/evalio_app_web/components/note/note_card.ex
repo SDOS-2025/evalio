@@ -40,10 +40,10 @@ defmodule EvalioAppWeb.NoteCard do
               <p><%= @note.content %></p>
             </div>
             <div class="flex justify-end gap-4 mt-auto">
-              <button phx-click="edit_note" phx-value-index={@index} class="text-blue-500">
+              <button phx-click="edit_note" phx-value-id={@note.id} class="text-blue-500">
                 <HeroiconsV1.Outline.pencil class="w-7 h-7 cursor-pointer" />
               </button>
-              <button phx-click="delete_note" phx-value-index={@index} class="text-red-500">
+              <button phx-click="delete_note" phx-value-id={@note.id} class="text-red-500">
                 <HeroiconsV1.Outline.trash class="w-7 h-7 cursor-pointer" />
               </button>
             </div>
