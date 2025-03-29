@@ -4,12 +4,16 @@ defmodule EvalioAppWeb.NotesLive do
   import PetalComponents
 
   alias EvalioAppWeb.NoteHelpers
-  alias EvalioAppWeb.NoteComponent
   alias EvalioAppWeb.NoteFormComponent
+
+  alias EvalioAppWeb.NoteContainer
+  alias EvalioAppWeb.HomePage.SortMenu
+  alias EvalioAppWeb.HomePage.FilterMenu
+
   alias EvalioAppWeb.NoteCard
   alias EvalioApp.Note
   alias EvalioAppWeb.SidePanel
-
+  
   @impl true
   def mount(_params, _session, socket) do
     {:ok, assign(socket, show_form: false, notes: [], editing_id: nil)}
@@ -26,6 +30,7 @@ defmodule EvalioAppWeb.NotesLive do
 
     case socket.assigns.editing_id do
       nil ->
+
         # Add new note
         updated_socket = NoteHelpers.add_note(socket, note)
         {:noreply, assign(updated_socket, form: build_form())}
@@ -72,11 +77,16 @@ defmodule EvalioAppWeb.NotesLive do
   @impl true
   def render(assigns) do
     ~H"""
+
     <div class="relative">
       <div class="flex justify-start">
         <.button color="primary" label="New Note" phx-click="toggle_form" />
       </div>
-
+      <div class="flex justify-end">
+        <.live_component module={SortMenu} id="sort-menu" />
+        <.live_component module={FilterMenu} id="filter-menu" />
+      </div>
+      
       <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <%= for note <- @notes do %>
         <.live_component
@@ -87,6 +97,8 @@ defmodule EvalioAppWeb.NotesLive do
         />
       <% end %>
       </div>
+      
+      <.live_component module={NoteContainer} id="note-container" notes={@notes} />
 
       <.live_component
         module={EvalioAppWeb.SidePanel}
