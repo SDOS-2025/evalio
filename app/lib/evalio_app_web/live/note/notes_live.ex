@@ -2,6 +2,7 @@ defmodule EvalioAppWeb.NotesLive do
   use EvalioAppWeb, :live_view
   import EvalioAppWeb.CoreComponents
   import PetalComponents
+  require Logger
 
   alias EvalioAppWeb.NoteHelpers
   alias EvalioAppWeb.NoteFormComponent
@@ -13,7 +14,7 @@ defmodule EvalioAppWeb.NotesLive do
   alias EvalioAppWeb.NoteCard
   alias EvalioApp.Note
   alias EvalioAppWeb.SidePanel
-  
+
   @impl true
   def mount(_params, _session, socket) do
     {:ok, assign(socket, show_form: false, notes: [], editing_id: nil)}
@@ -30,7 +31,6 @@ defmodule EvalioAppWeb.NotesLive do
 
     case socket.assigns.editing_id do
       nil ->
-
         # Add new note
         updated_socket = NoteHelpers.add_note(socket, note)
         {:noreply, assign(updated_socket, form: build_form())}
@@ -65,45 +65,39 @@ defmodule EvalioAppWeb.NotesLive do
   end
 
   @impl true
+  def handle_event("cancel_form", _params, socket) do
+    {:noreply, assign(socket, show_form: false, editing_id: nil)}
+  end
+
+  @impl true
   defp build_form(note \\ %{"title" => "", "content" => ""}) do
     to_form(note)
   end
 
   @impl true
   def handle_event("delete_note", %{"id" => id}, socket) do
+    Logger.info("Deleting note with ID: #{id}")
     {:noreply, NoteHelpers.delete_note(socket, id)}
   end
 
   @impl true
   def render(assigns) do
     ~H"""
-
     <div class="relative">
-      <div class="flex justify-start">
+      <div class="flex justify-between items-center mb-4">
         <.button color="primary" label="New Note" phx-click="toggle_form" />
       </div>
-      <div class="flex justify-end">
+
+      <div class="flex gap-4">
         <.live_component module={SortMenu} id="sort-menu" />
         <.live_component module={FilterMenu} id="filter-menu" />
       </div>
-      
-      <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <%= for note <- @notes do %>
-        <.live_component
-          module={NoteCard}
-          id={"note-#{note.id}"}
-          note={note}
-          editing={note.editing}
-        />
-      <% end %>
-      </div>
-      
-      <.live_component module={NoteContainer} id="note-container" notes={@notes} />
 
-      <.live_component
-        module={EvalioAppWeb.SidePanel}
-        id="side-panel"
-      />
+      <div>
+        <.live_component module={NoteContainer} id="note-container" notes={@notes} />
+      </div>
+
+      <.live_component module={SidePanel} id="side-panel" />
 
       <%= if @show_form do %>
         <div class="fixed inset-0 z-50">
@@ -111,7 +105,6 @@ defmodule EvalioAppWeb.NotesLive do
             module={NoteCard}
             id="note-form"
             form={@form}
-            editing_id={@editing_id}
             editing={true}
           />
         </div>

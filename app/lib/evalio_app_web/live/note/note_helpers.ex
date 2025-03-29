@@ -16,6 +16,7 @@ defmodule EvalioAppWeb.NoteHelpers do
   end
 
   def delete_note(socket, id) do
+    Logger.info("Deleting note with ID: #{id}")
     notes = Enum.reject(socket.assigns.notes, &(&1.id == id))
     Logger.info("Deleted note with ID: #{id}")
     Logger.info("Current notes: #{inspect(notes)}")
