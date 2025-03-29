@@ -1,9 +1,9 @@
 defmodule EvalioAppWeb.NoteHelpers do
   use EvalioAppWeb, :live_view
+  alias EvalioApp.Note
 
-  def add_note(socket, title, content) do
-    new_note = %{title: title, content: content}
-    notes = [new_note | socket.assigns.notes]
+  def add_note(socket, note) do
+    notes = [note | socket.assigns.notes]
 
     socket
     |> assign(:notes, notes)
@@ -22,18 +22,28 @@ defmodule EvalioAppWeb.NoteHelpers do
     assign(socket, :notes, notes)
   end
 
-  def edit_note(socket, index, new_title, new_content) do
+  def edit_note(socket, index, updated_note) do
     notes =
       socket.assigns.notes
       |> Enum.with_index()
       |> Enum.map(fn {note, i} ->
         if Integer.to_string(i) == index do
-          %{title: new_title, content: new_content} # Update note
+          updated_note
         else
           note
         end
       end)
 
     assign(socket, :notes, notes)
+  end
+
+  def cancel_changes(socket) do
+    socket
+    |> assign(:show_form, false)
+    |> assign(:editing_index, nil)
+  end
+
+  defp build_form(note \\ %{"title" => "", "content" => ""}) do
+    to_form(note)
   end
 end
