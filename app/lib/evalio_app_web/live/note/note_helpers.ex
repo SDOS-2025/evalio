@@ -1,9 +1,12 @@
 defmodule EvalioAppWeb.NoteHelpers do
   use EvalioAppWeb, :live_view
+  require Logger
+  alias EvalioApp.Note
 
-  def add_note(socket, title, content) do
-    new_note = %{title: title, content: content}
-    notes = [new_note | socket.assigns.notes]
+  def add_note(socket, note) do
+    notes = [note | socket.assigns.notes]
+    Logger.info("Added note with ID: #{note.id}")
+    Logger.info("Current notes: #{inspect(notes)}")
 
     socket
     |> assign(:notes, notes)
@@ -12,28 +15,36 @@ defmodule EvalioAppWeb.NoteHelpers do
     |> assign(:content, "")
   end
 
-  def delete_note(socket, index) do
-    notes =
-      socket.assigns.notes
-      |> Enum.with_index()
-      |> Enum.reject(fn {_note, i} -> Integer.to_string(i) == index end)
-      |> Enum.map(fn {note, _} -> note end)
-
+  def delete_note(socket, id) do
+    notes = Enum.reject(socket.assigns.notes, &(&1.id == id))
+    Logger.info("Deleted note with ID: #{id}")
+    Logger.info("Current notes: #{inspect(notes)}")
     assign(socket, :notes, notes)
   end
 
-  def edit_note(socket, index, new_title, new_content) do
+  def edit_note(socket, id, updated_note) do
     notes =
-      socket.assigns.notes
-      |> Enum.with_index()
-      |> Enum.map(fn {note, i} ->
-        if Integer.to_string(i) == index do
-          %{title: new_title, content: new_content} # Update note
+      Enum.map(socket.assigns.notes, fn note ->
+        if note.id == id do
+          Logger.info("Editing note with ID: #{id}")
+          Logger.info("Updated note: #{inspect(updated_note)}")
+          updated_note
         else
           note
         end
       end)
 
+    Logger.info("Current notes after edit: #{inspect(notes)}")
     assign(socket, :notes, notes)
+  end
+
+  def cancel_changes(socket) do
+    socket
+    |> assign(:show_form, false)
+    |> assign(:editing_id, nil)
+  end
+
+  defp build_form(note \\ %{"title" => "", "content" => ""}) do
+    to_form(note)
   end
 end

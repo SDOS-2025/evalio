@@ -3,18 +3,27 @@ defmodule EvalioAppWeb.NoteFormComponent do
   import PetalComponents
   import PetalComponents.Input
 
+
   def render(assigns) do
     ~H"""
-    <div class="absolute top-[10px] right-0">
-      <.form phx-submit="save_note">
-        <PetalComponents.Input.input name="title" label="Title" placeholder="Note Title" value={@title} />
-        <PetalComponents.Input.input name="content" label="Content" placeholder="Write your note here..." value={@content} />
-
-        <div class="mt-4">
-          <.button label="Save" color="green" />
-          <.button label="Cancel" color="red" phx-click="toggle_form" type="button" />
+    <div>
+      <.card class="shadow-lg rounded-lg p-4 w-[260px] h-[260px] flex flex-col justify-between">
+        <div class="flex justify-between items-center">
+          <h3 class="font-bold text-lg">
+            <%= if @note.title == "", do: "New Note", else: @note.title %>
+          </h3>
+          <div class="flex items-center space-x-2">
+            <!-- Orange Button -->
+            <div class="w-[60px] h-[30px] bg-[#FF655F] text-white text-sm flex items-center justify-center rounded-full">
+              <!-- Toggle Button (if needed) -->
+            </div>
+          </div>
         </div>
-      </.form>
+
+        <p class="text-gray-600 mt-2 overflow-hidden text-ellipsis">
+          <%= if @note.content == "", do: "Click to add content...", else: @note.content %>
+        </p>
+      </.card>
     </div>
     """
   end

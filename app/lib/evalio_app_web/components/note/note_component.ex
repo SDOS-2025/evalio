@@ -5,16 +5,25 @@ defmodule EvalioAppWeb.NoteComponent do
   def render(assigns) do
     ~H"""
     <div>
-      <.card class="mt-4 flex flex-col justify-between p-4">
-        <.card_content heading={@note.title} class="flex-grow">
-          <p><%= @note.content %></p>
-        </.card_content>
-        <div class="mt-4 flex justify-end">
-          <.button label="Edit" color="blue" phx-click="edit_note" phx-value-index={@index} />
-          <.button label="Delete" color="red" phx-click="delete_note" phx-value-index={@index} />
+      <.card class="shadow-lg rounded-lg p-4 w-[260px] h-[260px] flex flex-col justify-between">
+        <div class="flex justify-between items-center">
+          <h3 class="font-bold text-lg">
+            <%= if @note.title == "", do: "New Note", else: @note.title %>
+          </h3>
+          <div class="flex items-center space-x-2">
+            <!-- Orange Button -->
+            <div class="w-[60px] h-[30px] bg-[#FF655F] text-white text-sm flex items-center justify-center rounded-full">
+              <!-- Toggle Button (if needed) -->
+            </div>
+          </div>
         </div>
+
+        <p class="text-gray-600 mt-2 overflow-hidden text-ellipsis">
+          <%= if @note.content == "", do: "Click to add content...", else: @note.content %>
+        </p>
       </.card>
     </div>
     """
   end
+
 end
