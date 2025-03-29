@@ -62,7 +62,10 @@ defmodule EvalioAppWeb.NotesLive do
     <div class="flex justify-start">
       <.button color="primary" label="New Note" phx-click="toggle_form" />
     </div>
-    <.live_component module={SortMenu} id="sort-menu" />
+    <div class="flex justify-end">
+      <.live_component module={SortMenu} id="sort-menu" />
+      <.live_component module={FilterMenu} id="filter-menu" />
+    </div>
     <%= if @show_form do %>
       <.live_component
         module={NoteFormComponent}
