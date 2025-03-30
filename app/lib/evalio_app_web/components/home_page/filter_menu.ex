@@ -9,10 +9,12 @@ defmodule EvalioAppWeb.HomePage.FilterMenu do
     <div class="relative">
       <button
         type="button"
-        class="p-2 rounded-lg hover:bg-gray-100 transition-all cursor-pointer"
+        class="w-[50px] h-[50px] rounded-lg bg-[#EAEAEA] hover:bg-[#171717] transition-all cursor-pointer flex items-center justify-center group"
         phx-click={JS.toggle(to: "#filter-menu-#{@id}")}
       >
-        <PetalComponents.Icon.icon name="hero-funnel" class="w-5 h-5 text-gray-700" />
+        <svg class="w-[30px] h-[30px] text-[#171717] group-hover:text-[#EAEAEA] transition-colors" viewBox="0 0 34 42" xmlns="http://www.w3.org/2000/svg">
+          <path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M19.5148 21.8996L28.388 9.95438H5.41482L14.2881 21.8996H19.5148ZM18.5916 25.8814H15.2113V35.9492L18.5916 34.4561V25.8814ZM3.38028 5.97263H30.4225V3.98175H3.38028V5.97263ZM11.831 24.6386L0 8.71155V3.98175C0 1.78269 1.5134 0 3.38028 0H30.4225C32.2894 0 33.8028 1.78269 33.8028 3.98175V8.71155L21.9718 24.6386V37.2154L11.831 41.6949V24.6386Z" />
+        </svg>
       </button>
 
       <div
