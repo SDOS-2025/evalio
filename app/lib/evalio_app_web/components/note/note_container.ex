@@ -6,20 +6,12 @@ defmodule EvalioAppWeb.NoteContainer do
 
   def render(assigns) do
     ~H"""
-    <div class="absolute top-[170px] left-0 w-2/3">
-      <.container max_width="full" class="max-h-[calc(100vh-170px)] overflow-y-auto p-4 rounded-lg">
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          <%= if @notes && length(@notes) > 0 do %>
-            <%= for note <- @notes do %>
-              <.live_component module={NoteCard} id={"note-#{note.id}"} note={note} editing={note.editing} />
-            <% end %>
-          <% else %>
-            <div class="col-span-full text-center text-gray-500 py-8">
-              No notes yet. Click "New Note" to create one.
-            </div>
-          <% end %>
-        </div>
-      </.container>
+    <div class="fixed top-[170px] left-0 w-2/3 h-[calc(100vh-170px)] overflow-y-auto">
+      <div class="grid grid-cols-3 gap-6 p-6">
+        <%= for note <- @notes do %>
+          <.live_component module={NoteCard} id={"note-#{note.id}"} note={note} editing={false} />
+        <% end %>
+      </div>
     </div>
     """
   end
