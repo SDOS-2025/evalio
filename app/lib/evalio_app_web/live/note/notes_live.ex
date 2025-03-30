@@ -93,8 +93,10 @@ defmodule EvalioAppWeb.NotesLive do
         <.live_component module={NewNote} id="new-note" />
       </div>
 
-      <div class="flex gap-4 fixed top-[110px] left-[720px]">
+      <div class="flex gap-4 fixed top-[105px] left-[760px]">
         <.live_component module={SortMenu} id="sort-menu" />
+      </div>
+      <div class="flex gap-4 fixed top-[105px] left-[820px]">
         <.live_component module={FilterMenu} id="filter-menu" />
       </div>
 
