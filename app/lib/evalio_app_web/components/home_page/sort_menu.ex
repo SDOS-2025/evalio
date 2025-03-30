@@ -7,10 +7,10 @@ defmodule EvalioAppWeb.HomePage.SortMenu do
     <div class="relative">
       <button
         type="button"
-        class="w-[50px] h-[50px] rounded-lg bg-[#EAEAEA] hover:bg-[#171717] transition-all cursor-pointer flex items-center justify-center group"
+        class="w-[50px] h-[50px] rounded-lg bg-[#FFFFFF] hover:bg-[#171717] transition-all cursor-pointer flex items-center justify-center group"
         phx-click={JS.toggle(to: "#sort-menu")}
       >
-        <svg class="w-[30px] h-[30px] text-[#171717] group-hover:text-[#EAEAEA] transition-colors" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <svg class="w-[30px] h-[30px] text-[#171717] group-hover:text-[#FFFFFF] transition-colors" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path fill="currentColor" d="M8 16H4l6 6V2H8zm6-11v17h2V8h4l-6-6z"/>
         </svg>
       </button>
