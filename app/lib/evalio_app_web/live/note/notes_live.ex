@@ -10,6 +10,7 @@ defmodule EvalioAppWeb.NotesLive do
   alias EvalioAppWeb.NoteContainer
   alias EvalioAppWeb.HomePage.SortMenu
   alias EvalioAppWeb.HomePage.FilterMenu
+  alias EvalioAppWeb.HomePage.NewNote
 
   alias EvalioAppWeb.NoteCard
   alias EvalioApp.Note
@@ -83,18 +84,18 @@ defmodule EvalioAppWeb.NotesLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="relative">
-      <div class="flex justify-between items-center mb-4">
-        <.button color="primary" label="New Note" phx-click="toggle_form" />
-      </div>
-
-      <div class="flex gap-4">
-        <.live_component module={SortMenu} id="sort-menu" />
-        <.live_component module={FilterMenu} id="filter-menu" />
-      </div>
-
       <div>
         <.live_component module={NoteContainer} id="note-container" notes={@notes} />
+      </div>
+
+    <div class="relative">
+      <div class="fixed top-[100px] left-5 w-2/3">
+        <.live_component module={NewNote} id="new-note" />
+      </div>
+
+      <div class="flex gap-4 fixed top-[115px] left-[700px]">
+        <.live_component module={SortMenu} id="sort-menu" />
+        <.live_component module={FilterMenu} id="filter-menu" />
       </div>
 
       <.live_component module={SidePanel} id="side-panel" />

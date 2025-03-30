@@ -2,7 +2,6 @@ defmodule EvalioAppWeb.HomePage.FilterMenu do
   use EvalioAppWeb, :live_component
   import PetalComponents
   alias EvalioAppWeb.HomePage.FilterTypeMenu
-  alias EvalioAppWeb.HomePage.FilterAttachmentMenu
   alias EvalioAppWeb.HomePage.FilterTagMenu
 
   def render(assigns) do
