@@ -1,6 +1,5 @@
 defmodule EvalioAppWeb.NotesLive do
   use EvalioAppWeb, :live_view
-  import EvalioAppWeb.CoreComponents
   import PetalComponents
 
   alias EvalioAppWeb.NoteHelpers
@@ -8,15 +7,16 @@ defmodule EvalioAppWeb.NotesLive do
   alias EvalioAppWeb.NoteFormComponent
   alias EvalioAppWeb.NoteCard
   alias EvalioAppWeb.SidePanel
+  alias EvalioAppWeb.ReminderFormComponent
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, show_form: false, title: "", content: "", notes: [], editing_index: nil)}
+    {:ok, assign(socket, show_form: false, form_type: nil, title: "", content: "", notes: [], editing_index: nil)}
   end
 
   @impl true
   def handle_event("toggle_form", _params, socket) do
-    {:noreply, assign(socket, show_form: !socket.assigns.show_form, editing_index: nil)}
+    {:noreply, assign(socket, show_form: !socket.assigns.show_form, form_type: "note", editing_index: nil)}
   end
 
   @impl true
@@ -53,6 +53,14 @@ defmodule EvalioAppWeb.NotesLive do
     {:noreply, NoteHelpers.delete_note(socket, index)}
   end
 
+  def handle_event("show_reminder_form", _params, socket) do
+    {:noreply, assign(socket, show_form: true, form_type: "reminder")}
+  end
+
+  def handle_event("show_meeting_form", _params, socket) do
+    {:noreply, assign(socket, show_form: true, form_type: "meeting")}
+  end
+
   @impl true
   def render(assigns) do
     ~H"""
@@ -61,13 +69,31 @@ defmodule EvalioAppWeb.NotesLive do
     </div>
 
     <%= if @show_form do %>
-      <.live_component
-        module={NoteFormComponent}
-        id="note-form"
-        title={@title}
-        content={@content}
-        editing_index={@editing_index}
-      />
+      <div class="fixed inset-0 flex items-center justify-center z-50">
+        <div class="absolute inset-0 bg-black bg-opacity-50"></div> <!-- Background Overlay -->
+        <div class="relative z-50 p-4 bg-white rounded-lg shadow-lg w-96">
+          <%= case @form_type do %>
+            <% "note" -> %>
+              <.live_component
+                module={NoteFormComponent}
+                id="note-form"
+                title={@title}
+                content={@content}
+                editing_index={@editing_index}
+              />
+            <% "reminder" -> %>
+              <.live_component
+                module={ReminderFormComponent}
+                id="reminder-form"
+              />
+            <% "meeting" -> %>
+              <.live_component
+                module={MeetingFormComponent}
+                id="meeting-form"
+              />
+          <% end %>
+        </div>
+      </div>
     <% end %>
 
     <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -84,7 +110,7 @@ defmodule EvalioAppWeb.NotesLive do
     </div>
 
     <div>
-        <.live_component module={SidePanel} id="side-panel" />
+      <.live_component module={SidePanel} id="side-panel" />
     </div>
     """
   end
