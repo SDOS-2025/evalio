@@ -38,7 +38,7 @@ defmodule EvalioAppWeb.HomePage.FilterTagMenu do
             <div class="w-3 h-3 rounded-full bg-[#D9D9D9] transition-all group-hover:w-full group-hover:h-[20px]"></div>
             <span class="text-sm transition-opacity group-hover:opacity-0">No Tag</span>
           </button>
-          <button type="button" phx-click="filter_by_tag" phx-value-tag="all" class="w-full px-4 py-2 text-center text-sm text-[#525252] hover:bg-[#525252] hover:text-[#EAEAEA] transition-colors" role="menuitem">
+          <button type="button" phx-click="filter_by_tag" phx-value-tag="all" class="w-full px-4 py-2 text-center text-sm text-[#171717] hover:bg-[#171717] hover:text-[#EAEAEA] transition-colors" role="menuitem">
             Show All
           </button>
         </div>

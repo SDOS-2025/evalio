@@ -19,17 +19,17 @@ defmodule EvalioAppWeb.HomePage.FilterMenu do
 
       <div
         id={"filter-menu-#{@id}"}
-        class="hidden absolute right-0 z-10 mt-2 w-[160px] bg-[#EAEAEA] rounded-lg shadow-lg"
+        class="hidden absolute right-0 z-10 mt-2 w-[160px] bg-[#FFFFFF] rounded-lg shadow-lg border border-gray-200"
       >
         <div class="flex flex-col py-1" role="menu" aria-orientation="vertical">
-          <button type="button" class="w-full px-4 py-2 text-center text-sm text-[#525252] hover:bg-[#525252] hover:text-[#EAEAEA] transition-colors" role="menuitem">
+          <button type="button" class="w-full px-4 py-2 text-center text-sm text-[#1C1C1E] hover:bg-[#1C1C1E] hover:text-[#FFFFFF] transition-colors" role="menuitem">
             Date
           </button>
-          <div class="mx-5 border-t-2 border-[#525252]"></div>
+          <div class="mx-5 border-t-2 border-[#1C1C1E]"></div>
           <div class="relative">
             <button
               type="button"
-              class="w-full px-4 py-2 text-center text-sm text-[#525252] hover:bg-[#525252] hover:text-[#EAEAEA] transition-colors"
+              class="w-full px-4 py-2 text-center text-sm text-[#1C1C1E] hover:bg-[#1C1C1E] hover:text-[#FFFFFF] transition-colors"
               role="menuitem"
               phx-click={JS.toggle(to: "#filter-type-menu-filter-type-#{@id}")}
             >
@@ -37,15 +37,15 @@ defmodule EvalioAppWeb.HomePage.FilterMenu do
             </button>
             <.live_component module={FilterTypeMenu} id={"filter-type-#{@id}"} />
           </div>
-          <div class="mx-5 border-t-2 border-[#525252]"></div>
-          <button type="button" class="w-full px-4 py-2 text-center text-sm text-[#525252] hover:bg-[#525252] hover:text-[#EAEAEA] transition-colors" role="menuitem">
+          <div class="mx-5 border-t-2 border-[#1C1C1E]"></div>
+          <button type="button" class="w-full px-4 py-2 text-center text-sm text-[#1C1C1E] hover:bg-[#1C1C1E] hover:text-[#FFFFFF] transition-colors" role="menuitem">
             Attachment
           </button>
-          <div class="mx-5 border-t-2 border-[#525252]"></div>
+          <div class="mx-5 border-t-2 border-[#1C1C1E]"></div>
           <div class="relative">
             <button
               type="button"
-              class="w-full px-4 py-2 text-center text-sm text-[#525252] hover:bg-[#525252] hover:text-[#EAEAEA] transition-colors"
+              class="w-full px-4 py-2 text-center text-sm text-[#1C1C1E] hover:bg-[#1C1C1E] hover:text-[#FFFFFF] transition-colors"
               role="menuitem"
               phx-click={JS.toggle(to: "#filter-tag-menu-filter-tag-#{@id}")}
             >
