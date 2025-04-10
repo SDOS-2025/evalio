@@ -28,23 +28,44 @@ defmodule EvalioAppWeb.NotesLive do
 
   @impl true
   def handle_event("save_note", %{"title" => title, "content" => content}, socket) do
-    note = Note.new(title, content)
+    # Extract special word from content (first word after a # symbol)
+    special_word = extract_special_word(content)
 
     case socket.assigns.editing_id do
       nil ->
         # Add new note
+        note = Note.new(title, content, special_word)
         updated_socket = NoteHelpers.add_note(socket, note)
         {:noreply, assign(updated_socket, form: build_form())}
 
       id ->
         # Edit existing note
-        updated_socket = NoteHelpers.edit_note(socket, id, note)
+        # Find the existing note to preserve its tag and created_at values
+        existing_note = Enum.find(socket.assigns.notes, &(&1.id == id))
+
+        # Create updated note while preserving the tag and created_at
+        updated_note = %{
+          Note.new(title, content, special_word) |
+          id: id,
+          tag: existing_note.tag,
+          created_at: existing_note.created_at
+        }
+
+        updated_socket = NoteHelpers.edit_note(socket, id, updated_note)
         updated_socket = assign(updated_socket,
           show_form: false,
           editing_id: nil,
           form: build_form()
         )
         {:noreply, updated_socket}
+    end
+  end
+
+  # Extract first word that appears after a # symbol
+  defp extract_special_word(content) do
+    case Regex.run(~r/#(\w+)/, content) do
+      [_, word] -> word
+      _ -> nil
     end
   end
 
@@ -82,6 +103,19 @@ defmodule EvalioAppWeb.NotesLive do
   end
 
   @impl true
+  def handle_info({:update_note_tag, id, tag}, socket) do
+    updated_notes = Enum.map(socket.assigns.notes, fn note ->
+      if note.id == id do
+        Note.update_tag(note, tag)
+      else
+        note
+      end
+    end)
+
+    {:noreply, assign(socket, notes: updated_notes)}
+  end
+
+  @impl true
   def render(assigns) do
     ~H"""
       <div>
@@ -93,10 +127,10 @@ defmodule EvalioAppWeb.NotesLive do
         <.live_component module={NewNote} id="new-note" />
       </div>
 
-      <div class="flex gap-4 fixed top-[105px] left-[760px]">
+      <div class="flex gap-4 fixed top-[107px] left-[760px]">
         <.live_component module={SortMenu} id="sort-menu" />
       </div>
-      <div class="flex gap-4 fixed top-[105px] left-[820px]">
+      <div class="flex gap-4 fixed top-[107px] left-[820px]">
         <.live_component module={FilterMenu} id="filter-menu" />
       </div>
 
