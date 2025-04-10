@@ -20,19 +20,23 @@ defmodule EvalioAppWeb.HomePage.SortMenu do
         class="hidden absolute z-10 mt-2 w-[160px] bg-[#EAEAEA] rounded-lg shadow-lg"
       >
         <div class="flex flex-col py-1" role="menu" aria-orientation="vertical">
-          <button type="button" class="w-full px-4 py-2 text-center text-sm text-[#525252] hover:bg-[#525252] hover:text-[#EAEAEA] transition-colors" role="menuitem">
+          <button type="button" phx-click="sort_notes" phx-value-sort="newest_first" class="w-full px-4 py-2 text-center text-sm text-[#525252] hover:bg-[#525252] hover:text-[#EAEAEA] transition-colors" role="menuitem">
             Newest to Oldest
           </button>
           <div class="mx-5 border-t-2 border-[#525252]"></div>
-          <button type="button" class="w-full px-4 py-2 text-center text-sm text-[#525252] hover:bg-[#525252] hover:text-[#EAEAEA] transition-colors" role="menuitem">
+          <button type="button" phx-click="sort_notes" phx-value-sort="oldest_first" class="w-full px-4 py-2 text-center text-sm text-[#525252] hover:bg-[#525252] hover:text-[#EAEAEA] transition-colors" role="menuitem">
             Oldest to Newest
           </button>
           <div class="mx-5 border-t-2 border-[#525252]"></div>
-          <button type="button" class="w-full px-4 py-2 text-center text-sm text-[#525252] hover:bg-[#525252] hover:text-[#EAEAEA] transition-colors" role="menuitem">
+          <button type="button" phx-click="sort_notes" phx-value-sort="last_edited" class="w-full px-4 py-2 text-center text-sm text-[#525252] hover:bg-[#525252] hover:text-[#EAEAEA] transition-colors" role="menuitem">
+            Last Edited
+          </button>
+          <div class="mx-5 border-t-2 border-[#525252]"></div>
+          <button type="button" phx-click="sort_notes" phx-value-sort="title_asc" class="w-full px-4 py-2 text-center text-sm text-[#525252] hover:bg-[#525252] hover:text-[#EAEAEA] transition-colors" role="menuitem">
             Title A-Z
           </button>
           <div class="mx-5 border-t-2 border-[#525252]"></div>
-          <button type="button" class="w-full px-4 py-2 text-center text-sm text-[#525252] hover:bg-[#525252] hover:text-[#EAEAEA] transition-colors" role="menuitem">
+          <button type="button" phx-click="sort_notes" phx-value-sort="title_desc" class="w-full px-4 py-2 text-center text-sm text-[#525252] hover:bg-[#525252] hover:text-[#EAEAEA] transition-colors" role="menuitem">
             Title Z-A
           </button>
         </div>

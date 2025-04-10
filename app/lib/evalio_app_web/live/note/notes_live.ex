@@ -18,7 +18,7 @@ defmodule EvalioAppWeb.NotesLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, show_form: false, notes: [], editing_id: nil)}
+    {:ok, assign(socket, show_form: false, notes: [], editing_id: nil, sort_by: "newest_first")}
   end
 
   @impl true
@@ -28,13 +28,13 @@ defmodule EvalioAppWeb.NotesLive do
 
   @impl true
   def handle_event("save_note", %{"title" => title, "content" => content}, socket) do
-    # Extract special word from content (first word after a # symbol)
-    special_word = extract_special_word(content)
+    # Extract special words from content (all words after # symbols)
+    special_words = extract_special_word(content)
 
     case socket.assigns.editing_id do
       nil ->
         # Add new note
-        note = Note.new(title, content, special_word)
+        note = Note.new(title, content, special_words)
         updated_socket = NoteHelpers.add_note(socket, note)
         {:noreply, assign(updated_socket, form: build_form())}
 
@@ -45,7 +45,7 @@ defmodule EvalioAppWeb.NotesLive do
 
         # Create updated note while preserving the tag and created_at
         updated_note = %{
-          Note.new(title, content, special_word) |
+          Note.new(title, content, special_words) |
           id: id,
           tag: existing_note.tag,
           created_at: existing_note.created_at
@@ -61,12 +61,10 @@ defmodule EvalioAppWeb.NotesLive do
     end
   end
 
-  # Extract first word that appears after a # symbol
+  # Extract all words that appear after a # symbol
   defp extract_special_word(content) do
-    case Regex.run(~r/#(\w+)/, content) do
-      [_, word] -> word
-      _ -> nil
-    end
+    Regex.scan(~r/#(\w+)/, content)
+    |> Enum.map(fn [_, word] -> word end)
   end
 
   @impl true
@@ -116,10 +114,15 @@ defmodule EvalioAppWeb.NotesLive do
   end
 
   @impl true
+  def handle_event("sort_notes", %{"sort" => sort_option}, socket) do
+    {:noreply, assign(socket, sort_by: sort_option)}
+  end
+
+  @impl true
   def render(assigns) do
     ~H"""
       <div>
-        <.live_component module={NoteContainer} id="note-container" notes={@notes} />
+        <.live_component module={NoteContainer} id="note-container" notes={@notes} sort_by={@sort_by} />
       </div>
 
     <div class="relative">

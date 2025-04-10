@@ -3,12 +3,12 @@ defmodule EvalioApp.Note do
   Defines the Note struct and its functions.
   """
   require Logger
-  defstruct [:id, :title, :content, :editing, :special_word, :created_at, tag: "none"]
+  defstruct [:id, :title, :content, :editing, :special_words, :created_at, :last_edited_at, tag: "none"]
 
   @doc """
   Creates a new note with the given title and content.
   """
-  def new(title, content, special_word \\ nil) do
+  def new(title, content, special_words \\ []) do
     id = generate_unique_id()
     current_time = DateTime.utc_now() |> DateTime.truncate(:second)
     Logger.info("Generated new note ID: #{id}")
@@ -17,26 +17,29 @@ defmodule EvalioApp.Note do
       title: title,
       content: content,
       editing: false,
-      special_word: special_word,
+      special_words: special_words,
       tag: "none",
-      created_at: current_time
+      created_at: current_time,
+      last_edited_at: current_time
     }
   end
 
   @doc """
   Updates a note with new title and content.
   """
-  def update(note, title, content, special_word) do
+  def update(note, title, content, special_words) do
+    current_time = DateTime.utc_now() |> DateTime.truncate(:second)
     Logger.info("Updating note with ID: #{note.id}")
-    %{note | title: title, content: content, editing: true, special_word: special_word}
+    %{note | title: title, content: content, editing: true, special_words: special_words, last_edited_at: current_time}
   end
 
   @doc """
   Updates a note's tag.
   """
   def update_tag(note, tag) do
+    current_time = DateTime.utc_now() |> DateTime.truncate(:second)
     Logger.info("Updating tag for note with ID: #{note.id} to #{tag}")
-    %{note | tag: tag}
+    %{note | tag: tag, last_edited_at: current_time}
   end
 
   defp generate_unique_id do
