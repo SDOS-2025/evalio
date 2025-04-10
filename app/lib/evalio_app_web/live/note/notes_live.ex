@@ -11,6 +11,7 @@ defmodule EvalioAppWeb.NotesLive do
   alias EvalioAppWeb.HomePage.SortMenu
   alias EvalioAppWeb.HomePage.FilterMenu
   alias EvalioAppWeb.HomePage.NewNote
+  alias EvalioAppWeb.HomePage.SearchBar
 
   alias EvalioAppWeb.NoteCard
   alias EvalioApp.Note
@@ -18,7 +19,14 @@ defmodule EvalioAppWeb.NotesLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, show_form: false, notes: [], editing_id: nil, sort_by: "newest_first", tag_filter: "all")}
+    {:ok, assign(socket,
+      show_form: false,
+      notes: [],
+      editing_id: nil,
+      sort_by: "newest_first",
+      tag_filter: "all",
+      search_text: ""
+    )}
   end
 
   @impl true
@@ -124,37 +132,63 @@ defmodule EvalioAppWeb.NotesLive do
   end
 
   @impl true
+  def handle_info({:search_notes, search_text}, socket) do
+    {:noreply, assign(socket, search_text: search_text)}
+  end
+
+  @impl true
   def render(assigns) do
     ~H"""
+    <div>
+      <div class="fixed top-[10px] flex justify-center mb-8 pt-8">
+        <.live_component module={SearchBar} id="search-bar" />
+      </div>
+
       <div>
-        <.live_component module={NoteContainer} id="note-container" notes={@notes} sort_by={@sort_by} tag_filter={@tag_filter} />
+        <.live_component
+          module={NoteContainer}
+          id="note-container"
+          notes={filter_notes_by_search(@notes, @search_text)}
+          sort_by={@sort_by}
+          tag_filter={@tag_filter}
+        />
       </div>
 
-    <div class="relative">
-      <div class="fixed top-[100px] left-5 w-2/3">
-        <.live_component module={NewNote} id="new-note" />
-      </div>
-
-      <div class="flex gap-4 fixed top-[107px] left-[760px]">
-        <.live_component module={SortMenu} id="sort-menu" />
-      </div>
-      <div class="flex gap-4 fixed top-[107px] left-[820px]">
-        <.live_component module={FilterMenu} id="filter-menu" />
-      </div>
-
-      <.live_component module={SidePanel} id="side-panel" />
-
-      <%= if @show_form do %>
-        <div class="fixed inset-0 z-50">
-          <.live_component
-            module={NoteCard}
-            id="note-form"
-            form={@form}
-            editing={true}
-          />
+      <div class="relative">
+        <div class="fixed top-[100px] left-5 w-2/3">
+          <.live_component module={NewNote} id="new-note" />
         </div>
-      <% end %>
+
+        <div class="flex gap-4 fixed top-[107px] left-[760px]">
+          <.live_component module={SortMenu} id="sort-menu" />
+        </div>
+        <div class="flex gap-4 fixed top-[107px] left-[820px]">
+          <.live_component module={FilterMenu} id="filter-menu" />
+        </div>
+
+        <.live_component module={SidePanel} id="side-panel" />
+
+        <%= if @show_form do %>
+          <div class="fixed inset-0 z-50">
+            <.live_component
+              module={NoteCard}
+              id="note-form"
+              form={@form}
+              editing={true}
+            />
+          </div>
+        <% end %>
+      </div>
     </div>
     """
+  end
+
+  defp filter_notes_by_search(notes, ""), do: notes
+  defp filter_notes_by_search(notes, search_text) do
+    search_text = String.downcase(search_text)
+    Enum.filter(notes, fn note ->
+      String.contains?(String.downcase(note.title), search_text) ||
+      String.contains?(String.downcase(note.content), search_text)
+    end)
   end
 end
