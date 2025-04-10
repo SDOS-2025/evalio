@@ -5,7 +5,8 @@ defmodule EvalioAppWeb.NoteContainer do
   alias EvalioAppWeb.NoteCard
 
   def render(assigns) do
-    sorted_notes = sort_notes(assigns.notes, assigns.sort_by || "newest_first")
+    filtered_notes = filter_notes(assigns.notes, assigns.tag_filter || "all")
+    sorted_notes = sort_notes(filtered_notes, assigns.sort_by || "newest_first")
     assigns = assign(assigns, :sorted_notes, sorted_notes)
 
     ~H"""
@@ -20,8 +21,16 @@ defmodule EvalioAppWeb.NoteContainer do
   end
 
   def update(assigns, socket) do
-    sorted_notes = sort_notes(assigns.notes, assigns.sort_by || "newest_first")
+    filtered_notes = filter_notes(assigns.notes, assigns.tag_filter || "all")
+    sorted_notes = sort_notes(filtered_notes, assigns.sort_by || "newest_first")
     {:ok, assign(socket, assigns) |> assign(:sorted_notes, sorted_notes)}
+  end
+
+  defp filter_notes(notes, tag_filter) do
+    case tag_filter do
+      "all" -> notes
+      tag -> Enum.filter(notes, & &1.tag == tag)
+    end
   end
 
   defp sort_notes(notes, sort_option) do

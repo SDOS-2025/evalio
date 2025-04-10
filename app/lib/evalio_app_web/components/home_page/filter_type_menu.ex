@@ -10,16 +10,32 @@ defmodule EvalioAppWeb.HomePage.FilterTypeMenu do
         class="hidden absolute z-20 right-full ml-2 w-[160px] bg-[#EAEAEA] rounded-lg shadow-lg"
       >
         <div class="flex flex-col py-1" role="menu" aria-orientation="vertical">
-          <button type="button" class="w-full px-4 py-2 text-center text-sm text-[#525252] hover:bg-[#525252] hover:text-[#EAEAEA] transition-colors" role="menuitem">
-            Text Note
+          <button type="button" phx-click="filter_by_type" phx-value-type="todo" class="w-full px-4 py-2 text-center text-sm text-[#525252] hover:bg-[#525252] hover:text-[#EAEAEA] transition-colors" role="menuitem">
+            To-Do
           </button>
           <div class="mx-5 border-t-2 border-[#525252]"></div>
-          <button type="button" class="w-full px-4 py-2 text-center text-sm text-[#525252] hover:bg-[#525252] hover:text-[#EAEAEA] transition-colors" role="menuitem">
-            Code Snippet
+          <button type="button" phx-click="filter_by_type" phx-value-type="checklist" class="w-full px-4 py-2 text-center text-sm text-[#525252] hover:bg-[#525252] hover:text-[#EAEAEA] transition-colors" role="menuitem">
+            Checklist
           </button>
           <div class="mx-5 border-t-2 border-[#525252]"></div>
-          <button type="button" class="w-full px-4 py-2 text-center text-sm text-[#525252] hover:bg-[#525252] hover:text-[#EAEAEA] transition-colors" role="menuitem">
-            Image Note
+          <button type="button" phx-click="filter_by_type" phx-value-type="meeting" class="w-full px-4 py-2 text-center text-sm text-[#525252] hover:bg-[#525252] hover:text-[#EAEAEA] transition-colors" role="menuitem">
+            Meeting
+          </button>
+          <div class="mx-5 border-t-2 border-[#525252]"></div>
+          <button type="button" phx-click="filter_by_type" phx-value-type="student_mentions" class="w-full px-4 py-2 text-center text-sm text-[#525252] hover:bg-[#525252] hover:text-[#EAEAEA] transition-colors" role="menuitem">
+            Student Mentions
+          </button>
+          <div class="mx-5 border-t-2 border-[#525252]"></div>
+          <button type="button" phx-click="filter_by_type" phx-value-type="mentor_mentions" class="w-full px-4 py-2 text-center text-sm text-[#525252] hover:bg-[#525252] hover:text-[#EAEAEA] transition-colors" role="menuitem">
+            Mentor Mentions
+          </button>
+          <div class="mx-5 border-t-2 border-[#525252]"></div>
+          <button type="button" phx-click="filter_by_type" phx-value-type="cohort_mentions" class="w-full px-4 py-2 text-center text-sm text-[#525252] hover:bg-[#525252] hover:text-[#EAEAEA] transition-colors" role="menuitem">
+            Cohort Mentions
+          </button>
+          <div class="mx-5 border-t-2 border-[#525252]"></div>
+          <button type="button" phx-click="filter_by_type" phx-value-type="hyperlinked" class="w-full px-4 py-2 text-center text-sm text-[#525252] hover:bg-[#525252] hover:text-[#EAEAEA] transition-colors" role="menuitem">
+            Hyperlinked
           </button>
         </div>
       </div>

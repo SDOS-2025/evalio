@@ -18,7 +18,7 @@ defmodule EvalioAppWeb.NotesLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, show_form: false, notes: [], editing_id: nil, sort_by: "newest_first")}
+    {:ok, assign(socket, show_form: false, notes: [], editing_id: nil, sort_by: "newest_first", tag_filter: "all")}
   end
 
   @impl true
@@ -119,10 +119,15 @@ defmodule EvalioAppWeb.NotesLive do
   end
 
   @impl true
+  def handle_event("filter_by_tag", %{"tag" => tag}, socket) do
+    {:noreply, assign(socket, tag_filter: tag)}
+  end
+
+  @impl true
   def render(assigns) do
     ~H"""
       <div>
-        <.live_component module={NoteContainer} id="note-container" notes={@notes} sort_by={@sort_by} />
+        <.live_component module={NoteContainer} id="note-container" notes={@notes} sort_by={@sort_by} tag_filter={@tag_filter} />
       </div>
 
     <div class="relative">
