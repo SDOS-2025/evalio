@@ -19,7 +19,7 @@ defmodule EvalioAppWeb.HomePage.FilterMenu do
 
       <div
         id={"filter-menu-#{@id}"}
-        class="hidden absolute z-10 mt-2 w-[160px] bg-[#EAEAEA] rounded-lg shadow-lg"
+        class="hidden absolute right-0 z-10 mt-2 w-[160px] bg-[#EAEAEA] rounded-lg shadow-lg"
       >
         <div class="flex flex-col py-1" role="menu" aria-orientation="vertical">
           <button type="button" class="w-full px-4 py-2 text-center text-sm text-[#525252] hover:bg-[#525252] hover:text-[#EAEAEA] transition-colors" role="menuitem">
