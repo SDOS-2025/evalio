@@ -6,19 +6,37 @@ defmodule EvalioAppWeb.ReminderFormComponent do
     ~H"""
     <div>  <!-- This ensures a single static root element -->
       <.card class="w-96 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Add Reminder</h3>
+
+        <!-- CHANGED: Dynamic Heading based on add/edit -->
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+          <%= if @reminder, do: "Edit Reminder", else: "Add Reminder" %>
+        </h3>
+
         <form phx-submit="save_reminder" phx-target={@myself}>
+
           <!-- Title Field -->
           <label class="block text-sm text-gray-700 dark:text-gray-300">Title</label>
-          <input type="text" name="title" class="w-full px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 mb-2">
+
+          <!-- CHANGED: Added value attribute for pre-filling -->
+          <input type="text" name="title"
+            value={@reminder && @reminder.title || ""}
+            class="w-full px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 mb-2">
 
           <!-- Date Field -->
           <label class="block text-sm text-gray-700 dark:text-gray-300">Date</label>
-          <input type="date" name="date" class="w-full px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 mb-2">
+
+          <!-- CHANGED: Added value attribute for pre-filling -->
+          <input type="date" name="date"
+            value={@reminder && @reminder.date || ""}
+            class="w-full px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 mb-2">
 
           <!-- Time Field -->
           <label class="block text-sm text-gray-700 dark:text-gray-300">Time</label>
-          <input type="time" name="time" class="w-full px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 mb-4">
+
+          <!-- CHANGED: Added value attribute for pre-filling -->
+          <input type="time" name="time"
+            value={@reminder && @reminder.time || ""}
+            class="w-full px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 mb-4">
 
           <div class="flex justify-end space-x-2">
             <button type="button" phx-click="hide_reminder_form" phx-target={@myself}
