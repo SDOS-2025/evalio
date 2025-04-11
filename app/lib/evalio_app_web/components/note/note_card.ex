@@ -37,6 +37,13 @@ defmodule EvalioAppWeb.NoteCard do
         <!-- Normal note card -->
         <.card class="shadow-lg rounded-lg p-4 w-[260px] h-[260px] flex flex-col justify-between">
           <div class="flex justify-between items-center">
+            <button phx-click="pin_note" phx-value-id={@note.id} class={
+              "transition-colors #{if @note.pinned, do: "text-blue-500 hover:text-blue-700", else: "text-[#171717] hover:text-[#666666]"}"
+            }>
+              <svg width="16" height="24" viewBox="0 0 16 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4.00016 1V8.5L1.3335 13.5V16H14.6668V13.5L12.0002 8.5V1M8.00016 16V22.25M2.66683 1H13.3335" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
             <h3 class="font-bold text-lg"><%= @note.title %></h3>
             <div class="flex items-center space-x-2">
               <.live_component module={NoteTagMenu} id={"note-tag-menu-#{@note.id}"} note={@note} />

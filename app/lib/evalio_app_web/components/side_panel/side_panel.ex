@@ -20,12 +20,12 @@ defmodule EvalioAppWeb.SidePanel do
         <div class="overflow-y-auto flex-grow space-y-4">
           <!-- Calendar Card -->
           <.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl flex items-center justify-center">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Calendar</h3>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100"></h3>
           </.card>
 
           <!-- Reminders Card -->
           <.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl relative p-4 flex flex-col">
-            <h4 class="absolute top-3 left-4 text-lg font-bold text-gray-800 dark:text-gray-200">Reminders</h4>
+            <h4 class="absolute top-3 left-4 text-lg font-bold text-gray-800 dark:text-gray-200"></h4>
             <div class="mt-8 h-[calc(100%-40px)] w-full overflow-y-auto bg-gray-100 dark:bg-gray-700 rounded-lg p-2 space-y-2">
               <.card class="w-[95%] mx-auto h-20 bg-gray-300 dark:bg-gray-600 shadow-md rounded-lg p-3"></.card>
               <.card class="w-[95%] mx-auto h-20 bg-gray-300 dark:bg-gray-600 shadow-md rounded-lg p-3"></.card>
@@ -39,7 +39,7 @@ defmodule EvalioAppWeb.SidePanel do
 
           <!-- Meetings Card -->
           <.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl relative p-4 flex flex-col">
-            <h4 class="absolute top-3 left-4 text-lg font-bold text-gray-800 dark:text-gray-200">Meetings</h4>
+            <h4 class="absolute top-3 left-4 text-lg font-bold text-gray-800 dark:text-gray-200"></h4>
             <div class="mt-8 h-[calc(100%-40px)] w-full overflow-y-auto bg-gray-100 dark:bg-gray-700 rounded-lg p-2 space-y-2">
               <.card class="w-[95%] mx-auto h-20 bg-gray-300 dark:bg-gray-600 shadow-md rounded-lg p-3"></.card>
               <.card class="w-[95%] mx-auto h-20 bg-gray-300 dark:bg-gray-600 shadow-md rounded-lg p-3"></.card>

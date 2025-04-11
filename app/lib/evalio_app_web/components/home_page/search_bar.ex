@@ -16,9 +16,9 @@ defmodule EvalioAppWeb.HomePage.SearchBar do
 
   def render(assigns) do
     ~H"""
-    <div class="relative">
+    <div class="relative flex justify-center">
       <div class={
-        "flex items-center bg-white rounded-full shadow-md transition-all duration-300 ease-in-out #{if @expanded, do: "w-[300px]", else: "w-[50px]"}"
+        "flex items-center bg-white rounded-xl shadow-md border border-gray-200 transition-all duration-300 ease-in-out #{if @expanded, do: "w-[400px]", else: "w-[50px]"}"
       }>
         <button
           type="button"
@@ -49,4 +49,5 @@ defmodule EvalioAppWeb.HomePage.SearchBar do
     </div>
     """
   end
+
 end

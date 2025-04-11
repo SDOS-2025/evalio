@@ -48,14 +48,15 @@ defmodule EvalioAppWeb.NotesLive do
 
       id ->
         # Edit existing note
-        # Find the existing note to preserve its tag and created_at values
+        # Find the existing note to preserve its tag, created_at, and pinned status
         existing_note = Enum.find(socket.assigns.notes, &(&1.id == id))
 
-        # Create updated note while preserving the tag and created_at
+        # Create updated note while preserving the tag, created_at, and pinned status
         updated_note = %{
           Note.new(title, content, special_words) |
           id: id,
           tag: existing_note.tag,
+          pinned: existing_note.pinned,
           created_at: existing_note.created_at
         }
 
@@ -137,10 +138,23 @@ defmodule EvalioAppWeb.NotesLive do
   end
 
   @impl true
+  def handle_event("pin_note", %{"id" => id}, socket) do
+    updated_notes = Enum.map(socket.assigns.notes, fn note ->
+      if note.id == id do
+        Note.toggle_pin(note)
+      else
+        note
+      end
+    end)
+
+    {:noreply, assign(socket, notes: updated_notes)}
+  end
+
+  @impl true
   def render(assigns) do
     ~H"""
     <div>
-      <div class="fixed top-[10px] flex justify-center mb-8 pt-8">
+      <div class="fixed top-[10px] left-[20px] mb-8 pt-8">
         <.live_component module={SearchBar} id="search-bar" />
       </div>
 

@@ -34,6 +34,18 @@ defmodule EvalioAppWeb.NoteContainer do
   end
 
   defp sort_notes(notes, sort_option) do
+    # First, separate pinned and unpinned notes
+    {pinned, unpinned} = Enum.split_with(notes, & &1.pinned)
+
+    # Sort each group according to the sort option
+    sorted_pinned = sort_by_option(pinned, sort_option)
+    sorted_unpinned = sort_by_option(unpinned, sort_option)
+
+    # Combine the sorted groups, with pinned notes first
+    sorted_pinned ++ sorted_unpinned
+  end
+
+  defp sort_by_option(notes, sort_option) do
     case sort_option do
       "newest_first" ->
         Enum.sort_by(notes, & &1.created_at, {:desc, DateTime})

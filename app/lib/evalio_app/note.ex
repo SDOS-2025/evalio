@@ -3,7 +3,7 @@ defmodule EvalioApp.Note do
   Defines the Note struct and its functions.
   """
   require Logger
-  defstruct [:id, :title, :content, :editing, :special_words, :created_at, :last_edited_at, tag: "none"]
+  defstruct [:id, :title, :content, :editing, :special_words, :created_at, :last_edited_at, tag: "none", pinned: false]
 
   @doc """
   Creates a new note with the given title and content.
@@ -19,6 +19,7 @@ defmodule EvalioApp.Note do
       editing: false,
       special_words: special_words,
       tag: "none",
+      pinned: false,
       created_at: current_time,
       last_edited_at: current_time
     }
@@ -40,6 +41,15 @@ defmodule EvalioApp.Note do
     current_time = DateTime.utc_now() |> DateTime.truncate(:second)
     Logger.info("Updating tag for note with ID: #{note.id} to #{tag}")
     %{note | tag: tag, last_edited_at: current_time}
+  end
+
+  @doc """
+  Toggles the pinned status of a note.
+  """
+  def toggle_pin(note) do
+    current_time = DateTime.utc_now() |> DateTime.truncate(:second)
+    Logger.info("Toggling pin status for note with ID: #{note.id} to #{!note.pinned}")
+    %{note | pinned: !note.pinned, last_edited_at: current_time}
   end
 
   defp generate_unique_id do
