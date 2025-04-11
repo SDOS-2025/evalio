@@ -16,16 +16,20 @@ defmodule EvalioAppWeb.NotesLive do
   alias EvalioAppWeb.NoteCard
   alias EvalioApp.Note
   alias EvalioAppWeb.SidePanel
+  alias EvalioAppWeb.ReminderFormComponent
 
   @impl true
   def mount(_params, _session, socket) do
     {:ok, assign(socket,
       show_form: false,
+      form_type: nil,
+      # title: "", content: "",
       notes: [],
       editing_id: nil,
       sort_by: "newest_first",
       tag_filter: "all",
-      search_text: ""
+      search_text: "",
+      editing_index: nil
     )}
   end
 
@@ -108,6 +112,14 @@ defmodule EvalioAppWeb.NotesLive do
     {:noreply, NoteHelpers.delete_note(socket, id)}
   end
 
+  def handle_event("show_reminder_form", _params, socket) do
+    {:noreply, assign(socket, show_form: true, form_type: "reminder")}
+  end
+
+  def handle_event("show_meeting_form", _params, socket) do
+    {:noreply, assign(socket, show_form: true, form_type: "meeting")}
+  end
+
   @impl true
   def handle_info({:update_note_tag, id, tag}, socket) do
     updated_notes = Enum.map(socket.assigns.notes, fn note ->
@@ -169,13 +181,31 @@ defmodule EvalioAppWeb.NotesLive do
         <.live_component module={SidePanel} id="side-panel" />
 
         <%= if @show_form do %>
-          <div class="fixed inset-0 z-50">
-            <.live_component
-              module={NoteCard}
-              id="note-form"
-              form={@form}
-              editing={true}
-            />
+          <div class="fixed inset-0 flex items-center justify-center z-50">
+            <div class="absolute inset-0 bg-black bg-opacity-50"></div> <!-- Background Overlay -->
+            <div class="relative z-50 p-4 bg-white rounded-lg shadow-lg w-96">
+            <%!-- <div class="fixed inset-0 z-50"> --%>
+              <%= case @form_type do %>
+                <% "note" -> %>
+                  <.live_component
+                    module={NoteFormComponent}
+                    id="note-form"
+                    form={@form}
+                    editing={true}
+                  />
+                <% "reminder" -> %>
+                  <.live_component
+                    module={ReminderFormComponent}
+                    id="reminder-form"
+                  />
+                <% "meeting" -> %>
+                  <.live_component
+                    module={MeetingFormComponent}
+                    id="meeting-form"
+                  />
+              <% end %>
+              <%!-- </div> --%>
+            </div>
           </div>
         <% end %>
       </div>
