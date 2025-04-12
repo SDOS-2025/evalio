@@ -13,10 +13,10 @@ defmodule EvalioAppWeb.AuthLive do
     email = user_params["email"]
     password = user_params["password"]
 
-    if email == "admin@evalio.com" && password == "password123" do
+    if email == "evaliouser@123" && password == "evaliopass123" do
       {:noreply,
        socket
-       |> put_flash(:info, "Welcome back!")
+      #  |> put_flash(:info, "Welcome back!")
        |> push_navigate(to: ~p"/notes")}
     else
       {:noreply,
