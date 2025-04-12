@@ -20,9 +20,13 @@ defmodule EvalioAppWeb.SidePanel do
         <!-- Scrollable Content -->
         <div class="overflow-y-auto flex-grow space-y-4">
           <!-- Calendar Card -->
-          <.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl flex items-center justify-center">
+          <%!-- <.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl flex items-center justify-center">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Calendar</h3>
+          </.card> --%>
+          <.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl overflow-hidden p-0">
+            <img src="/images/calender.png" alt="Calendar" class="w-full h-full object-cover" />
           </.card>
+
 
           <!-- Reminders Card -->
           <.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl relative p-4 flex flex-col">
