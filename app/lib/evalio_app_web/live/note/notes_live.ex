@@ -199,28 +199,13 @@ defmodule EvalioAppWeb.NotesLive do
             <div class="absolute inset-0 bg-black/30 backdrop-blur-lg"></div>
             <%= case @form_type do %>
               <% "note" -> %>
-                <div class="relative z-50">
-                  <.card class="shadow-lg rounded-lg p-6 w-[600px] h-[400px] flex flex-col justify-between transform scale-100 transition-transform duration-300 ease-in-out bg-white">
-                    <.form for={@form} phx-submit="save_note">
-                      <.field field={@form[:title]}
-                        placeholder="Title"
-                        phx-debounce="blur"
-                        label=""
-                        class="!border-none !outline-none !ring-0 !shadow-none"
-                      />
-                      <.field field={@form[:content]}
-                        type="textarea"
-                        placeholder="Content"
-                        phx-debounce="blur"
-                        label=""
-                        class="!border-none !outline-none !ring-0 !shadow-none"
-                      />
-                      <div class="mt-4 flex justify-between">
-                        <.button label="Save" color="green" />
-                        <.button label="Cancel" color="red" phx-click="cancel_form" type="button" />
-                      </div>
-                    </.form>
-                  </.card>
+                <div class="fixed inset-0 z-50">
+                  <.live_component
+                    module={NoteCard}
+                    id="note-form"
+                    form={@form}
+                    editing={true}
+                  />
                 </div>
               <% "reminder" -> %>
                 <div class="relative z-50 p-4 bg-white rounded-lg shadow-lg w-96">
