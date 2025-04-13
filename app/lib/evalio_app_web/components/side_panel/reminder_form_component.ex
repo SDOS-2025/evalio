@@ -18,6 +18,15 @@ defmodule EvalioAppWeb.ReminderFormComponent do
         </h3>
 
         <.form for={%{}} phx-submit="save_reminder" phx-target={@myself} class="space-y-4">
+          <!-- Hidden ID field for editing existing reminders -->
+          <%= if @reminder && @reminder.id do %>
+            <Input.input
+              type="hidden"
+              name="id"
+              value={@reminder.id}
+            />
+          <% end %>
+
           <div class="mb-4 w-full">
             <Input.input
               type="text"

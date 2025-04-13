@@ -8,6 +8,9 @@ defmodule EvalioAppWeb.SidePanel do
 
   alias EvalioApp.Reminder
   alias EvalioApp.Meeting
+  alias EvalioAppWeb.ReminderTagMenu
+  alias EvalioAppWeb.MeetingTagMenu
+  alias EvalioAppWeb.TagManager
 
   def render(assigns) do
     ~H"""
@@ -48,6 +51,7 @@ defmodule EvalioAppWeb.SidePanel do
               <%= for {reminder, index} <- Enum.with_index(@reminders) do %>
                 <Card.card class="w-[95%] mx-auto h-20 bg-gray-300 dark:bg-gray-600 shadow-md rounded-lg p-3 flex flex-col relative">
                   <div class="absolute top-1 right-1 flex gap-2">
+                    <.live_component module={ReminderTagMenu} id={"reminder-tag-menu-#{reminder.id}"} reminder={reminder} />
                     <button phx-click="edit_reminder" phx-value-id={reminder.id} phx-target={@myself} class="text-blue-500">
                       <HeroiconsV1.Outline.pencil class="w-5 h-5 cursor-pointer" />
                     </button>
@@ -79,6 +83,7 @@ defmodule EvalioAppWeb.SidePanel do
               <%= for {meeting, index} <- Enum.with_index(@meetings) do %>
                 <Card.card class="w-[95%] mx-auto h-20 bg-gray-300 dark:bg-gray-600 shadow-md rounded-lg p-3 flex flex-col relative">
                   <div class="absolute top-1 right-1 flex gap-2">
+                    <.live_component module={MeetingTagMenu} id={"meeting-tag-menu-#{meeting.id}"} meeting={meeting} />
                     <button phx-click="edit_meeting" phx-value-id={meeting.id} phx-target={@myself} class="text-blue-500">
                       <HeroiconsV1.Outline.pencil class="w-5 h-5 cursor-pointer" />
                     </button>
@@ -118,6 +123,47 @@ defmodule EvalioAppWeb.SidePanel do
     """
   end
 
+  @impl true
+  def update(%{update_reminder_tag: {id, tag}} = assigns, socket) do
+    # Find the reminder in the current list
+    reminder = Enum.find(socket.assigns.reminders, &(&1.id == id))
+    
+    if reminder do
+      # Update the reminder's tag
+      updated_reminder = TagManager.update_reminder_tag(reminder, tag)
+      
+      # Update the reminders list
+      updated_reminders = Enum.map(socket.assigns.reminders, fn r ->
+        if r.id == id, do: updated_reminder, else: r
+      end)
+      
+      {:ok, assign(socket, :reminders, updated_reminders)}
+    else
+      {:ok, socket}
+    end
+  end
+
+  @impl true
+  def update(%{update_meeting_tag: {id, tag}} = assigns, socket) do
+    # Find the meeting in the current list
+    meeting = Enum.find(socket.assigns.meetings, &(&1.id == id))
+    
+    if meeting do
+      # Update the meeting's tag
+      updated_meeting = TagManager.update_meeting_tag(meeting, tag)
+      
+      # Update the meetings list
+      updated_meetings = Enum.map(socket.assigns.meetings, fn m ->
+        if m.id == id, do: updated_meeting, else: m
+      end)
+      
+      {:ok, assign(socket, :meetings, updated_meetings)}
+    else
+      {:ok, socket}
+    end
+  end
+
+  @impl true
   def update(assigns, socket) do
     socket =
       socket
@@ -130,6 +176,7 @@ defmodule EvalioAppWeb.SidePanel do
 
     {:ok, socket}
   end
+
   # Existing handle_events...
 
   def handle_event("edit_reminder", %{"id" => id}, socket) do
@@ -188,10 +235,12 @@ defmodule EvalioAppWeb.SidePanel do
             # Create new reminder
             [Reminder.new(title, date, time) | socket.assigns.reminders]
           reminder ->
-            # Update existing reminder
+            # Update existing reminder while preserving the tag
             Enum.map(socket.assigns.reminders, fn r ->
               if r.id == reminder.id do
-                Reminder.update(r, title, date, time)
+                updated = Reminder.update(r, title, date, time)
+                # Preserve the tag
+                %{updated | tag: r.tag}
               else
                 r
               end
@@ -218,10 +267,12 @@ defmodule EvalioAppWeb.SidePanel do
             # Create new meeting
             [Meeting.new(title, date, time, link) | socket.assigns.meetings]
           meeting ->
-            # Update existing meeting
+            # Update existing meeting while preserving the tag
             Enum.map(socket.assigns.meetings, fn m ->
               if m.id == meeting.id do
-                Meeting.update(m, title, date, time, link)
+                updated = Meeting.update(m, title, date, time, link)
+                # Preserve the tag
+                %{updated | tag: m.tag}
               else
                 m
               end

@@ -3,7 +3,7 @@ defmodule EvalioApp.Reminder do
   Defines the Reminder struct and its functions.
   """
   require Logger
-  defstruct [:id, :title, :date, :time]
+  defstruct [:id, :title, :date, :time, :tag]
 
   @doc """
   Creates a new reminder with the given title, date and time.
@@ -15,7 +15,8 @@ defmodule EvalioApp.Reminder do
       id: id,
       title: title,
       date: date,
-      time: time
+      time: time,
+      tag: "none"
     }
   end
 
@@ -25,6 +26,14 @@ defmodule EvalioApp.Reminder do
   def update(reminder, title, date, time) do
     Logger.info("Updating reminder with ID: #{reminder.id}")
     %{reminder | title: title, date: date, time: time}
+  end
+
+  @doc """
+  Updates a reminder's tag.
+  """
+  def update_tag(reminder, tag) do
+    Logger.info("Updating reminder tag with ID: #{reminder.id}")
+    %{reminder | tag: tag}
   end
 
   defp generate_unique_id do

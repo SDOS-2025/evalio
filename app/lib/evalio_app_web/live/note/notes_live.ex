@@ -134,6 +134,20 @@ defmodule EvalioAppWeb.NotesLive do
   end
 
   @impl true
+  def handle_info({:update_reminder_tag, id, tag}, socket) do
+    # Forward the message to the SidePanel component
+    send_update(EvalioAppWeb.SidePanel, id: "side-panel", update_reminder_tag: {id, tag})
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info({:update_meeting_tag, id, tag}, socket) do
+    # Forward the message to the SidePanel component
+    send_update(EvalioAppWeb.SidePanel, id: "side-panel", update_meeting_tag: {id, tag})
+    {:noreply, socket}
+  end
+
+  @impl true
   def handle_event("sort_notes", %{"sort" => sort_option}, socket) do
     {:noreply, assign(socket, sort_by: sort_option)}
   end

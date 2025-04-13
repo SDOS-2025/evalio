@@ -3,7 +3,7 @@ defmodule EvalioApp.Meeting do
   Defines the Meeting struct and its functions.
   """
   require Logger
-  defstruct [:id, :title, :date, :time, :link]
+  defstruct [:id, :title, :date, :time, :link, :tag]
 
   @doc """
   Creates a new meeting with the given title, date, time, and link.
@@ -16,7 +16,8 @@ defmodule EvalioApp.Meeting do
       title: title,
       date: date,
       time: time,
-      link: link
+      link: link,
+      tag: "none"
     }
   end
 
@@ -26,6 +27,14 @@ defmodule EvalioApp.Meeting do
   def update(meeting, title, date, time, link) do
     Logger.info("Updating meeting with ID: #{meeting.id}")
     %{meeting | title: title, date: date, time: time, link: link}
+  end
+
+  @doc """
+  Updates a meeting's tag.
+  """
+  def update_tag(meeting, tag) do
+    Logger.info("Updating meeting tag with ID: #{meeting.id}")
+    %{meeting | tag: tag}
   end
 
   defp generate_unique_id do
