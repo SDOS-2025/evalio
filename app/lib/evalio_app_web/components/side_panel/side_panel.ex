@@ -47,9 +47,9 @@ defmodule EvalioAppWeb.SidePanel do
               </button>
             </div>
 
-            <div class="mt-4 flex-grow w-full max-h-[310px] overflow-y-auto bg-gray-100 dark:bg-gray-700 rounded-lg p-2 space-y-2">
+            <div class="mt-4 flex-grow w-full max-h-[310px] overflow-y-auto bg-transparent rounded-lg px-0 py-2 space-y-2">
               <%= for {reminder, index} <- Enum.with_index(@reminders) do %>
-                <Card.card class="w-[95%] mx-auto h-20 bg-gray-300 dark:bg-gray-600 shadow-md rounded-lg p-3 flex flex-col relative">
+                <Card.card class="w-full h-20 bg-gray-100 dark:bg-gray-700 rounded-lg px-1 py-1 flex flex-col relative">
                   <div class="absolute top-1 right-1 flex gap-2">
                     <.live_component module={ReminderTagMenu} id={"reminder-tag-menu-#{reminder.id}"} reminder={reminder} />
                     <button phx-click="edit_reminder" phx-value-id={reminder.id} phx-target={@myself} class="text-blue-500">
@@ -79,9 +79,9 @@ defmodule EvalioAppWeb.SidePanel do
               </button>
             </div>
 
-            <div class="mt-4 flex-grow w-full max-h-[310px] overflow-y-auto bg-gray-100 dark:bg-gray-700 rounded-lg p-2 space-y-2">
+            <div class="mt-4 flex-grow w-full max-h-[310px] overflow-y-auto bg-transparent rounded-lg px-0 py-2 space-y-2">
               <%= for {meeting, index} <- Enum.with_index(@meetings) do %>
-                <Card.card class="w-[95%] mx-auto h-20 bg-gray-300 dark:bg-gray-600 shadow-md rounded-lg p-3 flex flex-col relative">
+                <Card.card class="w-full h-20 bg-gray-100 dark:bg-gray-700 rounded-lg px-1 py-1 flex flex-col relative">
                   <div class="absolute top-1 right-1 flex gap-2">
                     <.live_component module={MeetingTagMenu} id={"meeting-tag-menu-#{meeting.id}"} meeting={meeting} />
                     <button phx-click="edit_meeting" phx-value-id={meeting.id} phx-target={@myself} class="text-blue-500">
