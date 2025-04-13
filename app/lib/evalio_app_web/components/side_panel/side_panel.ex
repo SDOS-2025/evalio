@@ -50,7 +50,7 @@ defmodule EvalioAppWeb.SidePanel do
             </div>
 
             <div class="mt-4 flex-grow w-full max-h-[310px] overflow-y-auto bg-transparent rounded-lg px-0 py-2 space-y-2">
-              <%= for {reminder, index} <- Enum.with_index(@reminders) do %>
+              <%= for {reminder, index} <- Enum.with_index(@sorted_reminders) do %>
                 <Card.card class="w-full h-20 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
                   <div class="flex h-full">
                     <.live_component module={ReminderTagMenu} id={"reminder-tag-menu-#{reminder.id}"} reminder={reminder} />
@@ -88,7 +88,7 @@ defmodule EvalioAppWeb.SidePanel do
             </div>
 
             <div class="mt-4 flex-grow w-full max-h-[310px] overflow-y-auto bg-transparent rounded-lg px-0 py-2 space-y-2">
-              <%= for {meeting, index} <- Enum.with_index(@meetings) do %>
+              <%= for {meeting, index} <- Enum.with_index(@sorted_meetings) do %>
                 <Card.card class="w-full h-20 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
                   <div class="flex h-full">
                     <.live_component module={MeetingTagMenu} id={"meeting-tag-menu-#{meeting.id}"} meeting={meeting} />
@@ -151,7 +151,10 @@ defmodule EvalioAppWeb.SidePanel do
         if r.id == id, do: updated_reminder, else: r
       end)
       
-      {:ok, assign(socket, :reminders, updated_reminders)}
+      # Sort the reminders
+      sorted_reminders = sort_reminders(updated_reminders)
+      
+      {:ok, assign(socket, reminders: updated_reminders, sorted_reminders: sorted_reminders)}
     else
       {:ok, socket}
     end
@@ -171,7 +174,10 @@ defmodule EvalioAppWeb.SidePanel do
         if m.id == id, do: updated_meeting, else: m
       end)
       
-      {:ok, assign(socket, :meetings, updated_meetings)}
+      # Sort the meetings
+      sorted_meetings = sort_meetings(updated_meetings)
+      
+      {:ok, assign(socket, meetings: updated_meetings, sorted_meetings: sorted_meetings)}
     else
       {:ok, socket}
     end
@@ -179,10 +185,19 @@ defmodule EvalioAppWeb.SidePanel do
 
   @impl true
   def update(assigns, socket) do
+    reminders = assigns[:reminders] || []
+    meetings = assigns[:meetings] || []
+    
+    # Sort reminders and meetings
+    sorted_reminders = sort_reminders(reminders)
+    sorted_meetings = sort_meetings(meetings)
+    
     socket =
       socket
-      |> assign(:reminders, assigns[:reminders] || [])
-      |> assign(:meetings, assigns[:meetings] || [])
+      |> assign(:reminders, reminders)
+      |> assign(:meetings, meetings)
+      |> assign(:sorted_reminders, sorted_reminders)
+      |> assign(:sorted_meetings, sorted_meetings)
       |> assign(:show_reminder_form, assigns[:show_reminder_form] || false)
       |> assign(:show_meeting_form, assigns[:show_meeting_form] || false)
       |> assign_new(:editing_reminder, fn -> nil end)
@@ -206,7 +221,8 @@ defmodule EvalioAppWeb.SidePanel do
 
   def handle_event("delete_reminder", %{"id" => id}, socket) do
     updated_reminders = Enum.reject(socket.assigns.reminders, &(&1.id == id))
-    {:noreply, assign(socket, :reminders, updated_reminders)}
+    sorted_reminders = sort_reminders(updated_reminders)
+    {:noreply, assign(socket, reminders: updated_reminders, sorted_reminders: sorted_reminders)}
   end
 
   def handle_event("edit_meeting", %{"id" => id}, socket) do
@@ -222,7 +238,8 @@ defmodule EvalioAppWeb.SidePanel do
 
   def handle_event("delete_meeting", %{"id" => id}, socket) do
     updated_meetings = Enum.reject(socket.assigns.meetings, &(&1.id == id))
-    {:noreply, assign(socket, :meetings, updated_meetings)}
+    sorted_meetings = sort_meetings(updated_meetings)
+    {:noreply, assign(socket, meetings: updated_meetings, sorted_meetings: sorted_meetings)}
   end
 
   def handle_event("show_reminder_form", _, socket) do
@@ -260,10 +277,14 @@ defmodule EvalioAppWeb.SidePanel do
               end
             end)
         end
+      
+      # Sort the reminders
+      sorted_reminders = sort_reminders(updated_reminders)
 
       socket =
         socket
         |> assign(:reminders, updated_reminders)
+        |> assign(:sorted_reminders, sorted_reminders)
         |> assign(:show_reminder_form, false)
         |> assign(:editing_reminder, nil)
 
@@ -292,10 +313,14 @@ defmodule EvalioAppWeb.SidePanel do
               end
             end)
         end
+      
+      # Sort the meetings
+      sorted_meetings = sort_meetings(updated_meetings)
 
       socket =
         socket
         |> assign(:meetings, updated_meetings)
+        |> assign(:sorted_meetings, sorted_meetings)
         |> assign(:show_meeting_form, false)
         |> assign(:editing_meeting, nil)
 
@@ -325,5 +350,19 @@ defmodule EvalioAppWeb.SidePanel do
       _ ->
         date_string
     end
+  end
+  
+  # Sort reminders by date and time (most recent first)
+  defp sort_reminders(reminders) do
+    Enum.sort_by(reminders, fn reminder -> 
+      {reminder.date, reminder.time}
+    end, :asc)
+  end
+  
+  # Sort meetings by date and time (most recent first)
+  defp sort_meetings(meetings) do
+    Enum.sort_by(meetings, fn meeting -> 
+      {meeting.date, meeting.time}
+    end, :asc)
   end
 end
