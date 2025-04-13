@@ -49,22 +49,28 @@ defmodule EvalioAppWeb.SidePanel do
 
             <div class="mt-4 flex-grow w-full max-h-[310px] overflow-y-auto bg-transparent rounded-lg px-0 py-2 space-y-2">
               <%= for {reminder, index} <- Enum.with_index(@reminders) do %>
-                <Card.card class="w-full h-20 bg-gray-100 dark:bg-gray-700 rounded-lg px-1 py-1 flex flex-col relative">
-                  <div class="absolute top-1 right-1 flex gap-2">
+                <Card.card class="w-full h-20 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
+                  <div class="flex h-full">
                     <.live_component module={ReminderTagMenu} id={"reminder-tag-menu-#{reminder.id}"} reminder={reminder} />
-                    <button phx-click="edit_reminder" phx-value-id={reminder.id} phx-target={@myself} class="text-blue-500">
-                      <HeroiconsV1.Outline.pencil class="w-5 h-5 cursor-pointer" />
-                    </button>
-                    <button phx-click="delete_reminder" phx-value-id={reminder.id} phx-target={@myself} class="text-red-500">
-                      <HeroiconsV1.Outline.trash class="w-5 h-5 cursor-pointer" />
-                    </button>
+                    <div class="flex-grow relative p-1">
+                      <div class="absolute top-1 right-1 flex gap-2">
+                        <button phx-click="edit_reminder" phx-value-id={reminder.id} phx-target={@myself} class="text-blue-500">
+                          <HeroiconsV1.Outline.pencil class="w-5 h-5 cursor-pointer" />
+                        </button>
+                        <button phx-click="delete_reminder" phx-value-id={reminder.id} phx-target={@myself} class="text-red-500">
+                          <HeroiconsV1.Outline.trash class="w-5 h-5 cursor-pointer" />
+                        </button>
+                      </div>
+                      <div class="flex flex-col justify-center h-full">
+                        <p class="text-sm font-bold text-gray-900 dark:text-gray-100">
+                          <%= reminder.title %>
+                        </p>
+                        <p class="text-xs text-gray-700 dark:text-gray-300 mt-1">
+                          <%= reminder.time %> | <%= format_date(reminder.date) %>
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <p class="text-sm font-bold text-gray-900 dark:text-gray-100">
-                    <%= reminder.title %>
-                  </p>
-                  <p class="text-xs text-gray-700 dark:text-gray-300 mt-1">
-                    <%= reminder.time %> | <%= format_date(reminder.date) %>
-                  </p>
                 </Card.card>
               <% end %>
             </div>
@@ -81,23 +87,29 @@ defmodule EvalioAppWeb.SidePanel do
 
             <div class="mt-4 flex-grow w-full max-h-[310px] overflow-y-auto bg-transparent rounded-lg px-0 py-2 space-y-2">
               <%= for {meeting, index} <- Enum.with_index(@meetings) do %>
-                <Card.card class="w-full h-20 bg-gray-100 dark:bg-gray-700 rounded-lg px-1 py-1 flex flex-col relative">
-                  <div class="absolute top-1 right-1 flex gap-2">
+                <Card.card class="w-full h-20 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
+                  <div class="flex h-full">
                     <.live_component module={MeetingTagMenu} id={"meeting-tag-menu-#{meeting.id}"} meeting={meeting} />
-                    <button phx-click="edit_meeting" phx-value-id={meeting.id} phx-target={@myself} class="text-blue-500">
-                      <HeroiconsV1.Outline.pencil class="w-5 h-5 cursor-pointer" />
-                    </button>
-                    <button phx-click="delete_meeting" phx-value-id={meeting.id} phx-target={@myself} class="text-red-500">
-                      <HeroiconsV1.Outline.trash class="w-5 h-5 cursor-pointer" />
-                    </button>
+                    <div class="flex-grow relative p-1">
+                      <div class="absolute top-1 right-1 flex gap-2">
+                        <button phx-click="edit_meeting" phx-value-id={meeting.id} phx-target={@myself} class="text-blue-500">
+                          <HeroiconsV1.Outline.pencil class="w-5 h-5 cursor-pointer" />
+                        </button>
+                        <button phx-click="delete_meeting" phx-value-id={meeting.id} phx-target={@myself} class="text-red-500">
+                          <HeroiconsV1.Outline.trash class="w-5 h-5 cursor-pointer" />
+                        </button>
+                      </div>
+                      <div class="flex flex-col justify-center h-full">
+                        <p class="text-sm font-bold text-gray-900 dark:text-gray-100">
+                          <%= meeting.title %>
+                        </p>
+                        <p class="text-xs text-gray-700 dark:text-gray-300 mt-1">
+                          <%= meeting.time %> | <%= format_date(meeting.date) %>
+                        </p>
+                        <a href={meeting.link} target="_blank" class="text-blue-500 underline text-xs mt-1">Join Meeting</a>
+                      </div>
+                    </div>
                   </div>
-                  <p class="text-sm font-bold text-gray-900 dark:text-gray-100">
-                    <%= meeting.title %>
-                  </p>
-                  <p class="text-xs text-gray-700 dark:text-gray-300 mt-1">
-                    <%= meeting.time %> | <%= format_date(meeting.date) %>
-                  </p>
-                  <a href={meeting.link} target="_blank" class="text-blue-500 underline text-xs mt-1">Join Meeting</a>
                 </Card.card>
               <% end %>
             </div>
