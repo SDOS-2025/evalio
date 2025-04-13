@@ -14,7 +14,7 @@ defmodule EvalioAppWeb.MeetingTagMenu do
 
       <div
         id={"dropdown-menu-#{@meeting.id}"}
-        class="hidden absolute z-10 mt-2 right-0 w-[120px] bg-white rounded-lg py-2 shadow-lg border border-gray-200 max-h-[200px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+        class="hidden absolute z-10 top-0 left-[45px] w-[120px] bg-white rounded-lg py-2 shadow-lg border border-gray-200 max-h-[62px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
       >
         <div class="flex flex-col" role="menu" aria-orientation="vertical">
           <button type="button" phx-click="change_tag" phx-value-tag="red" phx-value-id={@meeting.id} phx-target={@myself} class="group w-full px-4 py-2 flex items-center space-x-3 hover:bg-[#FF655F] transition-all text-gray-700" role="menuitem">
