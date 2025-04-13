@@ -13,11 +13,11 @@ defmodule EvalioAppWeb.MeetingFormComponent do
     ~H"""
     <div>
       <Card.card class="w-96 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">
           <%= if @meeting, do: "Edit Meeting", else: "Add Meeting" %>
         </h3>
 
-        <.form for={%{}} phx-submit="save_meeting" phx-target={@myself}>
+        <.form for={%{}} phx-submit="save_meeting" phx-target={@myself} class="space-y-4">
           <!-- Hidden ID field for editing existing meetings -->
           <%= if @meeting && @meeting.id do %>
             <Input.input
@@ -27,39 +27,53 @@ defmodule EvalioAppWeb.MeetingFormComponent do
             />
           <% end %>
 
-          <Input.input
-            type="text"
-            name="title"
-            value={@meeting && @meeting.title || ""}
-            label="Title"
-            required
-          />
+          <div class="mb-4 w-full">
+            <Input.input
+              type="text"
+              name="title"
+              value={@meeting && @meeting.title || ""}
+              label="Title"
+              placeholder="Title"
+              class="w-full rounded-md border-gray-300 dark:border-gray-600"
+              required
+            />
+          </div>
 
-          <Input.input
-            type="date"
-            name="date"
-            value={@meeting && @meeting.date || ""}
-            label="Date"
-            required
-          />
+          <div class="mb-4 w-full">
+            <Input.input
+              type="date"
+              name="date"
+              value={@meeting && @meeting.date || ""}
+              label="Date"
+              class="w-full rounded-md border-gray-300 dark:border-gray-600"
+              required
+            />
+          </div>
 
-          <Input.input
-            type="time"
-            name="time"
-            value={@meeting && @meeting.time || ""}
-            label="Time"
-            required
-          />
+          <div class="mb-4 w-full">
+            <Input.input
+              type="time"
+              name="time"
+              value={@meeting && @meeting.time || ""}
+              label="Time"
+              class="w-full rounded-md border-gray-300 dark:border-gray-600"
+              required
+            />
+          </div>
 
-          <Input.input
-            type="url"
-            name="link"
-            value={@meeting && @meeting.link || ""}
-            label="Link"
-            required
-          />
+          <div class="mb-4 w-full">
+            <Input.input
+              type="url"
+              name="link"
+              value={@meeting && @meeting.link || ""}
+              label="Link"
+              placeholder="Link"
+              class="w-full rounded-md border-gray-300 dark:border-gray-600"
+              required
+            />
+          </div>
 
-          <div class="mt-4 flex justify-between">
+          <div class="mt-6 flex justify-between">
             <Button.button
               type="button"
               phx-click="hide_meeting_form"

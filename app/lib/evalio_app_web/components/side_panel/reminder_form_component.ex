@@ -13,36 +13,46 @@ defmodule EvalioAppWeb.ReminderFormComponent do
     ~H"""
     <div>
       <Card.card class="w-96 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">
           <%= if @reminder, do: "Edit Reminder", else: "Add Reminder" %>
         </h3>
 
-        <.form for={%{}} phx-submit="save_reminder" phx-target={@myself}>
-          <Input.input
-            type="text"
-            name="title"
-            value={@reminder && @reminder.title || ""}
-            label="Title"
-            required
-          />
+        <.form for={%{}} phx-submit="save_reminder" phx-target={@myself} class="space-y-4">
+          <div class="mb-4 w-full">
+            <Input.input
+              type="text"
+              name="title"
+              value={@reminder && @reminder.title || ""}
+              label="Title"
+              placeholder="Title"
+              class="w-full rounded-md border-gray-300 dark:border-gray-600"
+              required
+            />
+          </div>
 
-          <Input.input
-            type="date"
-            name="date"
-            value={@reminder && @reminder.date || ""}
-            label="Date"
-            required
-          />
+          <div class="mb-4 w-full">
+            <Input.input
+              type="date"
+              name="date"
+              value={@reminder && @reminder.date || ""}
+              label="Date"
+              class="w-full rounded-md border-gray-300 dark:border-gray-600"
+              required
+            />
+          </div>
 
-          <Input.input
-            type="time"
-            name="time"
-            value={@reminder && @reminder.time || ""}
-            label="Time"
-            required
-          />
+          <div class="mb-4 w-full">
+            <Input.input
+              type="time"
+              name="time"
+              value={@reminder && @reminder.time || ""}
+              label="Time"
+              class="w-full rounded-md border-gray-300 dark:border-gray-600"
+              required
+            />
+          </div>
 
-          <div class="mt-4 flex justify-between">
+          <div class="mt-6 flex justify-between">
             <Button.button
               type="button"
               phx-click="hide_reminder_form"
