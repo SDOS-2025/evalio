@@ -11,6 +11,7 @@ defmodule EvalioAppWeb.SidePanel do
   alias EvalioAppWeb.ReminderTagMenu
   alias EvalioAppWeb.MeetingTagMenu
   alias EvalioAppWeb.TagManager
+  alias EvalioAppWeb.CalendarComponent
 
   def render(assigns) do
     ~H"""
@@ -30,13 +31,14 @@ defmodule EvalioAppWeb.SidePanel do
         <!-- Scrollable Content -->
         <div class="overflow-y-auto flex-grow space-y-4">
           <!-- Calendar Card -->
-          <%!-- <.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl flex items-center justify-center">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Calendar</h3>
-          </.card> --%>
-          <Card.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl overflow-hidden p-0">
-            <img src="/images/calender.png" alt="Calendar" class="w-full h-full object-cover" />
+          <Card.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl overflow-hidden p-4">
+            <.live_component 
+              module={CalendarComponent} 
+              id="calendar" 
+              reminders={@reminders} 
+              meetings={@meetings} 
+            />
           </Card.card>
-
 
           <!-- Reminders Card -->
           <Card.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl relative p-4 flex flex-col">
