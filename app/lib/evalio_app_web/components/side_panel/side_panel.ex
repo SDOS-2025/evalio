@@ -19,12 +19,12 @@ defmodule EvalioAppWeb.SidePanel do
 
         <!-- Existing Header Buttons -->
         <div class="w-full max-w-[90%] mx-auto flex justify-between mb-4">
-          <Button.button class="w-80 bg-transparent text-black dark:text-white border-none outline-none shadow-none">
+          <button class="w-80 bg-transparent text-black dark:text-white border border-transparent outline-none shadow-none hover:border-gray-600 dark:hover:border-gray-400 focus:border-gray-600 dark:focus:border-gray-400 focus:ring-0 rounded-lg px-4 py-2 transition-colors duration-200">
             Profile
-          </Button.button>
-          <Button.button class="bg-green-500 dark:bg-green-700 text-white px-4 py-2 rounded-lg">
+          </button>
+          <button class="bg-transparent text-black dark:text-white border border-transparent outline-none shadow-none hover:border-gray-600 dark:hover:border-gray-400 focus:border-gray-600 dark:focus:border-gray-400 focus:ring-0 rounded-lg px-4 py-2 transition-colors duration-200">
             Stats
-          </Button.button>
+          </button>
         </div>
 
         <!-- Scrollable Content -->
@@ -97,7 +97,7 @@ defmodule EvalioAppWeb.SidePanel do
                   <p class="text-xs text-gray-700 dark:text-gray-300 mt-1">
                     <%= meeting.time %> | <%= format_date(meeting.date) %>
                   </p>
-                  <a href={meeting.link} target="_blank" class="text-blue-500 underline text-xs mt-1">JoinMeeting</a>
+                  <a href={meeting.link} target="_blank" class="text-blue-500 underline text-xs mt-1">Join Meeting</a>
                 </Card.card>
               <% end %>
             </div>
@@ -107,13 +107,13 @@ defmodule EvalioAppWeb.SidePanel do
 
         <!-- Popups for Forms -->
         <%= if @show_meeting_form do %>
-          <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div class="fixed inset-0 flex items-center justify-center">
             <.live_component module={EvalioAppWeb.MeetingFormComponent} id="meeting_form" myself={@myself} meeting={@editing_meeting} />
           </div>
         <% end %>
 
         <%= if @show_reminder_form do %>
-          <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div class="fixed inset-0 flex items-center justify-center">
             <.live_component module={EvalioAppWeb.ReminderFormComponent} id="reminder_form" myself={@myself} reminder={@editing_reminder} />
           </div>
         <% end %>

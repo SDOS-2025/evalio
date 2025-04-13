@@ -34,7 +34,7 @@ defmodule EvalioAppWeb.ReminderFormComponent do
               value={@reminder && @reminder.title || ""}
               label="Title"
               placeholder="Title"
-              class="w-full rounded-md border-gray-300 dark:border-gray-600"
+              class="w-full rounded-md border-gray-300 dark:border-gray-600 focus:border-gray-400 focus:ring-gray-400"
               required
             />
           </div>
@@ -45,7 +45,7 @@ defmodule EvalioAppWeb.ReminderFormComponent do
               name="date"
               value={@reminder && @reminder.date || ""}
               label="Date"
-              class="w-full rounded-md border-gray-300 dark:border-gray-600"
+              class="w-full rounded-md border-gray-300 dark:border-gray-600 focus:border-gray-400 focus:ring-gray-400"
               required
             />
           </div>
@@ -56,7 +56,7 @@ defmodule EvalioAppWeb.ReminderFormComponent do
               name="time"
               value={@reminder && @reminder.time || ""}
               label="Time"
-              class="w-full rounded-md border-gray-300 dark:border-gray-600"
+              class="w-full rounded-md border-gray-300 dark:border-gray-600 focus:border-gray-400 focus:ring-gray-400"
               required
             />
           </div>
