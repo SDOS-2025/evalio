@@ -21,6 +21,7 @@ defmodule EvalioAppWeb.Router do
 
     # get "/", PageController, :home
     live "/", NotesLive, :index
+    live "/notes", NotesLive, :index
   end
 
   # Other scopes may use custom stacks.

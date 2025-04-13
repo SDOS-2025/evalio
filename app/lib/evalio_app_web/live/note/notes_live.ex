@@ -35,7 +35,7 @@ defmodule EvalioAppWeb.NotesLive do
 
   @impl true
   def handle_event("toggle_form", _params, socket) do
-    {:noreply, assign(socket, show_form: true, form: build_form())}
+    {:noreply, assign(socket, show_form: true, form_type: "note", form: build_form())}
   end
 
   @impl true
@@ -196,30 +196,47 @@ defmodule EvalioAppWeb.NotesLive do
 
         <%= if @show_form do %>
           <div class="fixed inset-0 flex items-center justify-center z-50">
-            <div class="absolute inset-0 bg-black bg-opacity-50"></div> <!-- Background Overlay -->
-            <div class="relative z-50 p-4 bg-white rounded-lg shadow-lg w-96">
-            <%!-- <div class="fixed inset-0 z-50"> --%>
-              <%= case @form_type do %>
-                <% "note" -> %>
-                  <.live_component
-                    module={NoteFormComponent}
-                    id="note-form"
-                    form={@form}
-                    editing={true}
-                  />
-                <% "reminder" -> %>
+            <div class="absolute inset-0 bg-black/30 backdrop-blur-lg"></div>
+            <%= case @form_type do %>
+              <% "note" -> %>
+                <div class="relative z-50">
+                  <.card class="shadow-lg rounded-lg p-6 w-[600px] h-[400px] flex flex-col justify-between transform scale-100 transition-transform duration-300 ease-in-out bg-white">
+                    <.form for={@form} phx-submit="save_note">
+                      <.field field={@form[:title]}
+                        placeholder="Title"
+                        phx-debounce="blur"
+                        label=""
+                        class="!border-none !outline-none !ring-0 !shadow-none"
+                      />
+                      <.field field={@form[:content]}
+                        type="textarea"
+                        placeholder="Content"
+                        phx-debounce="blur"
+                        label=""
+                        class="!border-none !outline-none !ring-0 !shadow-none"
+                      />
+                      <div class="mt-4 flex justify-between">
+                        <.button label="Save" color="green" />
+                        <.button label="Cancel" color="red" phx-click="cancel_form" type="button" />
+                      </div>
+                    </.form>
+                  </.card>
+                </div>
+              <% "reminder" -> %>
+                <div class="relative z-50 p-4 bg-white rounded-lg shadow-lg w-96">
                   <.live_component
                     module={ReminderFormComponent}
                     id="reminder-form"
                   />
-                <% "meeting" -> %>
+                </div>
+              <% "meeting" -> %>
+                <div class="relative z-50 p-4 bg-white rounded-lg shadow-lg w-96">
                   <.live_component
                     module={MeetingFormComponent}
                     id="meeting-form"
                   />
-              <% end %>
-              <%!-- </div> --%>
-            </div>
+                </div>
+            <% end %>
           </div>
         <% end %>
       </div>

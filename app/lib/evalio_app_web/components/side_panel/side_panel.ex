@@ -121,14 +121,20 @@ defmodule EvalioAppWeb.SidePanel do
 
         <!-- Popups for Forms -->
         <%= if @show_meeting_form do %>
-          <div class="fixed inset-0 flex items-center justify-center">
-            <.live_component module={EvalioAppWeb.MeetingFormComponent} id="meeting_form" myself={@myself} meeting={@editing_meeting} />
+          <div class="fixed inset-0 flex items-center justify-center z-50">
+            <div class="absolute inset-0 bg-black/30 backdrop-blur-lg"></div>
+            <div class="relative z-50">
+              <.live_component module={EvalioAppWeb.MeetingFormComponent} id="meeting_form" myself={@myself} meeting={@editing_meeting} />
+            </div>
           </div>
         <% end %>
 
         <%= if @show_reminder_form do %>
-          <div class="fixed inset-0 flex items-center justify-center">
-            <.live_component module={EvalioAppWeb.ReminderFormComponent} id="reminder_form" myself={@myself} reminder={@editing_reminder} />
+          <div class="fixed inset-0 flex items-center justify-center z-50">
+            <div class="absolute inset-0 bg-black/30 backdrop-blur-lg"></div>
+            <div class="relative z-50">
+              <.live_component module={EvalioAppWeb.ReminderFormComponent} id="reminder_form" myself={@myself} reminder={@editing_reminder} />
+            </div>
           </div>
         <% end %>
 
