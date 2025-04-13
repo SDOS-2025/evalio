@@ -46,18 +46,21 @@ defmodule EvalioAppWeb.SidePanel do
 
             <div class="mt-4 flex-grow w-full max-h-[310px] overflow-y-auto bg-gray-100 dark:bg-gray-700 rounded-lg p-2 space-y-2">
               <%= for {reminder, index} <- Enum.with_index(@reminders) do %>
-                <Card.card class="w-[95%] mx-auto h-20 bg-gray-300 dark:bg-gray-600 shadow-md rounded-lg p-3 flex justify-between items-center">
-                  <p class="text-sm text-gray-900 dark:text-gray-100">
-                    <%= reminder.title %> - <%= reminder.date %> <%= reminder.time %>
-                  </p>
-                  <div class="ml-auto flex gap-2">
-                    <Button.button phx-click="edit_reminder" phx-value-id={reminder.id} phx-target={@myself} color="blue">
-                      Edit
-                    </Button.button>
-                    <Button.button phx-click="delete_reminder" phx-value-id={reminder.id} phx-target={@myself} color="red">
-                      Delete
-                    </Button.button>
+                <Card.card class="w-[95%] mx-auto h-20 bg-gray-300 dark:bg-gray-600 shadow-md rounded-lg p-3 flex flex-col relative">
+                  <div class="absolute top-1 right-1 flex gap-2">
+                    <button phx-click="edit_reminder" phx-value-id={reminder.id} phx-target={@myself} class="text-blue-500">
+                      <HeroiconsV1.Outline.pencil class="w-5 h-5 cursor-pointer" />
+                    </button>
+                    <button phx-click="delete_reminder" phx-value-id={reminder.id} phx-target={@myself} class="text-red-500">
+                      <HeroiconsV1.Outline.trash class="w-5 h-5 cursor-pointer" />
+                    </button>
                   </div>
+                  <p class="text-sm font-bold text-gray-900 dark:text-gray-100">
+                    <%= reminder.title %>
+                  </p>
+                  <p class="text-xs text-gray-700 dark:text-gray-300 mt-1">
+                    <%= reminder.time %> | <%= format_date(reminder.date) %>
+                  </p>
                 </Card.card>
               <% end %>
             </div>
@@ -74,21 +77,22 @@ defmodule EvalioAppWeb.SidePanel do
 
             <div class="mt-4 flex-grow w-full max-h-[310px] overflow-y-auto bg-gray-100 dark:bg-gray-700 rounded-lg p-2 space-y-2">
               <%= for {meeting, index} <- Enum.with_index(@meetings) do %>
-                <Card.card class="w-[95%] mx-auto h-20 bg-gray-300 dark:bg-gray-600 shadow-md rounded-lg p-3 flex justify-between items-center">
-                  <div>
-                    <p class="text-sm text-gray-900 dark:text-gray-100">
-                      <%= meeting.title %> - <%= meeting.date %> <%= meeting.time %>
-                    </p>
-                    <a href={meeting.link} target="_blank" class="text-blue-500 underline">JoinMeeting</a>
+                <Card.card class="w-[95%] mx-auto h-20 bg-gray-300 dark:bg-gray-600 shadow-md rounded-lg p-3 flex flex-col relative">
+                  <div class="absolute top-1 right-1 flex gap-2">
+                    <button phx-click="edit_meeting" phx-value-id={meeting.id} phx-target={@myself} class="text-blue-500">
+                      <HeroiconsV1.Outline.pencil class="w-5 h-5 cursor-pointer" />
+                    </button>
+                    <button phx-click="delete_meeting" phx-value-id={meeting.id} phx-target={@myself} class="text-red-500">
+                      <HeroiconsV1.Outline.trash class="w-5 h-5 cursor-pointer" />
+                    </button>
                   </div>
-                  <div class="ml-auto flex gap-2">
-                    <Button.button phx-click="edit_meeting" phx-value-id={meeting.id} phx-target={@myself} color="blue">
-                      Edit
-                    </Button.button>
-                    <Button.button phx-click="delete_meeting" phx-value-id={meeting.id} phx-target={@myself} color="red">
-                      Delete
-                    </Button.button>
-                  </div>
+                  <p class="text-sm font-bold text-gray-900 dark:text-gray-100">
+                    <%= meeting.title %>
+                  </p>
+                  <p class="text-xs text-gray-700 dark:text-gray-300 mt-1">
+                    <%= meeting.time %> | <%= format_date(meeting.date) %>
+                  </p>
+                  <a href={meeting.link} target="_blank" class="text-blue-500 underline text-xs mt-1">JoinMeeting</a>
                 </Card.card>
               <% end %>
             </div>
@@ -247,5 +251,14 @@ defmodule EvalioAppWeb.SidePanel do
 
   def handle_event("hide_meeting_form", _, socket) do
     {:noreply, assign(socket, :show_meeting_form, false)}
+  end
+
+  defp format_date(date_string) do
+    case Date.from_iso8601(date_string) do
+      {:ok, date} ->
+        "#{String.pad_leading("#{date.day}", 2, "0")}-#{String.pad_leading("#{date.month}", 2, "0")}-#{date.year}"
+      _ ->
+        date_string
+    end
   end
 end
