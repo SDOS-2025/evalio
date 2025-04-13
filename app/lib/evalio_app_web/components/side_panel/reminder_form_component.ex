@@ -1,54 +1,62 @@
 defmodule EvalioAppWeb.ReminderFormComponent do
   use EvalioAppWeb, :live_component
+  
+  # Use aliases instead of imports to avoid ambiguity
+  alias PetalComponents.Card
+  alias PetalComponents.Button
+  alias PetalComponents.Input
+
+  alias EvalioApp.Reminder
 
   @impl true
   def render(assigns) do
     ~H"""
-    <div>  <!-- This ensures a single static root element -->
-      <.card class="w-96 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
-
-        <!-- CHANGED: Dynamic Heading based on add/edit -->
+    <div>
+      <Card.card class="w-96 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
           <%= if @reminder, do: "Edit Reminder", else: "Add Reminder" %>
         </h3>
 
-        <form phx-submit="save_reminder" phx-target={@myself}>
-
-          <!-- Title Field -->
-          <label class="block text-sm text-gray-700 dark:text-gray-300">Title</label>
-
-          <!-- CHANGED: Added value attribute for pre-filling -->
-          <input type="text" name="title"
+        <.form for={%{}} phx-submit="save_reminder" phx-target={@myself}>
+          <Input.input
+            type="text"
+            name="title"
             value={@reminder && @reminder.title || ""}
-            class="w-full px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 mb-2">
+            label="Title"
+            required
+          />
 
-          <!-- Date Field -->
-          <label class="block text-sm text-gray-700 dark:text-gray-300">Date</label>
-
-          <!-- CHANGED: Added value attribute for pre-filling -->
-          <input type="date" name="date"
+          <Input.input
+            type="date"
+            name="date"
             value={@reminder && @reminder.date || ""}
-            class="w-full px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 mb-2">
+            label="Date"
+            required
+          />
 
-          <!-- Time Field -->
-          <label class="block text-sm text-gray-700 dark:text-gray-300">Time</label>
-
-          <!-- CHANGED: Added value attribute for pre-filling -->
-          <input type="time" name="time"
+          <Input.input
+            type="time"
+            name="time"
             value={@reminder && @reminder.time || ""}
-            class="w-full px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 mb-4">
+            label="Time"
+            required
+          />
 
-          <div class="flex justify-end space-x-2">
-            <button type="button" phx-click="hide_reminder_form" phx-target={@myself}
-              class="px-4 py-2 bg-gray-400 dark:bg-gray-600 text-white rounded-lg">
+          <div class="mt-4 flex justify-between">
+            <Button.button
+              type="button"
+              phx-click="hide_reminder_form"
+              phx-target={@myself}
+              color="red"
+            >
               Cancel
-            </button>
-            <button type="submit" class="px-4 py-2 bg-blue-500 dark:bg-blue-700 text-white rounded-lg">
+            </Button.button>
+            <Button.button type="submit" color="green">
               Save
-            </button>
+            </Button.button>
           </div>
-        </form>
-      </.card>
+        </.form>
+      </Card.card>
     </div>
     """
   end

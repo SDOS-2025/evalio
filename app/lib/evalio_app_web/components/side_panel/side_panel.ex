@@ -1,20 +1,27 @@
 defmodule EvalioAppWeb.SidePanel do
   use EvalioAppWeb, :live_component
-  import PetalComponents
+  
+  # Use aliases instead of imports to avoid ambiguity
+  alias PetalComponents.Card
+  alias PetalComponents.Button
+  alias PetalComponents.Container
+
+  alias EvalioApp.Reminder
+  alias EvalioApp.Meeting
 
   def render(assigns) do
     ~H"""
     <div class="fixed right-0 top-0 h-screen w-1/3 bg-gray-200 dark:bg-gray-900 shadow-lg">
-      <.container class="h-full px-4 py-4 flex flex-col">
+      <Container.container class="h-full px-4 py-4 flex flex-col">
 
         <!-- Existing Header Buttons -->
         <div class="w-full max-w-[90%] mx-auto flex justify-between mb-4">
-          <.button class="w-80 bg-transparent text-black dark:text-white border-none outline-none shadow-none">
+          <Button.button class="w-80 bg-transparent text-black dark:text-white border-none outline-none shadow-none">
             Profile
-          </.button>
-          <.button class="bg-green-500 dark:bg-green-700 text-white px-4 py-2 rounded-lg">
+          </Button.button>
+          <Button.button class="bg-green-500 dark:bg-green-700 text-white px-4 py-2 rounded-lg">
             Stats
-          </.button>
+          </Button.button>
         </div>
 
         <!-- Scrollable Content -->
@@ -23,13 +30,13 @@ defmodule EvalioAppWeb.SidePanel do
           <%!-- <.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl flex items-center justify-center">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Calendar</h3>
           </.card> --%>
-          <.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl overflow-hidden p-0">
+          <Card.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl overflow-hidden p-0">
             <img src="/images/calender.png" alt="Calendar" class="w-full h-full object-cover" />
-          </.card>
+          </Card.card>
 
 
           <!-- Reminders Card -->
-          <.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl relative p-4 flex flex-col">
+          <Card.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl relative p-4 flex flex-col">
             <div class="flex justify-between items-center">
               <h4 class="text-xl font-bold text-gray-800 dark:text-gray-200">Reminders</h4>
               <button phx-click="show_reminder_form" phx-target={@myself}>
@@ -39,21 +46,25 @@ defmodule EvalioAppWeb.SidePanel do
 
             <div class="mt-4 flex-grow w-full max-h-[310px] overflow-y-auto bg-gray-100 dark:bg-gray-700 rounded-lg p-2 space-y-2">
               <%= for {reminder, index} <- Enum.with_index(@reminders) do %>
-                <.card class="w-[95%] mx-auto h-20 bg-gray-300 dark:bg-gray-600 shadow-md rounded-lg p-3 flex justify-between items-center">
+                <Card.card class="w-[95%] mx-auto h-20 bg-gray-300 dark:bg-gray-600 shadow-md rounded-lg p-3 flex justify-between items-center">
                   <p class="text-sm text-gray-900 dark:text-gray-100">
                     <%= reminder.title %> - <%= reminder.date %> <%= reminder.time %>
                   </p>
                   <div class="ml-auto flex gap-2">
-                    <button phx-click="edit_reminder" phx-value-index={index} phx-target={@myself} class="text-blue-500">Edit</button>
-                    <button phx-click="delete_reminder" phx-value-index={index} phx-target={@myself} class="text-red-500">Delete</button>
+                    <Button.button phx-click="edit_reminder" phx-value-id={reminder.id} phx-target={@myself} color="blue">
+                      Edit
+                    </Button.button>
+                    <Button.button phx-click="delete_reminder" phx-value-id={reminder.id} phx-target={@myself} color="red">
+                      Delete
+                    </Button.button>
                   </div>
-                </.card>
+                </Card.card>
               <% end %>
             </div>
-          </.card>
+          </Card.card>
 
           <!-- Meetings Card -->
-          <.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl relative p-4 flex flex-col">
+          <Card.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl relative p-4 flex flex-col">
             <div class="flex justify-between items-center">
               <h4 class="text-xl font-bold text-gray-800 dark:text-gray-200">Meetings</h4>
               <button phx-click="show_meeting_form" phx-target={@myself}>
@@ -63,7 +74,7 @@ defmodule EvalioAppWeb.SidePanel do
 
             <div class="mt-4 flex-grow w-full max-h-[310px] overflow-y-auto bg-gray-100 dark:bg-gray-700 rounded-lg p-2 space-y-2">
               <%= for {meeting, index} <- Enum.with_index(@meetings) do %>
-                <.card class="w-[95%] mx-auto h-20 bg-gray-300 dark:bg-gray-600 shadow-md rounded-lg p-3 flex justify-between items-center">
+                <Card.card class="w-[95%] mx-auto h-20 bg-gray-300 dark:bg-gray-600 shadow-md rounded-lg p-3 flex justify-between items-center">
                   <div>
                     <p class="text-sm text-gray-900 dark:text-gray-100">
                       <%= meeting.title %> - <%= meeting.date %> <%= meeting.time %>
@@ -71,13 +82,17 @@ defmodule EvalioAppWeb.SidePanel do
                     <a href={meeting.link} target="_blank" class="text-blue-500 underline">JoinMeeting</a>
                   </div>
                   <div class="ml-auto flex gap-2">
-                    <button phx-click="edit_meeting" phx-value-index={index} phx-target={@myself} class="text-blue-500">Edit</button>
-                    <button phx-click="delete_meeting" phx-value-index={index} phx-target={@myself} class="text-red-500">Delete</button>
+                    <Button.button phx-click="edit_meeting" phx-value-id={meeting.id} phx-target={@myself} color="blue">
+                      Edit
+                    </Button.button>
+                    <Button.button phx-click="delete_meeting" phx-value-id={meeting.id} phx-target={@myself} color="red">
+                      Delete
+                    </Button.button>
                   </div>
-                </.card>
+                </Card.card>
               <% end %>
             </div>
-          </.card>
+          </Card.card>
 
         </div>
 
@@ -94,7 +109,7 @@ defmodule EvalioAppWeb.SidePanel do
           </div>
         <% end %>
 
-      </.container>
+      </Container.container>
     </div>
     """
   end
@@ -113,42 +128,46 @@ defmodule EvalioAppWeb.SidePanel do
   end
   # Existing handle_events...
 
-  def handle_event("edit_reminder", %{"index" => index}, socket) do
-    reminder = Enum.at(socket.assigns.reminders, String.to_integer(index))
+  def handle_event("edit_reminder", %{"id" => id}, socket) do
+    reminder = Enum.find(socket.assigns.reminders, &(&1.id == id))
 
     socket =
       socket
       |> assign(:show_reminder_form, true)
       |> assign(:editing_reminder, reminder)
-      |> assign(:editing_reminder_index, String.to_integer(index))
 
     {:noreply, socket}
   end
 
-  def handle_event("delete_reminder", %{"index" => index}, socket) do
-    updated_reminders = List.delete_at(socket.assigns.reminders, String.to_integer(index))
+  def handle_event("delete_reminder", %{"id" => id}, socket) do
+    updated_reminders = Enum.reject(socket.assigns.reminders, &(&1.id == id))
     {:noreply, assign(socket, :reminders, updated_reminders)}
   end
 
-  def handle_event("edit_meeting", %{"index" => index}, socket) do
-    meeting = Enum.at(socket.assigns.meetings, String.to_integer(index))
+  def handle_event("edit_meeting", %{"id" => id}, socket) do
+    meeting = Enum.find(socket.assigns.meetings, &(&1.id == id))
 
     socket =
       socket
       |> assign(:show_meeting_form, true)
       |> assign(:editing_meeting, meeting)
-      |> assign(:editing_meeting_index, String.to_integer(index))
 
     {:noreply, socket}
   end
 
-  def handle_event("delete_meeting", %{"index" => index}, socket) do
-    updated_meetings = List.delete_at(socket.assigns.meetings, String.to_integer(index))
+  def handle_event("delete_meeting", %{"id" => id}, socket) do
+    updated_meetings = Enum.reject(socket.assigns.meetings, &(&1.id == id))
     {:noreply, assign(socket, :meetings, updated_meetings)}
   end
 
   def handle_event("show_reminder_form", _, socket) do
-    {:noreply, assign(socket, :show_reminder_form, true)}
+    # Reset editing state when showing the form for a new reminder
+    socket =
+      socket
+      |> assign(:show_reminder_form, true)
+      |> assign(:editing_reminder, nil)
+
+    {:noreply, socket}
   end
 
   def handle_event("hide_reminder_form", _, socket) do
@@ -159,12 +178,20 @@ defmodule EvalioAppWeb.SidePanel do
     if date == "" or title == "" or time == "" do
       {:noreply, socket}
     else
-      new_reminder = %{date: date, title: title, time: time}
-
       updated_reminders =
-        case socket.assigns[:editing_reminder_index] do
-          nil -> [new_reminder | socket.assigns.reminders]
-          index -> List.replace_at(socket.assigns.reminders, index, new_reminder)
+        case socket.assigns[:editing_reminder] do
+          nil ->
+            # Create new reminder
+            [Reminder.new(title, date, time) | socket.assigns.reminders]
+          reminder ->
+            # Update existing reminder
+            Enum.map(socket.assigns.reminders, fn r ->
+              if r.id == reminder.id do
+                Reminder.update(r, title, date, time)
+              else
+                r
+              end
+            end)
         end
 
       socket =
@@ -172,7 +199,6 @@ defmodule EvalioAppWeb.SidePanel do
         |> assign(:reminders, updated_reminders)
         |> assign(:show_reminder_form, false)
         |> assign(:editing_reminder, nil)
-        |> assign(:editing_reminder_index, nil)
 
       {:noreply, socket}
     end
@@ -182,12 +208,20 @@ defmodule EvalioAppWeb.SidePanel do
     if date == "" or time == "" or title == "" or link == "" do
       {:noreply, socket}
     else
-      new_meeting = %{date: date, time: time, title: title, link: link}
-
       updated_meetings =
-        case socket.assigns[:editing_meeting_index] do
-          nil -> [new_meeting | socket.assigns.meetings]
-          index -> List.replace_at(socket.assigns.meetings, index, new_meeting)
+        case socket.assigns[:editing_meeting] do
+          nil ->
+            # Create new meeting
+            [Meeting.new(title, date, time, link) | socket.assigns.meetings]
+          meeting ->
+            # Update existing meeting
+            Enum.map(socket.assigns.meetings, fn m ->
+              if m.id == meeting.id do
+                Meeting.update(m, title, date, time, link)
+              else
+                m
+              end
+            end)
         end
 
       socket =
@@ -195,7 +229,6 @@ defmodule EvalioAppWeb.SidePanel do
         |> assign(:meetings, updated_meetings)
         |> assign(:show_meeting_form, false)
         |> assign(:editing_meeting, nil)
-        |> assign(:editing_meeting_index, nil)
 
       {:noreply, socket}
     end
@@ -203,26 +236,16 @@ defmodule EvalioAppWeb.SidePanel do
 
 
   def handle_event("show_meeting_form", _, socket) do
-    {:noreply, assign(socket, :show_meeting_form, true)}
+    # Reset editing state when showing the form for a new meeting
+    socket =
+      socket
+      |> assign(:show_meeting_form, true)
+      |> assign(:editing_meeting, nil)
+
+    {:noreply, socket}
   end
 
   def handle_event("hide_meeting_form", _, socket) do
     {:noreply, assign(socket, :show_meeting_form, false)}
   end
-
-  # def handle_event("save_meeting", %{"date" => date, "time" => time, "title" => title, "link" => link}, socket) do
-  #   if date == "" or time == "" or title == "" or link == "" do
-  #     {:noreply, socket}
-  #   else
-  #     new_meeting = %{date: date, time: time, title: title, link: link}
-  #     updated_meetings = [new_meeting | socket.assigns.meetings]
-
-  #     socket =
-  #       socket
-  #       |> assign(:meetings, updated_meetings)
-  #       |> assign(:show_meeting_form, false)
-
-  #     {:noreply, socket}
-  #   end
-  # end
 end

@@ -1,54 +1,79 @@
 defmodule EvalioAppWeb.MeetingFormComponent do
   use EvalioAppWeb, :live_component
+  
+  # Use aliases instead of imports to avoid ambiguity
+  alias PetalComponents.Card
+  alias PetalComponents.Button
+  alias PetalComponents.Input
+  
+  alias EvalioApp.Meeting
 
   @impl true
   def render(assigns) do
     ~H"""
-    <div>  <!-- This ensures a single static root element -->
-      <.card class="w-96 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
-
-        <!-- Dynamic Heading based on add/edit -->
+    <div>
+      <Card.card class="w-96 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
           <%= if @meeting, do: "Edit Meeting", else: "Add Meeting" %>
         </h3>
 
-        <form phx-submit="save_meeting" phx-target={@myself}>
+        <.form for={%{}} phx-submit="save_meeting" phx-target={@myself}>
+          <!-- Hidden ID field for editing existing meetings -->
+          <%= if @meeting && @meeting.id do %>
+            <Input.input
+              type="hidden"
+              name="id"
+              value={@meeting.id}
+            />
+          <% end %>
 
-          <!-- Title Field -->
-          <label class="block text-sm text-gray-700 dark:text-gray-300">Title</label>
-          <input type="text" name="title"
+          <Input.input
+            type="text"
+            name="title"
             value={@meeting && @meeting.title || ""}
-            class="w-full px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 mb-2" required>
+            label="Title"
+            required
+          />
 
-          <!-- Date Field -->
-          <label class="block text-sm text-gray-700 dark:text-gray-300">Date</label>
-          <input type="date" name="date"
+          <Input.input
+            type="date"
+            name="date"
             value={@meeting && @meeting.date || ""}
-            class="w-full px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 mb-2" required>
+            label="Date"
+            required
+          />
 
-          <!-- Time Field -->
-          <label class="block text-sm text-gray-700 dark:text-gray-300">Time</label>
-          <input type="time" name="time"
+          <Input.input
+            type="time"
+            name="time"
             value={@meeting && @meeting.time || ""}
-            class="w-full px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 mb-2" required>
+            label="Time"
+            required
+          />
 
-          <!-- Link Field -->
-          <label class="block text-sm text-gray-700 dark:text-gray-300">Link</label>
-          <input type="url" name="link"
+          <Input.input
+            type="url"
+            name="link"
             value={@meeting && @meeting.link || ""}
-            class="w-full px-3 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 mb-4" required>
+            label="Link"
+            required
+          />
 
-          <div class="flex justify-end space-x-2">
-            <button type="button" phx-click="hide_meeting_form" phx-target={@myself}
-              class="px-4 py-2 bg-gray-400 dark:bg-gray-600 text-white rounded-lg">
+          <div class="mt-4 flex justify-between">
+            <Button.button
+              type="button"
+              phx-click="hide_meeting_form"
+              phx-target={@myself}
+              color="red"
+            >
               Cancel
-            </button>
-            <button type="submit" class="px-4 py-2 bg-blue-500 dark:bg-blue-700 text-white rounded-lg">
+            </Button.button>
+            <Button.button type="submit" color="green">
               Save
-            </button>
+            </Button.button>
           </div>
-        </form>
-      </.card>
+        </.form>
+      </Card.card>
     </div>
     """
   end
