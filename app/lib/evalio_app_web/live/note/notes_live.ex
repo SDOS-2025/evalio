@@ -162,6 +162,13 @@ defmodule EvalioAppWeb.NotesLive do
   end
 
   @impl true
+  def handle_info({:finish_delete_meeting, id}, socket) do
+    # Forward the message to the SidePanel component
+    send_update(EvalioAppWeb.SidePanel, id: "side-panel", delete_meeting_id: id)
+    {:noreply, socket}
+  end
+
+  @impl true
   def handle_event("sort_notes", %{"sort" => sort_option}, socket) do
     {:noreply, assign(socket, sort_by: sort_option)}
   end
