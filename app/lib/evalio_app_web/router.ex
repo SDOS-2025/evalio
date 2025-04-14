@@ -16,18 +16,25 @@ defmodule EvalioAppWeb.Router do
     plug :accepts, ["json"]
   end
 
+  # Public routes
   scope "/", EvalioAppWeb do
     pipe_through :browser
 
-    # Auth routes
-    live "/", AuthLive
-    live "/login", AuthLive
-    live "/signup", AuthLive
+    live "/", AuthLive, :home
+    live "/login", AuthLive, :login
+    live "/signup", AuthLive, :signup
+  end
 
-    # Notes routes
-    live "/notes", NotesLive
-    live "/notes/new", NotesLive
-    live "/notes/:id/edit", NotesLive
+  # Protected routes
+  scope "/", EvalioAppWeb do
+    pipe_through :browser
+
+    live "/notes", NotesLive, :index
+    live "/notes/new", NotesLive, :new
+    live "/notes/:id/edit", NotesLive, :edit
+    live "/mentees", MenteesLive, :index
+    live "/mentors", MentorsLive, :index
+    live "/cohorts", CohortsLive, :index
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
