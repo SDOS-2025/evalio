@@ -8,10 +8,15 @@ defmodule EvalioAppWeb.SidePanel do
 
   alias EvalioApp.Reminder
   alias EvalioApp.Meeting
-  alias EvalioAppWeb.ReminderTagMenu
   alias EvalioAppWeb.MeetingTagMenu
   alias EvalioAppWeb.TagManager
   alias EvalioAppWeb.CalendarComponent
+  alias EvalioAppWeb.ReminderCard
+  alias EvalioAppWeb.NoteCard
+  alias EvalioApp.Note
+  alias EvalioAppWeb.SidePanel
+  alias EvalioAppWeb.ReminderFormComponent
+  alias EvalioAppWeb.MeetingCard
 
   def render(assigns) do
     ~H"""
@@ -39,7 +44,6 @@ defmodule EvalioAppWeb.SidePanel do
               meetings={@meetings}
             />
           </Card.card>
-
           <!-- Reminders Card -->
           <Card.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl relative p-4 flex flex-col">
             <div class="flex justify-between items-center">
@@ -49,31 +53,17 @@ defmodule EvalioAppWeb.SidePanel do
               </button>
             </div>
 
-            <div class="mt-4 flex-grow w-full max-h-[310px] overflow-y-auto bg-transparent rounded-lg px-0 py-2 space-y-2">
+            <div class="mt-4 flex-grow w-full max-h-[310px] overflow-y-auto bg-transparent rounded-lg px-0 py-2 space-y-2 transition-all duration-300 ease-in-out">
               <%= for {reminder, index} <- Enum.with_index(@sorted_reminders) do %>
-                <Card.card class="w-full h-20 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
-                  <div class="flex h-full">
-                    <.live_component module={ReminderTagMenu} id={"reminder-tag-menu-#{reminder.id}"} reminder={reminder} />
-                    <div class="flex-grow relative p-1">
-                      <div class="absolute top-1 right-1 flex gap-2">
-                        <button phx-click="edit_reminder" phx-value-id={reminder.id} phx-target={@myself} class="text-blue-500">
-                          <HeroiconsV1.Outline.pencil class="w-5 h-5 cursor-pointer" />
-                        </button>
-                        <button phx-click="delete_reminder" phx-value-id={reminder.id} phx-target={@myself} class="text-red-500">
-                          <HeroiconsV1.Outline.trash class="w-5 h-5 cursor-pointer" />
-                        </button>
-                      </div>
-                      <div class="flex flex-col justify-center h-full">
-                        <p class="text-sm font-bold text-gray-900 dark:text-gray-100">
-                          <%= reminder.title %>
-                        </p>
-                        <p class="text-xs text-gray-700 dark:text-gray-300 mt-1">
-                          <%= reminder.time %> | <%= format_date(reminder.date) %>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </Card.card>
+                <div class="transition-all duration-300 ease-in-out">
+                  <.live_component
+                    module={EvalioAppWeb.ReminderCard}
+                    id={"reminder-#{reminder.id}"}
+                    reminder={reminder}
+                    on_delete="delete_reminder"
+                    on_edit="edit_reminder"
+                  />
+                </div>
               <% end %>
             </div>
           </Card.card>
@@ -89,30 +79,12 @@ defmodule EvalioAppWeb.SidePanel do
 
             <div class="mt-4 flex-grow w-full max-h-[310px] overflow-y-auto bg-transparent rounded-lg px-0 py-2 space-y-2">
               <%= for {meeting, index} <- Enum.with_index(@sorted_meetings) do %>
-                <Card.card class="w-full h-20 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
-                  <div class="flex h-full">
-                    <.live_component module={MeetingTagMenu} id={"meeting-tag-menu-#{meeting.id}"} meeting={meeting} />
-                    <div class="flex-grow relative p-1">
-                      <div class="absolute top-1 right-1 flex gap-2">
-                        <button phx-click="edit_meeting" phx-value-id={meeting.id} phx-target={@myself} class="text-blue-500">
-                          <HeroiconsV1.Outline.pencil class="w-5 h-5 cursor-pointer" />
-                        </button>
-                        <button phx-click="delete_meeting" phx-value-id={meeting.id} phx-target={@myself} class="text-red-500">
-                          <HeroiconsV1.Outline.trash class="w-5 h-5 cursor-pointer" />
-                        </button>
-                      </div>
-                      <div class="flex flex-col justify-center h-full">
-                        <p class="text-sm font-bold text-gray-900 dark:text-gray-100">
-                          <%= meeting.title %>
-                        </p>
-                        <p class="text-xs text-gray-700 dark:text-gray-300 mt-1">
-                          <%= meeting.time %> | <%= format_date(meeting.date) %>
-                        </p>
-                        <a href={meeting.link} target="_blank" class="text-blue-500 underline text-xs mt-1">Join Meeting</a>
-                      </div>
-                    </div>
-                  </div>
-                </Card.card>
+                <.live_component
+                  module={MeetingCard}
+                  id={"meeting-#{meeting.id}"}
+                  meeting={meeting}
+                  on_edit="edit_meeting"
+                />
               <% end %>
             </div>
           </Card.card>
@@ -190,6 +162,38 @@ defmodule EvalioAppWeb.SidePanel do
   end
 
   @impl true
+  def update(%{delete_reminder_id: id} = _assigns, socket) do
+    updated_reminders = Enum.reject(socket.assigns.reminders, &(&1.id == id))
+    sorted_reminders = sort_reminders(updated_reminders)
+
+    {:ok, assign(socket,
+      reminders: updated_reminders,
+      sorted_reminders: sorted_reminders
+    )}
+  end
+
+  def update(%{delete_meeting_id: id} = _assigns, socket) do
+    updated_meetings = Enum.reject(socket.assigns.meetings, &(&1.id == id))
+    sorted_meetings = sort_meetings(updated_meetings)
+
+    {:ok, assign(socket,
+      meetings: updated_meetings,
+      sorted_meetings: sorted_meetings
+    )}
+  end
+
+  def update(%{edit_meeting_id: id} = _assigns, socket) do
+    # Find the meeting to edit
+    meeting = Enum.find(socket.assigns.meetings, &(&1.id == id))
+
+    socket =
+      socket
+      |> assign(:show_meeting_form, true)
+      |> assign(:editing_meeting, meeting)
+
+    {:ok, socket}
+  end
+
   def update(assigns, socket) do
     reminders = assigns[:reminders] || []
     meetings = assigns[:meetings] || []
@@ -370,5 +374,34 @@ defmodule EvalioAppWeb.SidePanel do
     Enum.sort_by(meetings, fn meeting ->
       {meeting.date, meeting.time}
     end, :asc)
+  end
+
+  def handle_info({:update_reminder_tag, id, tag}, socket) do
+    # Find and update the reminder
+    updated_reminders = Enum.map(socket.assigns.reminders, fn reminder ->
+      if reminder.id == id do
+        Map.put(reminder, :tag, tag)
+      else
+        reminder
+      end
+    end)
+
+    # Sort the reminders
+    sorted_reminders = sort_reminders(updated_reminders)
+
+    {:noreply, assign(socket,
+      reminders: updated_reminders,
+      sorted_reminders: sorted_reminders
+    )}
+  end
+
+  def handle_info({:delete_reminder, id}, socket) do
+    updated_reminders = Enum.reject(socket.assigns.reminders, &(&1.id == id))
+    sorted_reminders = sort_reminders(updated_reminders)
+
+    {:noreply, assign(socket,
+      reminders: updated_reminders,
+      sorted_reminders: sorted_reminders
+    )}
   end
 end

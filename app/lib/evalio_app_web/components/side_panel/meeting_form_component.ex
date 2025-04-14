@@ -1,11 +1,11 @@
 defmodule EvalioAppWeb.MeetingFormComponent do
   use EvalioAppWeb, :live_component
-  
+
   # Use aliases instead of imports to avoid ambiguity
   alias PetalComponents.Card
   alias PetalComponents.Button
   alias PetalComponents.Input
-  
+
   alias EvalioApp.Meeting
 
   @impl true

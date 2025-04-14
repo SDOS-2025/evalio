@@ -150,6 +150,25 @@ defmodule EvalioAppWeb.NotesLive do
   end
 
   @impl true
+  def handle_info({:search_notes, search_text}, socket) do
+    {:noreply, assign(socket, search_text: search_text)}
+  end
+
+  @impl true
+  def handle_info({:finish_delete, id}, socket) do
+    # Forward the message to the SidePanel component
+    send_update(EvalioAppWeb.SidePanel, id: "side-panel", delete_reminder_id: id)
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info({:finish_delete_meeting, id}, socket) do
+    # Forward the message to the SidePanel component
+    send_update(EvalioAppWeb.SidePanel, id: "side-panel", delete_meeting_id: id)
+    {:noreply, socket}
+  end
+
+  @impl true
   def handle_event("sort_notes", %{"sort" => sort_option}, socket) do
     {:noreply, assign(socket, sort_by: sort_option)}
   end
@@ -157,11 +176,6 @@ defmodule EvalioAppWeb.NotesLive do
   @impl true
   def handle_event("filter_by_tag", %{"tag" => tag}, socket) do
     {:noreply, assign(socket, tag_filter: tag)}
-  end
-
-  @impl true
-  def handle_info({:search_notes, search_text}, socket) do
-    {:noreply, assign(socket, search_text: search_text)}
   end
 
   @impl true
