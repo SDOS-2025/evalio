@@ -206,18 +206,18 @@ defmodule EvalioAppWeb.NotesLive do
             <.live_component module={NewNote} id="new-note" />
           </div>
 
-          <div class="flex gap-4 fixed top-[107px] left-[760px]">
+          <div class="fixed top-[107px] left-[760px] flex gap-4">
             <.live_component module={SortMenu} id="sort-menu" />
-          </div>
-          <div class="flex gap-4 fixed top-[107px] left-[820px]">
             <.live_component module={FilterMenu} id="filter-menu" />
           </div>
 
           <.live_component module={SidePanel} id="side-panel" />
+        </div>
 
         <%= if @show_form do %>
           <div class="fixed inset-0 flex items-center justify-center z-50">
             <div class="absolute inset-0 bg-black/30 backdrop-blur-lg"></div>
+
             <%= case @form_type do %>
               <% "note" -> %>
                 <div class="fixed inset-0 z-50">
