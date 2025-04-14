@@ -6,6 +6,7 @@ defmodule EvalioAppWeb.NotesLive do
 
   alias EvalioAppWeb.NoteHelpers
   alias EvalioAppWeb.NoteFormComponent
+  alias EvalioAppWeb.Components.HomePage.Topbar
 
   alias EvalioAppWeb.NoteContainer
   alias EvalioAppWeb.HomePage.SortMenu
@@ -151,47 +152,54 @@ defmodule EvalioAppWeb.NotesLive do
   end
 
   @impl true
+  def handle_event("logout", _params, socket) do
+    {:noreply, push_navigate(socket, to: ~p"/login")}
+  end
+
+  @impl true
   def render(assigns) do
     ~H"""
     <div>
-      <div class="fixed top-[10px] left-[20px] mb-8 pt-8">
-        <.live_component module={SearchBar} id="search-bar" />
+      <div class="fixed top-0 left-0 right-0 z-50">
+        <Topbar.topbar />
       </div>
 
-      <div>
-        <.live_component
-          module={NoteContainer}
-          id="note-container"
-          notes={filter_notes_by_search(@notes, @search_text)}
-          sort_by={@sort_by}
-          tag_filter={@tag_filter}
-        />
-      </div>
-
-      <div class="relative">
-        <div class="fixed top-[100px] left-5 w-2/3">
-          <.live_component module={NewNote} id="new-note" />
+      <div class="pt-16">
+        <div>
+          <.live_component
+            module={NoteContainer}
+            id="note-container"
+            notes={filter_notes_by_search(@notes, @search_text)}
+            sort_by={@sort_by}
+            tag_filter={@tag_filter}
+          />
         </div>
 
-        <div class="flex gap-4 fixed top-[107px] left-[760px]">
-          <.live_component module={SortMenu} id="sort-menu" />
-        </div>
-        <div class="flex gap-4 fixed top-[107px] left-[820px]">
-          <.live_component module={FilterMenu} id="filter-menu" />
-        </div>
-
-        <.live_component module={SidePanel} id="side-panel" />
-
-        <%= if @show_form do %>
-          <div class="fixed inset-0 z-50">
-            <.live_component
-              module={NoteCard}
-              id="note-form"
-              form={@form}
-              editing={true}
-            />
+        <div class="relative">
+          <div class="fixed top-[100px] left-5 w-2/3">
+            <.live_component module={NewNote} id="new-note" />
           </div>
-        <% end %>
+
+          <div class="flex gap-4 fixed top-[107px] left-[760px]">
+            <.live_component module={SortMenu} id="sort-menu" />
+          </div>
+          <div class="flex gap-4 fixed top-[107px] left-[820px]">
+            <.live_component module={FilterMenu} id="filter-menu" />
+          </div>
+
+          <.live_component module={SidePanel} id="side-panel" />
+
+          <%= if @show_form do %>
+            <div class="fixed inset-0 z-50">
+              <.live_component
+                module={NoteCard}
+                id="note-form"
+                form={@form}
+                editing={true}
+              />
+            </div>
+          <% end %>
+        </div>
       </div>
     </div>
     """
