@@ -178,6 +178,11 @@ defmodule EvalioAppWeb.NotesLive do
   end
 
   @impl true
+  def handle_event("navigate", %{"to" => path}, socket) do
+    {:noreply, push_navigate(socket, to: path)}
+  end
+
+  @impl true
   def handle_event("logout", _params, socket) do
     {:noreply, push_navigate(socket, to: ~p"/login")}
   end
