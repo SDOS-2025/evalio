@@ -16,18 +16,18 @@ defmodule EvalioAppWeb.Components.HomePage.Topbar do
             </div>
             <div class="hidden md:block">
               <div class="ml-10 flex items-baseline space-x-4">
-                <span class="px-3 py-2 rounded-md text-sm font-medium bg-gray text-white">
+                <button class="px-3 py-2 rounded-md text-sm font-medium bg-white text-black hover:bg-black hover:text-white transition-colors">
                   Notes
-                </span>
-                <span class="px-3 py-2 rounded-md text-sm font-medium text-gray-300">
+                </button>
+                <button class="px-3 py-2 rounded-md text-sm font-medium bg-black text-white hover:bg-white hover:text-black transition-colors">
                   Mentees
-                </span>
-                <span class="px-3 py-2 rounded-md text-sm font-medium text-gray-300">
+                </button>
+                <button class="px-3 py-2 rounded-md text-sm font-medium bg-black text-white hover:bg-white hover:text-black transition-colors">
                   Mentors
-                </span>
-                <span class="px-3 py-2 rounded-md text-sm font-medium text-gray-300">
+                </button>
+                <button class="px-3 py-2 rounded-md text-sm font-medium bg-black text-white hover:bg-white hover:text-black transition-colors">
                   Cohorts
-                </span>
+                </button>
               </div>
             </div>
           </div>
@@ -35,7 +35,7 @@ defmodule EvalioAppWeb.Components.HomePage.Topbar do
             <div class="ml-3 relative">
               <div class="flex items-center">
                 <span class="text-sm font-medium mr-2">Welcome, User</span>
-                <button phx-click="logout" class="px-3 py-1 rounded-md text-sm font-medium text-white bg-gray hover:bg-blue-600">
+                <button phx-click="logout" class="px-3 py-1 rounded-md text-sm font-medium text-white bg-gray hover:bg-white hover:text-black">
                   Logout
                 </button>
               </div>
