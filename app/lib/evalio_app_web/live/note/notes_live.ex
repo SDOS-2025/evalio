@@ -17,22 +17,26 @@ defmodule EvalioAppWeb.NotesLive do
   alias EvalioAppWeb.NoteCard
   alias EvalioApp.Note
   alias EvalioAppWeb.SidePanel
+  alias EvalioAppWeb.ReminderFormComponent
 
   @impl true
   def mount(_params, _session, socket) do
     {:ok, assign(socket,
       show_form: false,
+      form_type: nil,
+      # title: "", content: "",
       notes: [],
       editing_id: nil,
       sort_by: "newest_first",
       tag_filter: "all",
-      search_text: ""
+      search_text: "",
+      editing_index: nil
     )}
   end
 
   @impl true
   def handle_event("toggle_form", _params, socket) do
-    {:noreply, assign(socket, show_form: true, form: build_form())}
+    {:noreply, assign(socket, show_form: true, form_type: "note", form: build_form())}
   end
 
   @impl true
@@ -110,6 +114,14 @@ defmodule EvalioAppWeb.NotesLive do
     {:noreply, NoteHelpers.delete_note(socket, id)}
   end
 
+  def handle_event("show_reminder_form", _params, socket) do
+    {:noreply, assign(socket, show_form: true, form_type: "reminder")}
+  end
+
+  def handle_event("show_meeting_form", _params, socket) do
+    {:noreply, assign(socket, show_form: true, form_type: "meeting")}
+  end
+
   @impl true
   def handle_info({:update_note_tag, id, tag}, socket) do
     updated_notes = Enum.map(socket.assigns.notes, fn note ->
@@ -121,6 +133,20 @@ defmodule EvalioAppWeb.NotesLive do
     end)
 
     {:noreply, assign(socket, notes: updated_notes)}
+  end
+
+  @impl true
+  def handle_info({:update_reminder_tag, id, tag}, socket) do
+    # Forward the message to the SidePanel component
+    send_update(EvalioAppWeb.SidePanel, id: "side-panel", update_reminder_tag: {id, tag})
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info({:update_meeting_tag, id, tag}, socket) do
+    # Forward the message to the SidePanel component
+    send_update(EvalioAppWeb.SidePanel, id: "side-panel", update_meeting_tag: {id, tag})
+    {:noreply, socket}
   end
 
   @impl true
@@ -189,17 +215,36 @@ defmodule EvalioAppWeb.NotesLive do
 
           <.live_component module={SidePanel} id="side-panel" />
 
-          <%= if @show_form do %>
-            <div class="fixed inset-0 z-50">
-              <.live_component
-                module={NoteCard}
-                id="note-form"
-                form={@form}
-                editing={true}
-              />
-            </div>
-          <% end %>
-        </div>
+        <%= if @show_form do %>
+          <div class="fixed inset-0 flex items-center justify-center z-50">
+            <div class="absolute inset-0 bg-black/30 backdrop-blur-lg"></div>
+            <%= case @form_type do %>
+              <% "note" -> %>
+                <div class="fixed inset-0 z-50">
+                  <.live_component
+                    module={NoteCard}
+                    id="note-form"
+                    form={@form}
+                    editing={true}
+                  />
+                </div>
+              <% "reminder" -> %>
+                <div class="relative z-50 p-4 bg-white rounded-lg shadow-lg w-96">
+                  <.live_component
+                    module={ReminderFormComponent}
+                    id="reminder-form"
+                  />
+                </div>
+              <% "meeting" -> %>
+                <div class="relative z-50 p-4 bg-white rounded-lg shadow-lg w-96">
+                  <.live_component
+                    module={MeetingFormComponent}
+                    id="meeting-form"
+                  />
+                </div>
+            <% end %>
+          </div>
+        <% end %>
       </div>
     </div>
     """
