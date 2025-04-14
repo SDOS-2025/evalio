@@ -190,6 +190,7 @@ defmodule EvalioAppWeb.NotesLive do
   @impl true
   def render(assigns) do
     ~H"""
+
     <div>
       <div class="fixed top-0 left-0 right-0 z-50">
         <Topbar.topbar />
@@ -220,12 +221,10 @@ defmodule EvalioAppWeb.NotesLive do
         </div>
 
         <%= if @show_form do %>
-          <div class="fixed inset-0 flex items-center justify-center z-50">
-            <div class="absolute inset-0 bg-black/30 backdrop-blur-lg"></div>
-
-            <%= case @form_type do %>
-              <% "note" -> %>
-                <div class="fixed inset-0 z-50">
+          <%= case @form_type do %>
+            <% "note" -> %>
+              <div class="fixed inset-0 flex items-center justify-center z-50">
+                <div class="relative z-50">
                   <.live_component
                     module={NoteCard}
                     id="note-form"
@@ -233,22 +232,26 @@ defmodule EvalioAppWeb.NotesLive do
                     editing={true}
                   />
                 </div>
-              <% "reminder" -> %>
+              </div>
+            <% "reminder" -> %>
+              <div class="fixed inset-0 flex items-center justify-center z-50">
                 <div class="relative z-50 p-4 bg-white rounded-lg shadow-lg w-96">
                   <.live_component
                     module={ReminderFormComponent}
                     id="reminder-form"
                   />
                 </div>
-              <% "meeting" -> %>
+              </div>
+            <% "meeting" -> %>
+              <div class="fixed inset-0 flex items-center justify-center z-50">
                 <div class="relative z-50 p-4 bg-white rounded-lg shadow-lg w-96">
                   <.live_component
                     module={MeetingFormComponent}
                     id="meeting-form"
                   />
                 </div>
-            <% end %>
-          </div>
+              </div>
+          <% end %>
         <% end %>
       </div>
     </div>
