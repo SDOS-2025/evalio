@@ -10,7 +10,7 @@ defmodule EvalioAppWeb.NoteCard do
     <div class="relative">
       <%= if @editing do %>
         <!-- Full-screen overlay with blur effect when editing -->
-        <div class="fixed inset-0 bg-black/30 backdrop-blur-lg flex items-center justify-center transition-all transform duration-300 ease-in-out animate-in fade-in scale-[1.15]">
+        <div class="fixed inset-0 bg-black/30 backdrop-blur-lg flex items-center justify-center transition-all transform duration-300 ease-in-out animate-in fade-in scale-[1.15] z-50">
           <.card class="shadow-lg rounded-lg p-6 w-[600px] h-[400px] flex flex-col justify-between transform scale-100 transition-transform duration-300 ease-in-out bg-white">
             <.form for={@form} phx-submit="save_note">
               <.field field={@form[:title]}
@@ -33,7 +33,9 @@ defmodule EvalioAppWeb.NoteCard do
             </.form>
           </.card>
         </div>
-      <% else %>
+      <% end %>
+
+      <%= if Map.has_key?(assigns, :note) && @note do %>
         <!-- Pin button as a white circle with icon -->
         <button phx-click="pin_note" phx-value-id={@note.id}
           class={"absolute -right-3 -top-3 w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-md border border-gray-200 hover:bg-gray-100 transition-all duration-300 ease-in-out #{if @show_buttons, do: "opacity-100 translate-x-0", else: "opacity-0 -translate-x-4"}"}>
@@ -67,7 +69,7 @@ defmodule EvalioAppWeb.NoteCard do
                   </svg>
                 </button>
               <% end %>
-              <h3 class="font-bold text-lg text-left"><%= @note.title %></h3>
+              <h3 class="font-bold text-lg text-left cursor-pointer hover:text-blue-500 transition-colors" phx-click="toggle_read_mode" phx-target={@myself}><%= @note.title %></h3>
             </div>
             <div class="flex items-center space-x-2">
               <.live_component module={NoteTagMenu} id={"note-tag-menu-#{@note.id}"} note={@note} />
@@ -101,5 +103,11 @@ defmodule EvalioAppWeb.NoteCard do
   @impl true
   def handle_event("note_card_options", _params, socket) do
     {:noreply, assign(socket, show_buttons: !socket.assigns.show_buttons)}
+  end
+
+  @impl true
+  def handle_event("toggle_read_mode", _params, socket) do
+    send(self(), {:toggle_read_mode, socket.assigns.note})
+    {:noreply, socket}
   end
 end

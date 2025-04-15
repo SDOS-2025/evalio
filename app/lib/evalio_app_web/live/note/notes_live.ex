@@ -30,7 +30,8 @@ defmodule EvalioAppWeb.NotesLive do
       sort_by: "newest_first",
       tag_filter: "all",
       search_text: "",
-      editing_index: nil
+      editing_index: nil,
+      reading_note: nil
     )}
   end
 
@@ -202,11 +203,21 @@ defmodule EvalioAppWeb.NotesLive do
   end
 
   @impl true
+  def handle_info({:toggle_read_mode, note}, socket) do
+    {:noreply, assign(socket, reading_note: note)}
+  end
+
+  @impl true
+  def handle_info({:close_read_mode}, socket) do
+    {:noreply, assign(socket, reading_note: nil)}
+  end
+
+  @impl true
   def render(assigns) do
     ~H"""
 
     <div>
-      <div class="fixed top-0 left-0 right-0 z-50">
+      <div class="fixed top-0 left-0 right-0 z-40">
         <Topbar.topbar />
       </div>
 
@@ -222,50 +233,82 @@ defmodule EvalioAppWeb.NotesLive do
         </div>
 
         <div class="relative">
-          <div class="fixed top-[100px] left-5 w-2/3">
+          <div class="fixed top-[100px] left-5 w-2/3 z-30">
             <.live_component module={NewNote} id="new-note" />
           </div>
 
-          <div class="fixed top-[107px] left-[760px] flex gap-4">
+          <div class="fixed top-[107px] left-[760px] flex gap-4 z-30">
             <.live_component module={SortMenu} id="sort-menu" />
             <.live_component module={FilterMenu} id="filter-menu" />
           </div>
 
-          <.live_component module={SidePanel} id="side-panel" />
+          <div class="z-30">
+            <.live_component module={SidePanel} id="side-panel" />
+          </div>
         </div>
 
         <%= if @show_form do %>
-          <%= case @form_type do %>
-            <% "note" -> %>
-              <div class="fixed inset-0 flex items-center justify-center z-50">
-                <div class="relative z-50">
-                  <.live_component
-                    module={NoteCard}
-                    id="note-form"
-                    form={@form}
-                    editing={true}
-                  />
+          <div class="fixed inset-0 z-[200]">
+            <div class="fixed inset-0 bg-black/30 backdrop-blur-lg"></div>
+            <div class="fixed inset-0 flex items-center justify-center">
+              <div class="relative z-[201]">
+                <%= case @form_type do %>
+                  <% "note" -> %>
+                    <.live_component
+                      module={NoteCard}
+                      id="note-form"
+                      form={@form}
+                      editing={true}
+                    />
+                  <% "reminder" -> %>
+                    <.live_component
+                      module={ReminderFormComponent}
+                      id="reminder-form"
+                      myself={@myself}
+                      reminder={@editing_reminder}
+                    />
+                  <% "meeting" -> %>
+                    <.live_component
+                      module={MeetingFormComponent}
+                      id="meeting-form"
+                      myself={@myself}
+                      meeting={@editing_meeting}
+                    />
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+        <%= if @reading_note do %>
+          <div class="fixed inset-0 z-[200]">
+            <div class="fixed inset-0 bg-black/30 backdrop-blur-lg"></div>
+            <div class="fixed inset-0 flex items-center justify-center">
+              <div class="relative z-[201]">
+                <div class="bg-white rounded-lg shadow-lg w-[800px] h-[600px]">
+                  <div class="h-full flex flex-col">
+                    <div class="p-6 border-b border-gray-200">
+                      <div class="flex justify-between items-center">
+                        <h3 class="font-bold text-2xl"><%= @reading_note.title %></h3>
+                        <button phx-click="close_read_mode" class="text-gray-500 hover:text-gray-700">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-6">
+                      <div class="text-gray-700 text-lg">
+                        <%= for line <- String.split(@reading_note.content, "\n") do %>
+                          <div class="whitespace-pre-wrap"><%= line %></div>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-            <% "reminder" -> %>
-              <div class="fixed inset-0 flex items-center justify-center z-50">
-                <div class="relative z-50 p-4 bg-white rounded-lg shadow-lg w-96">
-                  <.live_component
-                    module={ReminderFormComponent}
-                    id="reminder-form"
-                  />
-                </div>
-              </div>
-            <% "meeting" -> %>
-              <div class="fixed inset-0 flex items-center justify-center z-50">
-                <div class="relative z-50 p-4 bg-white rounded-lg shadow-lg w-96">
-                  <.live_component
-                    module={MeetingFormComponent}
-                    id="meeting-form"
-                  />
-                </div>
-              </div>
-          <% end %>
+            </div>
+          </div>
         <% end %>
       </div>
     </div>
@@ -279,5 +322,10 @@ defmodule EvalioAppWeb.NotesLive do
       String.contains?(String.downcase(note.title), search_text) ||
       String.contains?(String.downcase(note.content), search_text)
     end)
+  end
+
+  @impl true
+  def handle_event("close_read_mode", _params, socket) do
+    {:noreply, assign(socket, reading_note: nil)}
   end
 end

@@ -20,97 +20,100 @@ defmodule EvalioAppWeb.SidePanel do
 
   def render(assigns) do
     ~H"""
-    <div class="fixed right-0 top-0 h-screen w-1/3 bg-gray-200 dark:bg-gray-900 shadow-lg">
-      <Container.container class="h-full px-4 py-4 flex flex-col">
+    <div>
+      <div class="fixed right-0 top-0 h-screen w-1/3 bg-gray-200 dark:bg-gray-900 shadow-lg">
+        <Container.container class="h-full px-4 py-4 flex flex-col">
+          <!-- Existing Header Buttons -->
+          <div class="w-full max-w-[90%] mx-auto flex justify-between mb-4">
+            <button class="w-80 bg-transparent text-black dark:text-white border border-transparent outline-none shadow-none hover:border-gray-600 dark:hover:border-gray-400 focus:border-gray-600 dark:focus:border-gray-400 focus:ring-0 rounded-lg px-4 py-2 transition-colors duration-200">
+              Profile
+            </button>
+            <button class="bg-transparent text-black dark:text-white border border-transparent outline-none shadow-none hover:border-gray-600 dark:hover:border-gray-400 focus:border-gray-600 dark:focus:border-gray-400 focus:ring-0 rounded-lg px-4 py-2 transition-colors duration-200">
+              Stats
+            </button>
+          </div>
 
-        <!-- Existing Header Buttons -->
-        <div class="w-full max-w-[90%] mx-auto flex justify-between mb-4">
-          <button class="w-80 bg-transparent text-black dark:text-white border border-transparent outline-none shadow-none hover:border-gray-600 dark:hover:border-gray-400 focus:border-gray-600 dark:focus:border-gray-400 focus:ring-0 rounded-lg px-4 py-2 transition-colors duration-200">
-            Profile
-          </button>
-          <button class="bg-transparent text-black dark:text-white border border-transparent outline-none shadow-none hover:border-gray-600 dark:hover:border-gray-400 focus:border-gray-600 dark:focus:border-gray-400 focus:ring-0 rounded-lg px-4 py-2 transition-colors duration-200">
-            Stats
-          </button>
-        </div>
+          <!-- Scrollable Content -->
+          <div class="overflow-y-auto flex-grow space-y-4">
+            <!-- Calendar Card -->
+            <Card.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl overflow-hidden p-4">
+              <.live_component
+                module={CalendarComponent}
+                id="calendar"
+                reminders={@reminders}
+                meetings={@meetings}
+              />
+            </Card.card>
+            <!-- Reminders Card -->
+            <Card.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl relative p-4 flex flex-col">
+              <div class="flex justify-between items-center">
+                <h4 class="text-xl font-bold text-gray-800 dark:text-gray-200">Reminders</h4>
+                <button phx-click="show_reminder_form" phx-target={@myself}>
+                  <span class="text-2xl text-gray-600 dark:text-gray-300">+</span>
+                </button>
+              </div>
 
-        <!-- Scrollable Content -->
-        <div class="overflow-y-auto flex-grow space-y-4">
-          <!-- Calendar Card -->
-          <Card.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl overflow-hidden p-4">
-            <.live_component
-              module={CalendarComponent}
-              id="calendar"
-              reminders={@reminders}
-              meetings={@meetings}
-            />
-          </Card.card>
-          <!-- Reminders Card -->
-          <Card.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl relative p-4 flex flex-col">
-            <div class="flex justify-between items-center">
-              <h4 class="text-xl font-bold text-gray-800 dark:text-gray-200">Reminders</h4>
-              <button phx-click="show_reminder_form" phx-target={@myself}>
-                <span class="text-2xl text-gray-600 dark:text-gray-300">+</span>
-              </button>
-            </div>
+              <div class="mt-4 flex-grow w-full max-h-[310px] overflow-y-auto bg-transparent rounded-lg px-0 py-2 space-y-2 transition-all duration-300 ease-in-out">
+                <%= for {reminder, index} <- Enum.with_index(@sorted_reminders) do %>
+                  <div class="transition-all duration-300 ease-in-out">
+                    <.live_component
+                      module={EvalioAppWeb.ReminderCard}
+                      id={"reminder-#{reminder.id}"}
+                      reminder={reminder}
+                      on_delete="delete_reminder"
+                      on_edit="edit_reminder"
+                    />
+                  </div>
+                <% end %>
+              </div>
+            </Card.card>
 
-            <div class="mt-4 flex-grow w-full max-h-[310px] overflow-y-auto bg-transparent rounded-lg px-0 py-2 space-y-2 transition-all duration-300 ease-in-out">
-              <%= for {reminder, index} <- Enum.with_index(@sorted_reminders) do %>
-                <div class="transition-all duration-300 ease-in-out">
+            <!-- Meetings Card -->
+            <Card.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl relative p-4 flex flex-col">
+              <div class="flex justify-between items-center">
+                <h4 class="text-xl font-bold text-gray-800 dark:text-gray-200">Meetings</h4>
+                <button phx-click="show_meeting_form" phx-target={@myself}>
+                  <span class="text-2xl text-gray-600 dark:text-gray-300">+</span>
+                </button>
+              </div>
+
+              <div class="mt-4 flex-grow w-full max-h-[310px] overflow-y-auto bg-transparent rounded-lg px-0 py-2 space-y-2">
+                <%= for {meeting, index} <- Enum.with_index(@sorted_meetings) do %>
                   <.live_component
-                    module={EvalioAppWeb.ReminderCard}
-                    id={"reminder-#{reminder.id}"}
-                    reminder={reminder}
-                    on_delete="delete_reminder"
-                    on_edit="edit_reminder"
+                    module={MeetingCard}
+                    id={"meeting-#{meeting.id}"}
+                    meeting={meeting}
+                    on_edit="edit_meeting"
                   />
-                </div>
-              <% end %>
-            </div>
-          </Card.card>
+                <% end %>
+              </div>
+            </Card.card>
+          </div>
+        </Container.container>
+      </div>
 
-          <!-- Meetings Card -->
-          <Card.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl relative p-4 flex flex-col">
-            <div class="flex justify-between items-center">
-              <h4 class="text-xl font-bold text-gray-800 dark:text-gray-200">Meetings</h4>
-              <button phx-click="show_meeting_form" phx-target={@myself}>
-                <span class="text-2xl text-gray-600 dark:text-gray-300">+</span>
-              </button>
-            </div>
-
-            <div class="mt-4 flex-grow w-full max-h-[310px] overflow-y-auto bg-transparent rounded-lg px-0 py-2 space-y-2">
-              <%= for {meeting, index} <- Enum.with_index(@sorted_meetings) do %>
-                <.live_component
-                  module={MeetingCard}
-                  id={"meeting-#{meeting.id}"}
-                  meeting={meeting}
-                  on_edit="edit_meeting"
-                />
-              <% end %>
-            </div>
-          </Card.card>
-
-        </div>
-
-        <!-- Popups for Forms -->
-        <%= if @show_meeting_form do %>
-          <div class="fixed inset-0 flex items-center justify-center z-50">
-            <div class="absolute inset-0 bg-black/30 backdrop-blur-lg"></div>
-            <div class="relative z-50">
+      <!-- Modals (rendered outside the side panel container) -->
+      <%= if @show_meeting_form do %>
+        <div class="fixed inset-0 z-[9999]">
+          <div class="fixed inset-0 bg-black/30 backdrop-blur-lg"></div>
+          <div class="fixed inset-0 flex items-center justify-center">
+            <div class="relative z-[10000]">
               <.live_component module={EvalioAppWeb.MeetingFormComponent} id="meeting_form" myself={@myself} meeting={@editing_meeting} />
             </div>
           </div>
-        <% end %>
+        </div>
+      <% end %>
 
-        <%= if @show_reminder_form do %>
-          <div class="fixed inset-0 flex items-center justify-center z-50">
-            <div class="absolute inset-0 bg-black/30 backdrop-blur-lg"></div>
-            <div class="relative z-50">
+      <%= if @show_reminder_form do %>
+        <div class="fixed inset-0 z-[9999]">
+          <div class="fixed inset-0 bg-black/30 backdrop-blur-lg"></div>
+          <div class="fixed inset-0 flex items-center justify-center">
+            <div class="relative z-[10000]">
               <.live_component module={EvalioAppWeb.ReminderFormComponent} id="reminder_form" myself={@myself} reminder={@editing_reminder} />
             </div>
           </div>
-        <% end %>
-
-      </Container.container>
+        </div>
+      <% end %>
     </div>
     """
   end
