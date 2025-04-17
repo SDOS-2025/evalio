@@ -74,17 +74,8 @@ defmodule EvalioAppWeb.MeetingFormComponent do
           </div>
 
           <div class="mt-6 flex justify-between">
-            <Button.button
-              type="button"
-              phx-click="hide_meeting_form"
-              phx-target={@myself}
-              color="red"
-            >
-              Cancel
-            </Button.button>
-            <Button.button type="submit" color="green">
-              Save
-            </Button.button>
+            <.button label="Cancel" phx-click="hide_meeting_form" phx-target={@myself} color="white" />
+            <.button label="Save" type="submit" color = "black" class="px-3 py-2 rounded-md text-m font-medium bg-black text-white hover:bg-gray-700 hover:text-white transition-colors" />
           </div>
         </.form>
       </Card.card>
