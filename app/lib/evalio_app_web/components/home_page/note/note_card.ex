@@ -1,5 +1,7 @@
 defmodule EvalioAppWeb.NoteCard do
   use EvalioAppWeb, :live_component
+  use Phoenix.Component
+  import Phoenix.LiveView
   import PetalComponents
 
   alias EvalioAppWeb.NoteTagMenu
@@ -11,24 +13,26 @@ defmodule EvalioAppWeb.NoteCard do
       <%= if @editing do %>
         <!-- Full-screen overlay with blur effect when editing -->
         <div class="fixed inset-0 bg-black/30 backdrop-blur-lg flex items-center justify-center transition-all transform duration-300 ease-in-out animate-in fade-in scale-[1.15] z-50">
-          <.card class="shadow-lg rounded-lg p-6 w-[600px] h-[400px] flex flex-col justify-between transform scale-100 transition-transform duration-300 ease-in-out bg-white">
-            <.form for={@form} phx-submit="save_note">
+          <.card class="shadow-lg rounded-lg p-6 w-[600px] h-[400px] flex flex-col justify-between transform scale-100 transition-transform duration-300 ease-in-out bg-white resize">
+            <.form for={@form} phx-submit="save_note" class="h-full flex flex-col">
+              <div class="flex-grow">
               <.field field={@form[:title]}
                 placeholder="Title"
                 phx-debounce="blur"
                 label=""
-                class="!border-none !outline-none !ring-0 !shadow-none"
+                class="!border-none !outline-none !ring-0 shadow-3xl"
               />
               <.field field={@form[:content]}
                 type="textarea"
                 placeholder="Content"
                 phx-debounce="blur"
                 label=""
-                class="!border-none !outline-none !ring-0 !shadow-none"
+                class="!border-none !outline-none !ring-0 shadow-3xl"
               />
-              <div class="mt-4 flex justify-between">
-                <.button label="Save" color="green" />
-                <.button label="Cancel" color="red" phx-click="cancel_form" type="button" />
+              </div>
+              <div class="flex justify-end space-x-4 absolute bottom-[15px] right-6">
+                <.button label="Cancel" color="white" phx-click="cancel_form" type="button" />
+                <.button label="Save" color = "black" class="px-3 py-2 rounded-md text-m font-medium bg-black text-white hover:bg-gray-700 hover:text-white transition-colors" />
               </div>
             </.form>
           </.card>
@@ -69,7 +73,7 @@ defmodule EvalioAppWeb.NoteCard do
                   </svg>
                 </button>
               <% end %>
-              <h3 class="font-bold text-lg text-left cursor-pointer hover:text-blue-500 transition-colors" phx-click="toggle_read_mode" phx-target={@myself}><%= @note.title %></h3>
+              <h3 class="font-bold text-lg text-left cursor-pointer hover:text-gray-500 transition-colors" phx-click="toggle_read_mode" phx-target={@myself}><%= @note.title %></h3>
             </div>
             <div class="flex items-center space-x-2">
               <.live_component module={NoteTagMenu} id={"note-tag-menu-#{@note.id}"} note={@note} />

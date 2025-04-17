@@ -2,6 +2,8 @@ defmodule EvalioAppWeb.HomePage.NewNote do
   use EvalioAppWeb, :live_component
   import PetalComponents
 
+
+  # Input bar for adding a new note
   def render(assigns) do
     ~H"""
     <div class="bg-white rounded-lg shadow-md px-6 py-4 w-[720px] h-[60px] flex flex-row items-center">
