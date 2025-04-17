@@ -214,6 +214,13 @@ defmodule EvalioAppWeb.NotesLive do
   end
 
   @impl true
+  def handle_info({"edit_reminder", id}, socket) do
+    # Forward the message to the SidePanel component
+    send_update(EvalioAppWeb.SidePanel, id: "side-panel", edit_reminder_id: id)
+    {:noreply, socket}
+  end
+
+  @impl true
   def render(assigns) do
     ~H"""
 

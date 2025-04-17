@@ -185,6 +185,18 @@ defmodule EvalioAppWeb.SidePanel do
     )}
   end
 
+  def update(%{edit_reminder_id: id} = _assigns, socket) do
+    # Find the reminder to edit
+    reminder = Enum.find(socket.assigns.reminders, &(&1.id == id))
+
+    socket =
+      socket
+      |> assign(:show_reminder_form, true)
+      |> assign(:editing_reminder, reminder)
+
+    {:ok, socket}
+  end
+
   def update(%{edit_meeting_id: id} = _assigns, socket) do
     # Find the meeting to edit
     meeting = Enum.find(socket.assigns.meetings, &(&1.id == id))
