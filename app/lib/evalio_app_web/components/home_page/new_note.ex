@@ -6,7 +6,7 @@ defmodule EvalioAppWeb.HomePage.NewNote do
     ~H"""
     <div class="bg-white rounded-lg shadow-md px-6 py-4 w-[720px] h-[60px] flex flex-row items-center">
       <button class="text-gray-400 text-lg hover:text-gray-500 transition-colors" phx-click="toggle_form">
-        Take a note...
+        Write something...
       </button>
       <div class="flex-grow"></div>
       <div class="flex justify-end items-center space-x-6">
