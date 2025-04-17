@@ -22,7 +22,7 @@ defmodule EvalioAppWeb.Components.HomePage.Topbar do
                 <button
                   phx-click="navigate"
                   phx-value-to="/notes"
-                  class="px-3 py-2 rounded-md text-m font-medium bg-white text-black hover:bg-black hover:text-white transition-colors"
+                  class="px-3 py-2 rounded-md text-m font-medium bg-black text-white hover:bg-white hover:text-black transition-colors"
                 >
                   Notes
                 </button>
