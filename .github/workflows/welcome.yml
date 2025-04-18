@@ -6,6 +6,11 @@ on:
   pull_request:
     types: [opened]
 
+permissions: 
+  contents: read
+  issues: write
+
+
 jobs:
   welcome:
     runs-on: ubuntu-latest
