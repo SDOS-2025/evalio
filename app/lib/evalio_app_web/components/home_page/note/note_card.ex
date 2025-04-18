@@ -60,13 +60,14 @@ defmodule EvalioAppWeb.NoteCard do
                   class="!border-none !outline-none !ring-0 shadow-3xl h-[160px] "
                 />
               <% end %>
+              <.field type="file" field={@form[:file]} class="mt-1" color="white" />
             </div>
-            <div class="flex justify-between items-end mt-4">
+            <div class="flex justify-between items-end mt-2">
             <div class="flex items-center space-x-2 text-sm text-gray-500">
               <PetalComponents.Icon.icon name="hero-information-circle" class="w-4 h-4" />
               <span>Use Markdown for formatting</span>
             </div>
-            <div class="justify-end flex space-x-4 bottom-[15px]">
+            <div class="justify-end flex space-x-4">
               <.button label="Cancel" color="white" phx-click="cancel_form" type="button" />
               <.button label="Save" color="black" class="px-3 py-2 rounded-md text-m font-medium bg-black text-white hover:bg-gray-700 hover:text-white transition-colors" />
             </div>
