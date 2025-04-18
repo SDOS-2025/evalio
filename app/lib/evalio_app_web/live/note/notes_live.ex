@@ -8,6 +8,9 @@ defmodule EvalioAppWeb.NotesLive do
   alias EvalioAppWeb.NoteFormComponent
   alias EvalioAppWeb.Components.HomePage.Topbar
   alias EvalioAppWeb.Components.Note.ReadingNote
+  alias EvalioApp.Notes
+  alias EvalioApp.Reminders
+  alias EvalioApp.Meetings
 
   alias EvalioAppWeb.NoteContainer
   alias EvalioAppWeb.HomePage.SortMenu
@@ -24,11 +27,21 @@ defmodule EvalioAppWeb.NotesLive do
 
   @impl true
   def mount(_params, _session, socket) do
+    # Load data from database
+    notes = Notes.list_notes()
+    reminders = Reminders.list_reminders()
+    meetings = Meetings.list_meetings()
+
+    Logger.info("Loaded notes: #{inspect(notes)}")
+    Logger.info("Loaded reminders: #{inspect(reminders)}")
+    Logger.info("Loaded meetings: #{inspect(meetings)}")
+
     {:ok, assign(socket,
       show_form: false,
       form_type: nil,
-      # title: "", content: "",
-      notes: [],
+      notes: notes,
+      reminders: reminders,
+      meetings: meetings,
       editing_id: nil,
       sort_by: "newest_first",
       tag_filter: "all",
@@ -90,16 +103,22 @@ defmodule EvalioAppWeb.NotesLive do
     # Find the note to edit
     note = Enum.find(socket.assigns.notes, &(&1.id == id))
 
-    # Build form with existing note data
-    form = build_form(%{"title" => note.title, "content" => note.content})
+    if note do
+      # Build form with existing note data
+      form = build_form(%{"title" => note.title, "content" => note.content})
 
-    {:noreply,
-     assign(socket,
-       show_form: true,
-       editing: true,
-       editing_id: id,
-       form: form
-     )}
+      {:noreply,
+       assign(socket,
+         show_form: true,
+         form_type: "note",
+         editing: true,
+         editing_id: id,
+         form: form
+       )}
+    else
+      # Note not found, just return the socket unchanged
+      {:noreply, socket}
+    end
   end
 
   @impl true
@@ -128,15 +147,29 @@ defmodule EvalioAppWeb.NotesLive do
 
   @impl true
   def handle_info({:update_note_tag, id, tag}, socket) do
-    updated_notes = Enum.map(socket.assigns.notes, fn note ->
-      if note.id == id do
-        Note.update_tag(note, tag)
-      else
-        note
-      end
-    end)
+    # Find the note in the current list
+    note = Enum.find(socket.assigns.notes, &(&1.id == id))
 
-    {:noreply, assign(socket, notes: updated_notes)}
+    if note do
+      # Update the note's tag in the database
+      case Notes.update_note_tag(note, tag) do
+        {:ok, updated_note} ->
+          # Update the notes list
+          updated_notes = Enum.map(socket.assigns.notes, fn n ->
+            if n.id == id do
+              updated_note
+            else
+              n
+            end
+          end)
+
+          {:noreply, assign(socket, notes: updated_notes)}
+        {:error, _changeset} ->
+          {:noreply, socket}
+      end
+    else
+      {:noreply, socket}
+    end
   end
 
   @impl true
@@ -184,15 +217,29 @@ defmodule EvalioAppWeb.NotesLive do
 
   @impl true
   def handle_event("pin_note", %{"id" => id}, socket) do
-    updated_notes = Enum.map(socket.assigns.notes, fn note ->
-      if note.id == id do
-        Note.toggle_pin(note)
-      else
-        note
-      end
-    end)
+    # Find the note in the current list
+    note = Enum.find(socket.assigns.notes, &(&1.id == id))
 
-    {:noreply, assign(socket, notes: updated_notes)}
+    if note do
+      # Toggle the pin status in the database
+      case Notes.toggle_note_pin(note) do
+        {:ok, updated_note} ->
+          # Update the notes list
+          updated_notes = Enum.map(socket.assigns.notes, fn n ->
+            if n.id == id do
+              updated_note
+            else
+              n
+            end
+          end)
+
+          {:noreply, assign(socket, notes: updated_notes)}
+        {:error, _changeset} ->
+          {:noreply, socket}
+      end
+    else
+      {:noreply, socket}
+    end
   end
 
   @impl true
@@ -253,7 +300,12 @@ defmodule EvalioAppWeb.NotesLive do
           </div>
 
           <div class="z-30">
-            <.live_component module={SidePanel} id="side-panel" />
+            <.live_component
+              module={SidePanel}
+              id="side-panel"
+              reminders={@reminders}
+              meetings={@meetings}
+            />
           </div>
         </div>
 

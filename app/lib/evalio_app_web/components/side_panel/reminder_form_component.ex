@@ -70,4 +70,18 @@ defmodule EvalioAppWeb.ReminderFormComponent do
     </div>
     """
   end
+
+  @impl true
+  def handle_event("save_reminder", params, socket) do
+    # Forward the save event to the parent component
+    send_update(EvalioAppWeb.ReminderContainer, id: "reminder-container", save_reminder: params)
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("hide_reminder_form", _params, socket) do
+    # Forward the hide event to the parent component
+    send_update(EvalioAppWeb.ReminderContainer, id: "reminder-container", hide_reminder_form: true)
+    {:noreply, socket}
+  end
 end

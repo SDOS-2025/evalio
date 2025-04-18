@@ -1,5 +1,6 @@
 defmodule EvalioAppWeb.SidePanel do
   use EvalioAppWeb, :live_component
+  require Logger
 
   # Use aliases instead of imports to avoid ambiguity
   alias PetalComponents.Card
@@ -66,6 +67,11 @@ defmodule EvalioAppWeb.SidePanel do
   end
 
   @impl true
+  def mount(socket) do
+    {:ok, assign(socket, reminders: [], meetings: [])}
+  end
+
+  @impl true
   def update(%{update_meeting_tag: {id, tag}} = assigns, socket) do
     # Find the meeting in the current list
     meeting = Enum.find(socket.assigns.meetings, &(&1.id == id))
@@ -113,6 +119,10 @@ defmodule EvalioAppWeb.SidePanel do
   def update(assigns, socket) do
     reminders = assigns[:reminders] || []
     meetings = assigns[:meetings] || []
+
+    # Log the data for debugging
+    Logger.info("SidePanel update - Reminders: #{inspect(reminders)}")
+    Logger.info("SidePanel update - Meetings: #{inspect(meetings)}")
 
     socket =
       socket

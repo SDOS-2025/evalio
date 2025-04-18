@@ -1,6 +1,7 @@
 defmodule EvalioAppWeb.MeetingCard do
   use EvalioAppWeb, :live_component
   import PetalComponents
+  require Logger
 
   def mount(socket) do
     {:ok, assign(socket,
@@ -12,12 +13,15 @@ defmodule EvalioAppWeb.MeetingCard do
   end
 
   def update(%{meeting: nil} = assigns, socket) do
+    Logger.info("MeetingCard update - Meeting: #{inspect(assigns[:meeting])}")
     {:ok, assign(socket, assigns)}
   end
 
   def update(%{meeting: meeting} = assigns, socket) when is_map(meeting) do
     # Ensure meeting has a tag, default to "low" if not present
     meeting = Map.put_new(meeting, :tag, "low")
+
+    Logger.info("MeetingCard update - Meeting: #{inspect(meeting)}")
 
     {:ok, socket
       |> assign(assigns)
@@ -27,6 +31,7 @@ defmodule EvalioAppWeb.MeetingCard do
 
   # Fallback update function for any other case
   def update(assigns, socket) do
+    Logger.info("MeetingCard update - Meeting: #{inspect(assigns[:meeting])}")
     {:ok, assign(socket, assigns)}
   end
 

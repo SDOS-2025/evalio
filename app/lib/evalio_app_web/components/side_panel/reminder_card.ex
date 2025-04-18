@@ -1,6 +1,7 @@
 defmodule EvalioAppWeb.ReminderCard do
   use EvalioAppWeb, :live_component
   import PetalComponents
+  require Logger
 
   def mount(socket) do
     {:ok, assign(socket,
@@ -12,12 +13,15 @@ defmodule EvalioAppWeb.ReminderCard do
   end
 
   def update(%{reminder: nil} = assigns, socket) do
+    Logger.info("ReminderCard update - Reminder: #{inspect(assigns[:reminder])}")
     {:ok, assign(socket, assigns)}
   end
 
   def update(%{reminder: reminder} = assigns, socket) when is_map(reminder) do
     # Ensure reminder has a tag, default to "low" if not present
     reminder = Map.put_new(reminder, :tag, "low")
+
+    Logger.info("ReminderCard update - Reminder: #{inspect(reminder)}")
 
     {:ok, socket
       |> assign(assigns)
@@ -27,6 +31,7 @@ defmodule EvalioAppWeb.ReminderCard do
 
   # Fallback update function for any other case
   def update(assigns, socket) do
+    Logger.info("ReminderCard update - Reminder: #{inspect(assigns[:reminder])}")
     {:ok, assign(socket, assigns)}
   end
 

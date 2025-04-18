@@ -67,9 +67,8 @@ defmodule EvalioAppWeb.MeetingFormComponent do
               name="link"
               value={@meeting && @meeting.link || ""}
               label="Link"
-              placeholder="Link"
+              placeholder="Meeting Link"
               class="w-full rounded-md border-gray-300 dark:border-gray-600 focus:border-gray-400 focus:ring-gray-400"
-              required
             />
           </div>
 
@@ -81,5 +80,19 @@ defmodule EvalioAppWeb.MeetingFormComponent do
       </Card.card>
     </div>
     """
+  end
+
+  @impl true
+  def handle_event("save_meeting", params, socket) do
+    # Forward the save event to the parent component
+    send_update(EvalioAppWeb.MeetingContainer, id: "meeting-container", save_meeting: params)
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("hide_meeting_form", _params, socket) do
+    # Forward the hide event to the parent component
+    send_update(EvalioAppWeb.MeetingContainer, id: "meeting-container", hide_meeting_form: true)
+    {:noreply, socket}
   end
 end

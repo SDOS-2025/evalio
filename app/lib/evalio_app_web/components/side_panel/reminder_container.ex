@@ -5,6 +5,8 @@ defmodule EvalioAppWeb.ReminderContainer do
   alias EvalioAppWeb.ReminderFormComponent
   alias EvalioAppWeb.TagManager
   alias EvalioApp.Reminder
+  alias EvalioApp.Reminders
+  require Logger
 
   def render(assigns) do
     ~H"""
@@ -51,31 +53,47 @@ defmodule EvalioAppWeb.ReminderContainer do
     reminder = Enum.find(socket.assigns.reminders, &(&1.id == id))
 
     if reminder do
-      # Update the reminder's tag
-      updated_reminder = TagManager.update_reminder_tag(reminder, tag)
+      # Update the reminder's tag in the database
+      case Reminders.update_reminder_tag(reminder, tag) do
+        {:ok, updated_reminder} ->
+          # Update the reminders list
+          updated_reminders = Enum.map(socket.assigns.reminders, fn r ->
+            if r.id == id, do: updated_reminder, else: r
+          end)
 
-      # Update the reminders list
-      updated_reminders = Enum.map(socket.assigns.reminders, fn r ->
-        if r.id == id, do: updated_reminder, else: r
-      end)
+          # Sort the reminders
+          sorted_reminders = sort_reminders(updated_reminders)
 
-      # Sort the reminders
-      sorted_reminders = sort_reminders(updated_reminders)
-
-      {:ok, assign(socket, reminders: updated_reminders, sorted_reminders: sorted_reminders)}
+          {:ok, assign(socket, reminders: updated_reminders, sorted_reminders: sorted_reminders)}
+        {:error, _changeset} ->
+          {:ok, socket}
+      end
     else
       {:ok, socket}
     end
   end
 
   def update(%{delete_reminder_id: id} = _assigns, socket) do
-    updated_reminders = Enum.reject(socket.assigns.reminders, &(&1.id == id))
-    sorted_reminders = sort_reminders(updated_reminders)
+    # Get the reminder from the database
+    case Reminders.get_reminder!(id) do
+      nil ->
+        {:ok, socket}
+      reminder ->
+        # Delete from database
+        case Reminders.delete_reminder(reminder) do
+          {:ok, _} ->
+            # Update UI state
+            updated_reminders = Enum.reject(socket.assigns.reminders, &(&1.id == id))
+            sorted_reminders = sort_reminders(updated_reminders)
 
-    {:ok, assign(socket,
-      reminders: updated_reminders,
-      sorted_reminders: sorted_reminders
-    )}
+            {:ok, assign(socket,
+              reminders: updated_reminders,
+              sorted_reminders: sorted_reminders
+            )}
+          {:error, _} ->
+            {:ok, socket}
+        end
+    end
   end
 
   def update(%{edit_reminder_id: id} = _assigns, socket) do
@@ -92,6 +110,9 @@ defmodule EvalioAppWeb.ReminderContainer do
 
   def update(assigns, socket) do
     reminders = assigns[:reminders] || []
+
+    # Log the data for debugging
+    Logger.info("ReminderContainer update - Reminders: #{inspect(reminders)}")
 
     # Sort reminders
     sorted_reminders = sort_reminders(reminders)
@@ -111,7 +132,7 @@ defmodule EvalioAppWeb.ReminderContainer do
   end
 
   def handle_event("edit_reminder", %{"id" => id}, socket) do
-    reminder = Enum.find(socket.assigns.reminders, &(&1.id == id))
+    reminder = Reminders.get_reminder!(id)
 
     socket =
       socket
@@ -122,44 +143,80 @@ defmodule EvalioAppWeb.ReminderContainer do
   end
 
   def handle_event("delete_reminder", %{"id" => id}, socket) do
-    updated_reminders = Enum.reject(socket.assigns.reminders, &(&1.id == id))
-    sorted_reminders = sort_reminders(updated_reminders)
-    {:noreply, assign(socket, reminders: updated_reminders, sorted_reminders: sorted_reminders)}
+    case Reminders.get_reminder!(id) do
+      nil ->
+        {:noreply, socket}
+      reminder ->
+        case Reminders.delete_reminder(reminder) do
+          {:ok, _} ->
+            Logger.info("Reminder deleted successfully: #{id}")
+            updated_reminders = Enum.reject(socket.assigns.reminders, &(&1.id == id))
+            sorted_reminders = sort_reminders(updated_reminders)
+            {:noreply, assign(socket, reminders: updated_reminders, sorted_reminders: sorted_reminders)}
+          {:error, _} ->
+            Logger.error("Failed to delete reminder: #{id}")
+            {:noreply, socket}
+        end
+    end
   end
 
   def handle_event("save_reminder", %{"date" => date, "time" => time, "title" => title}, socket) do
     if date == "" or title == "" or time == "" do
       {:noreply, socket}
     else
-      updated_reminders =
-        case socket.assigns[:editing_reminder] do
-          nil ->
-            # Create new reminder
-            [Reminder.new(title, date, time) | socket.assigns.reminders]
-          reminder ->
-            # Update existing reminder while preserving the tag
-            Enum.map(socket.assigns.reminders, fn r ->
-              if r.id == reminder.id do
-                updated = Reminder.update(r, title, date, time)
-                # Preserve the tag
-                %{updated | tag: r.tag}
-              else
-                r
-              end
-            end)
-        end
+      case socket.assigns[:editing_reminder] do
+        nil ->
+          # Create new reminder
+          case Reminders.create_reminder(%{
+            title: title,
+            date: date,
+            time: time,
+            tag: "none"
+          }) do
+            {:ok, saved_reminder} ->
+              updated_reminders = [saved_reminder | socket.assigns.reminders]
+              sorted_reminders = sort_reminders(updated_reminders)
 
-      # Sort the reminders
-      sorted_reminders = sort_reminders(updated_reminders)
+              socket =
+                socket
+                |> assign(:reminders, updated_reminders)
+                |> assign(:sorted_reminders, sorted_reminders)
+                |> assign(:show_reminder_form, false)
+                |> assign(:editing_reminder, nil)
 
-      socket =
-        socket
-        |> assign(:reminders, updated_reminders)
-        |> assign(:sorted_reminders, sorted_reminders)
-        |> assign(:show_reminder_form, false)
-        |> assign(:editing_reminder, nil)
+              {:noreply, socket}
+            {:error, _changeset} ->
+              {:noreply, socket}
+          end
+        reminder ->
+          # Update existing reminder
+          case Reminders.update_reminder(reminder, %{
+            title: title,
+            date: date,
+            time: time
+          }) do
+            {:ok, saved_reminder} ->
+              updated_reminders = Enum.map(socket.assigns.reminders, fn r ->
+                if r.id == reminder.id do
+                  saved_reminder
+                else
+                  r
+                end
+              end)
+              sorted_reminders = sort_reminders(updated_reminders)
 
-      {:noreply, socket}
+              socket =
+                socket
+                |> assign(:reminders, updated_reminders)
+                |> assign(:sorted_reminders, sorted_reminders)
+                |> assign(:show_reminder_form, false)
+                |> assign(:editing_reminder, nil)
+
+              {:noreply, socket}
+            {:error, _changeset} ->
+              {:noreply, socket}
+          end
+      end
     end
   end
 
