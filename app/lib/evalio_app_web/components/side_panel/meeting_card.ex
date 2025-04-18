@@ -154,14 +154,14 @@ defmodule EvalioAppWeb.MeetingCard do
   end
 
   def handle_info({:finish_delete_meeting, id}, socket) do
-    # Send the delete event directly to the SidePanel component
-    send_update(EvalioAppWeb.SidePanel, id: "side-panel", delete_meeting_id: id)
+    # Send the delete event directly to the MeetingContainer component
+    send_update(EvalioAppWeb.MeetingContainer, id: "meeting-container", delete_meeting_id: id)
     {:noreply, socket}
   end
 
   def handle_event("edit_meeting", _params, socket) do
     # Send the edit event to the parent component with the meeting ID
-    send_update(EvalioAppWeb.SidePanel, id: "side-panel", edit_meeting_id: socket.assigns.meeting.id)
+    send_update(EvalioAppWeb.MeetingContainer, id: "meeting-container", edit_meeting_id: socket.assigns.meeting.id)
     {:noreply, socket}
   end
 end

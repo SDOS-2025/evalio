@@ -19,6 +19,8 @@ defmodule EvalioAppWeb.NotesLive do
   alias EvalioApp.Note
   alias EvalioAppWeb.SidePanel
   alias EvalioAppWeb.ReminderFormComponent
+  alias EvalioAppWeb.ReminderContainer
+  alias EvalioAppWeb.MeetingContainer
 
   @impl true
   def mount(_params, _session, socket) do
@@ -139,15 +141,15 @@ defmodule EvalioAppWeb.NotesLive do
 
   @impl true
   def handle_info({:update_reminder_tag, id, tag}, socket) do
-    # Forward the message to the SidePanel component
-    send_update(EvalioAppWeb.SidePanel, id: "side-panel", update_reminder_tag: {id, tag})
+    # Forward the message to the ReminderContainer component
+    send_update(EvalioAppWeb.ReminderContainer, id: "reminder-container", update_reminder_tag: {id, tag})
     {:noreply, socket}
   end
 
   @impl true
   def handle_info({:update_meeting_tag, id, tag}, socket) do
-    # Forward the message to the SidePanel component
-    send_update(EvalioAppWeb.SidePanel, id: "side-panel", update_meeting_tag: {id, tag})
+    # Forward the message to the MeetingContainer component
+    send_update(EvalioAppWeb.MeetingContainer, id: "meeting-container", update_meeting_tag: {id, tag})
     {:noreply, socket}
   end
 
@@ -158,15 +160,15 @@ defmodule EvalioAppWeb.NotesLive do
 
   @impl true
   def handle_info({:finish_delete, id}, socket) do
-    # Forward the message to the SidePanel component
-    send_update(EvalioAppWeb.SidePanel, id: "side-panel", delete_reminder_id: id)
+    # Forward the message to the ReminderContainer component
+    send_update(EvalioAppWeb.ReminderContainer, id: "reminder-container", delete_reminder_id: id)
     {:noreply, socket}
   end
 
   @impl true
   def handle_info({:finish_delete_meeting, id}, socket) do
-    # Forward the message to the SidePanel component
-    send_update(EvalioAppWeb.SidePanel, id: "side-panel", delete_meeting_id: id)
+    # Forward the message to the MeetingContainer component
+    send_update(EvalioAppWeb.MeetingContainer, id: "meeting-container", delete_meeting_id: id)
     {:noreply, socket}
   end
 
@@ -215,8 +217,8 @@ defmodule EvalioAppWeb.NotesLive do
 
   @impl true
   def handle_info({"edit_reminder", id}, socket) do
-    # Forward the message to the SidePanel component
-    send_update(EvalioAppWeb.SidePanel, id: "side-panel", edit_reminder_id: id)
+    # Forward the message to the ReminderContainer component
+    send_update(EvalioAppWeb.ReminderContainer, id: "reminder-container", edit_reminder_id: id)
     {:noreply, socket}
   end
 

@@ -157,8 +157,8 @@ defmodule EvalioAppWeb.ReminderCard do
   end
 
   def handle_info({:finish_delete, id}, socket) do
-    # Send the delete event directly to the SidePanel component
-    send_update(EvalioAppWeb.SidePanel, id: "side-panel", delete_reminder_id: id)
+    # Send the delete event directly to the ReminderContainer component
+    send_update(EvalioAppWeb.ReminderContainer, id: "reminder-container", delete_reminder_id: id)
     {:noreply, socket}
   end
 
