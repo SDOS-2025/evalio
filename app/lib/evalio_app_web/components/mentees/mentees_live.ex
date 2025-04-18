@@ -9,6 +9,21 @@ defmodule EvalioAppWeb.MenteesLive do
   @impl true
   def mount(_params, _session, socket) do
     mentees = Mentee.list_mentees()
+    # Set first 4 mentees as expanded if there are any mentees
+    mentees = case mentees do
+      [] -> []
+      list when length(list) >= 4 ->
+        [first, second, third, fourth | rest] = list
+        [
+          %{first | is_expanded: true},
+          %{second | is_expanded: true},
+          %{third | is_expanded: true},
+          %{fourth | is_expanded: true}
+          | rest
+        ]
+      list ->
+        Enum.map(list, &%{&1 | is_expanded: true})
+    end
 
     {:ok, assign(socket,
       mentees: mentees,
@@ -39,6 +54,19 @@ defmodule EvalioAppWeb.MenteesLive do
   end
 
   @impl true
+  def handle_event("toggle_expand", %{"mentee_id" => mentee_id}, socket) do
+    mentees = Enum.map(socket.assigns.mentees, fn mentee ->
+      if mentee.id == mentee_id do
+        %{mentee | is_expanded: !mentee.is_expanded}
+      else
+        mentee
+      end
+    end)
+
+    {:noreply, assign(socket, mentees: mentees)}
+  end
+
+  @impl true
   def handle_info({:search_mentees, search_text}, socket) do
     mentees = if search_text == "" do
       Mentee.list_mentees()
@@ -57,7 +85,7 @@ defmodule EvalioAppWeb.MenteesLive do
         <Topbar.topbar />
       </div>
 
-      <div class="pt-16 px-4 sm:px-6 lg:px-8">
+      <div class="pt-16 px-4 sm:px-6 lg:px-8 w-full">
         <div class="py-8">
           <div class="flex justify-between items-center">
             <div>
@@ -79,8 +107,10 @@ defmodule EvalioAppWeb.MenteesLive do
           </div>
         </div>
 
-        <div class="bg-white shadow-sm rounded-lg p-4">
-          <MenteeContainer.mentee_container mentees={@mentees} />
+        <div class="w-full">
+          <MenteeContainer.mentee_container
+            mentees={@mentees}
+          />
         </div>
       </div>
     </div>

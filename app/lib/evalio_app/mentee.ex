@@ -13,10 +13,11 @@ defmodule EvalioApp.Mentee do
   - batch: Mentee's batch number
   - attendance_percent: Percentage of attendance
   - assignment_percent: Percentage of assignments completed
+  - is_expanded: Boolean indicating if the mentee's card is expanded
   """
   require Logger
   defstruct [:id, :first_name, :last_name, :email, :pronouns, :profile_picture,
-             :cohort, :batch, :attendance_percent, :assignment_percent]
+             :cohort, :batch, :attendance_percent, :assignment_percent, :is_expanded]
 
   def new(attrs) do
     Logger.info("Creating new mentee with ID: #{attrs[:id]}")
@@ -127,7 +128,8 @@ defmodule EvalioApp.Mentee do
       cohort: cohort,
       batch: batch,
       attendance_percent: attendance_percent,
-      assignment_percent: assignment_percent
+      assignment_percent: assignment_percent,
+      is_expanded: false
     }
   end
 end

@@ -58,10 +58,13 @@ module.exports = {
         ["-mini", "/20/solid"]
       ]
       icons.forEach(([suffix, dir]) => {
-        fs.readdirSync(path.join(iconsDir, dir)).forEach(file => {
-          let name = path.basename(file, ".svg") + suffix
-          values[name] = {name, fullPath: path.join(iconsDir, dir, file)}
-        })
+        const dirPath = path.join(iconsDir, dir)
+        if (fs.existsSync(dirPath)) {
+          fs.readdirSync(dirPath).forEach(file => {
+            let name = path.basename(file, ".svg") + suffix
+            values[name] = {name, fullPath: path.join(dirPath, file)}
+          })
+        }
       })
       matchComponents({
         "hero": ({name, fullPath}) => {
