@@ -1,27 +1,31 @@
 defmodule EvalioAppWeb.MenteesLive do
   use EvalioAppWeb, :live_view
   import EvalioAppWeb.CoreComponents
-  import PetalComponents
 
   alias EvalioAppWeb.Components.HomePage.Topbar
+  alias EvalioAppWeb.Components.Mentees.MenteeContainer
+  alias EvalioApp.Mentee
 
   @impl true
   def mount(_params, _session, socket) do
+    mentees = Mentee.list_mentees()
+
     {:ok, assign(socket,
-      mentees: [],
+      mentees: mentees,
       search_text: "",
       sort_by: "name_asc"
     )}
   end
 
   @impl true
-  def handle_event("sort_mentees", %{"sort" => sort_option}, socket) do
-    {:noreply, assign(socket, sort_by: sort_option)}
+  def handle_event("search", %{"search" => search_text}, socket) do
+    send(self(), {:search_mentees, search_text})
+    {:noreply, socket}
   end
 
   @impl true
-  def handle_info({:search_mentees, search_text}, socket) do
-    {:noreply, assign(socket, search_text: search_text)}
+  def handle_event("sort_mentees", %{"sort" => sort_option}, socket) do
+    {:noreply, assign(socket, sort_by: sort_option)}
   end
 
   @impl true
@@ -35,62 +39,51 @@ defmodule EvalioAppWeb.MenteesLive do
   end
 
   @impl true
+  def handle_info({:search_mentees, search_text}, socket) do
+    mentees = if search_text == "" do
+      Mentee.list_mentees()
+    else
+      Mentee.search_mentees(search_text)
+    end
+
+    {:noreply, assign(socket, search_text: search_text, mentees: mentees)}
+  end
+
+  @impl true
   def render(assigns) do
     ~H"""
-    <div>
+    <div class="min-h-screen bg-gray-50">
       <div class="fixed top-0 left-0 right-0 z-50">
         <Topbar.topbar />
       </div>
 
-      <div class="pt-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="py-8">
-            <h1 class="text-3xl font-bold text-gray-900">Mentees</h1>
-            <p class="mt-2 text-sm text-gray-700">Manage your mentees and their progress.</p>
+      <div class="pt-16 px-4 sm:px-6 lg:px-8">
+        <div class="py-8">
+          <div class="flex justify-between items-center">
+            <div>
+              <h1 class="text-3xl font-bold text-gray-900">Mentees</h1>
+              <p class="mt-2 text-sm text-gray-700">View and track your mentees' progress</p>
+            </div>
+            <div class="w-64">
+              <.form for={%{}} phx-change="search" class="relative">
+                <input
+                  type="text"
+                  name="search"
+                  value={@search_text}
+                  placeholder="Search mentees..."
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  phx-debounce="300"
+                />
+              </.form>
+            </div>
           </div>
+        </div>
 
-          <div class="bg-white shadow overflow-hidden sm:rounded-md">
-            <ul role="list" class="divide-y divide-gray-200">
-              <%= for mentee <- filter_mentees_by_search(@mentees, @search_text) do %>
-                <li>
-                  <div class="px-4 py-4 sm:px-6">
-                    <div class="flex items-center justify-between">
-                      <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                          <div class="h-12 w-12 rounded-full bg-gray-300 flex items-center justify-center">
-                            <span class="text-xl font-medium text-gray-600">
-                              <%= String.first(mentee.name) %>
-                            </span>
-                          </div>
-                        </div>
-                        <div class="ml-4">
-                          <h2 class="text-lg font-medium text-gray-900"><%= mentee.name %></h2>
-                          <p class="text-sm text-gray-500"><%= mentee.email %></p>
-                        </div>
-                      </div>
-                      <div class="flex items-center">
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                          Active
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-              <% end %>
-            </ul>
-          </div>
+        <div class="bg-white shadow-sm rounded-lg p-4">
+          <MenteeContainer.mentee_container mentees={@mentees} />
         </div>
       </div>
     </div>
     """
-  end
-
-  defp filter_mentees_by_search(mentees, ""), do: mentees
-  defp filter_mentees_by_search(mentees, search_text) do
-    search_text = String.downcase(search_text)
-    Enum.filter(mentees, fn mentee ->
-      String.contains?(String.downcase(mentee.name), search_text) ||
-      String.contains?(String.downcase(mentee.email), search_text)
-    end)
   end
 end
