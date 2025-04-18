@@ -9,15 +9,17 @@ defmodule EvalioApp.MeetingsTest do
       title: "Test Meeting",
       date: ~D[2024-03-20],
       time: ~T[10:00:00],
-      tag: "none"
+      tag: "none",
+      link: "https://meet.google.com/test"
     }
     @update_attrs %{
       title: "Updated Meeting",
       date: ~D[2024-03-21],
       time: ~T[11:00:00],
-      tag: "none"
+      tag: "none",
+      link: "https://meet.google.com/updated"
     }
-    @invalid_attrs %{title: nil, date: nil, time: nil}
+    @invalid_attrs %{title: nil, date: nil, time: nil, link: nil}
 
     def meeting_fixture(attrs \\ %{}) do
       {:ok, meeting} =
@@ -44,6 +46,7 @@ defmodule EvalioApp.MeetingsTest do
       assert meeting.date == ~D[2024-03-20]
       assert meeting.time == ~T[10:00:00]
       assert meeting.tag == "none"
+      assert meeting.link == "https://meet.google.com/test"
     end
 
     test "create_meeting/1 with invalid data returns error changeset" do
@@ -56,6 +59,7 @@ defmodule EvalioApp.MeetingsTest do
       assert meeting.title == "Updated Meeting"
       assert meeting.date == ~D[2024-03-21]
       assert meeting.time == ~T[11:00:00]
+      assert meeting.link == "https://meet.google.com/updated"
     end
 
     test "update_meeting/2 with invalid data returns error changeset" do
