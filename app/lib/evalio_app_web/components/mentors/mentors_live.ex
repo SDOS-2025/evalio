@@ -41,49 +41,7 @@ defmodule EvalioAppWeb.MentorsLive do
       <div class="fixed top-0 left-0 right-0 z-50">
         <Topbar.topbar />
       </div>
-
-      <div class="pt-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="py-8">
-            <h1 class="text-3xl font-bold text-gray-900">Mentors</h1>
-            <p class="mt-2 text-sm text-gray-700">Manage mentors and their assignments.</p>
-          </div>
-
-          <div class="bg-white shadow overflow-hidden sm:rounded-md">
-            <ul role="list" class="divide-y divide-gray-200">
-              <%= for mentor <- filter_mentors_by_search(@mentors, @search_text) do %>
-                <li>
-                  <div class="px-4 py-4 sm:px-6">
-                    <div class="flex items-center justify-between">
-                      <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                          <div class="h-12 w-12 rounded-full bg-gray-300 flex items-center justify-center">
-                            <span class="text-xl font-medium text-gray-600">
-                              <%= String.first(mentor.name) %>
-                            </span>
-                          </div>
-                        </div>
-                        <div class="ml-4">
-                          <h2 class="text-lg font-medium text-gray-900"><%= mentor.name %></h2>
-                          <p class="text-sm text-gray-500"><%= mentor.email %></p>
-                        </div>
-                      </div>
-                      <div class="flex items-center space-x-4">
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                          <%= mentor.mentee_count %> Mentees
-                        </span>
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                          Active
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-              <% end %>
-            </ul>
-          </div>
-        </div>
-      </div>
+      <p>Mentors</p>
     </div>
     """
   end

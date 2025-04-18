@@ -57,7 +57,7 @@ defmodule EvalioAppWeb.NoteCard do
                   placeholder="Content"
                   phx-debounce="blur"
                   label=""
-                  class="!border-none !outline-none !ring-0 shadow-3xl h-[215px] "
+                  class="!border-none !outline-none !ring-0 shadow-3xl h-[160px] "
                 />
               <% end %>
             </div>
