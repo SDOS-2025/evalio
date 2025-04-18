@@ -7,36 +7,66 @@ defmodule EvalioAppWeb.NoteCard do
   alias EvalioAppWeb.NoteTagMenu
   alias EvalioApp.Note
 
+
+
+  @impl true
+  def handle_event("toggle_preview", _params, socket) do
+    {:noreply, assign(socket, show_preview: !socket.assigns.show_preview)}
+  end
+
   def render(assigns) do
     ~H"""
     <div class="relative">
       <%= if @editing do %>
         <!-- Full-screen overlay with blur effect when editing -->
-        <div class="fixed inset-0 bg-black/30 backdrop-blur-lg flex items-center justify-center transition-all transform duration-300 ease-in-out animate-in fade-in scale-[1.15] z-50">
-          <.card class="shadow-lg rounded-lg p-6 w-[600px] h-[400px] flex flex-col justify-between transform scale-100 transition-transform duration-300 ease-in-out bg-white resize">
-            <.form for={@form} phx-submit="save_note" class="h-full flex flex-col">
-              <div class="flex-grow">
+      <div class="fixed inset-0 bg-black/30 backdrop-blur-lg flex items-center justify-center transition-all transform duration-300 ease-in-out animate-in fade-in scale-[1.15] z-50">
+        <.card class="shadow-lg rounded-lg p-6 w-[600px] h-[400px] flex flex-col justify-between transform scale-100 transition-transform duration-300 ease-in-out bg-white resize">
+          <.form for={@form} phx-submit="save_note" class="h-full flex flex-col">
+            <div class="flex-grow">
               <.field field={@form[:title]}
                 placeholder="Title"
                 phx-debounce="blur"
                 label=""
                 class="!border-none !outline-none !ring-0 shadow-3xl"
               />
-              <.field field={@form[:content]}
-                type="textarea"
-                placeholder="Content"
-                phx-debounce="blur"
-                label=""
-                class="!border-none !outline-none !ring-0 shadow-3xl h-[215px]"
-              />
+              <div class="flex justify-end items-center mt-2 mb-1">
+                <.button
+                  type="button"
+                  phx-click="toggle_preview"
+                  phx-target={@myself}
+                  color="white"
+                  size="xs"
+                  label={if @show_preview, do: "Edit", else: "Preview"}
+                  class="hover:bg-black text-white transition-colors"
+                />
               </div>
-              <div class="flex justify-end space-x-4 absolute bottom-[15px] right-6">
+              <%= if @show_preview do %>
+                <div class="prose prose-sm max-w-none h-[400px] overflow-y-auto p-4 bg-gray-50 rounded-md">
+                  <%= raw Earmark.as_html!(@form[:content].value || "") %>
+                </div>
+              <% else %>
+                <.field field={@form[:content]}
+                  type="textarea"
+                  placeholder="Content"
+                  phx-debounce="blur"
+                  label=""
+                  class="!border-none !outline-none !ring-0 shadow-3xl h-[180px]"
+                />
+              <% end %>
+            </div>
+            <div class="flex justify-between mt-4">
+              <div class="flex items-center space-x-2 text-sm text-gray-500">
+                <PetalComponents.Icon.icon name="hero-information-circle" class="w-4 h-4" />
+                <span>Use Markdown for formatting</span>
+              </div>
+              <div class="flex space-x-4">
                 <.button label="Cancel" color="white" phx-click="cancel_form" type="button" />
-                <.button label="Save" color = "black" class="px-3 py-2 rounded-md text-m font-medium bg-black text-white hover:bg-gray-700 hover:text-white transition-colors" />
+                <.button label="Save" color="black" class="px-3 py-2 rounded-md text-m font-medium bg-black text-white hover:bg-gray-700 hover:text-white transition-colors" />
               </div>
-            </.form>
-          </.card>
-        </div>
+            </div>
+          </.form>
+        </.card>
+      </div>
       <% end %>
 
       <%= if Map.has_key?(assigns, :note) && @note do %>
@@ -86,7 +116,9 @@ defmodule EvalioAppWeb.NoteCard do
           </div>
 
           <p class="text-gray-600 mt-2 line-clamp-3">
-            <%= @note.content %>
+            <div class="prose prose-sm max-w-none">
+              <%= raw Earmark.as_html!(@note.content) %>
+            </div>
           </p>
         </.card>
       <% end %>
@@ -96,12 +128,17 @@ defmodule EvalioAppWeb.NoteCard do
 
   @impl true
   def mount(socket) do
-    {:ok, assign(socket, show_buttons: false)}
+    {:ok, assign(socket, show_buttons: false, show_preview: false, current_content: "")}
   end
 
   @impl true
   def handle_event("change_color", %{"color" => color}, socket) do
     {:noreply, assign(socket, :selected_color, color)}
+  end
+
+  @impl true
+  def handle_event("update_content", %{"value" => content}, socket) do
+    {:noreply, assign(socket, current_content: content)}
   end
 
   @impl true

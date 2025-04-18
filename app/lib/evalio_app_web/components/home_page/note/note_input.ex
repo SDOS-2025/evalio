@@ -3,14 +3,38 @@ defmodule EvalioAppWeb.Components.Note.NoteInput do
   use Phoenix.Component
   import Phoenix.LiveView
   import PetalComponents
-  
+
+  @impl true
+  def mount(socket) do
+    {:ok, assign(socket, show_preview: false, preview_content: "")}
+  end
+
+  @impl true
+  def handle_event("toggle_preview", _params, socket) do
+    # Get the current form content when toggling preview
+    current_content = if socket.assigns.form do
+      socket.assigns.form[:content].value || ""
+    else
+      ""
+    end
+
+    {:noreply, assign(socket,
+      show_preview: !socket.assigns.show_preview,
+      preview_content: current_content
+    )}
+  end
+
+  @impl true
+  def handle_event("update_content", %{"value" => content}, socket) do
+    {:noreply, assign(socket, current_content: content)}
+  end
 
   def render(assigns) do
     ~H"""
     <div id={"note-input-#{@id}"}>
       <!-- Full-screen overlay with blur effect when editing -->
       <div class="fixed inset-0 bg-black/30 backdrop-blur-lg flex items-center justify-center transition-all transform duration-300 ease-in-out animate-in fade-in scale-[1.15] z-50">
-        <.card class="shadow-lg rounded-lg p-6 w-[600px] h-[400px] flex flex-col justify-between transform scale-100 transition-transform duration-300 ease-in-out bg-white resize">
+        <.card class="shadow-lg rounded-lg p-6 w-[800px] h-[600px] flex flex-col justify-between transform scale-100 transition-transform duration-300 ease-in-out bg-white resize">
           <.form for={@form} phx-submit="save_note" class="h-full flex flex-col">
             <div class="flex-grow">
               <.field field={@form[:title]}
@@ -19,17 +43,54 @@ defmodule EvalioAppWeb.Components.Note.NoteInput do
                 label=""
                 class="!border-none !outline-none !ring-0 shadow-3xl"
               />
-              <.field field={@form[:content]}
-                type="textarea"
-                placeholder="Content"
-                phx-debounce="blur"
-                label=""
-                class="!border-none !outline-none !ring-0 shadow-3xl h-[217px]"
-              />
+              <div class="flex justify-between items-center mt-2 mb-1">
+                <div class="text-sm text-gray-500">
+                  Markdown supported
+                </div>
+                <.button
+                  type="button"
+                  phx-click="toggle_preview"
+                  phx-target={@myself}
+                  color="white"
+                  size="sm"
+                  label={if @show_preview, do: "Edit", else: "Preview"}
+                />
+              </div>
+              <%= if @show_preview do %>
+                <div class="prose prose-sm max-w-none h-[400px] overflow-y-auto p-4 bg-gray-50 rounded-md">
+                  <%= raw Earmark.as_html!(@preview_content) %>
+                </div>
+              <% else %>
+                <.field field={@form[:content]}
+                  type="textarea"
+                  placeholder="Content (Markdown supported)
+# Heading 1
+## Heading 2
+**Bold text**
+*Italic text*
+- List item
+1. Numbered list
+[Link](url)
+![Image](url)
+```code block```"
+                  phx-debounce="300"
+                  phx-change="update_content"
+                  phx-target={@myself}
+                  value={@current_content}
+                  label=""
+                  class="!border-none !outline-none !ring-0 shadow-3xl h-[400px] font-mono"
+                />
+              <% end %>
             </div>
-            <div class="flex justify-end space-x-4 absolute bottom-[15px] right-6">
-              <.button label="Cancel" color="white" phx-click="cancel_form" type="button" />
-              <.button label="Save" color="black" class="px-3 py-2 rounded-md text-m font-medium bg-black text-white hover:bg-gray-700 hover:text-white transition-colors" />
+            <div class="flex justify-between mt-4">
+              <div class="flex items-center space-x-2 text-sm text-gray-500">
+                <PetalComponents.Icon.icon name="hero-information-circle" class="w-4 h-4" />
+                <span>Use Markdown for formatting</span>
+              </div>
+              <div class="flex space-x-4">
+                <.button label="Cancel" color="white" phx-click="cancel_form" type="button" />
+                <.button label="Save" color="black" class="px-3 py-2 rounded-md text-m font-medium bg-black text-white hover:bg-gray-700 hover:text-white transition-colors" />
+              </div>
             </div>
           </.form>
         </.card>
