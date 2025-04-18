@@ -8,7 +8,6 @@ defmodule EvalioAppWeb.NoteCard do
   alias EvalioApp.Note
 
 
-
   @impl true
   def handle_event("toggle_preview", _params, socket) do
     {:noreply, assign(socket, show_preview: !socket.assigns.show_preview)}
@@ -30,15 +29,23 @@ defmodule EvalioAppWeb.NoteCard do
                 class="!border-none !outline-none !ring-0 shadow-3xl"
               />
               <div class="flex justify-end items-center mt-2 mb-1">
-                <.button
+                <button
                   type="button"
                   phx-click="toggle_preview"
                   phx-target={@myself}
-                  color="white"
-                  size="xs"
-                  label={if @show_preview, do: "Edit", else: "Preview"}
-                  class="hover:bg-black text-white transition-colors"
-                />
+                  class="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                >
+                  <%= if @show_preview do %>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-gray-700">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+                    </svg>
+                  <% else %>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-gray-500">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                    </svg>
+                  <% end %>
+                </button>
               </div>
               <%= if @show_preview do %>
                 <div class="prose prose-sm max-w-none h-[400px] overflow-y-auto p-4 bg-gray-50 rounded-md">
@@ -50,16 +57,16 @@ defmodule EvalioAppWeb.NoteCard do
                   placeholder="Content"
                   phx-debounce="blur"
                   label=""
-                  class="!border-none !outline-none !ring-0 shadow-3xl h-[180px]"
+                  class="!border-none !outline-none !ring-0 shadow-3xl h-[215px] "
                 />
               <% end %>
             </div>
             <div class="flex justify-between mt-4">
-              <div class="flex items-center space-x-2 text-sm text-gray-500">
-                <PetalComponents.Icon.icon name="hero-information-circle" class="w-4 h-4" />
+              <div class="flex items-center space-x-2 text-sm text-gray-500 absolute bottom-[15px]">
+                <PetalComponents.Icon.icon name="hero-information-circle" class=" w-4 h-4" />
                 <span>Use Markdown for formatting</span>
               </div>
-              <div class="flex space-x-4">
+              <div class="flex space-x-4 justify-end space-x-4 absolute bottom-[15px] right-6">
                 <.button label="Cancel" color="white" phx-click="cancel_form" type="button" />
                 <.button label="Save" color="black" class="px-3 py-2 rounded-md text-m font-medium bg-black text-white hover:bg-gray-700 hover:text-white transition-colors" />
               </div>

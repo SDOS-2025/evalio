@@ -1,3 +1,6 @@
+
+# this file needs refactoring
+
 defmodule EvalioAppWeb.Components.Note.NoteInput do
   use EvalioAppWeb, :live_component
   use Phoenix.Component
@@ -6,27 +9,12 @@ defmodule EvalioAppWeb.Components.Note.NoteInput do
 
   @impl true
   def mount(socket) do
-    {:ok, assign(socket, show_preview: false, preview_content: "")}
+    {:ok, assign(socket, show_preview: false)}
   end
 
   @impl true
   def handle_event("toggle_preview", _params, socket) do
-    # Get the current form content when toggling preview
-    current_content = if socket.assigns.form do
-      socket.assigns.form[:content].value || ""
-    else
-      ""
-    end
-
-    {:noreply, assign(socket,
-      show_preview: !socket.assigns.show_preview,
-      preview_content: current_content
-    )}
-  end
-
-  @impl true
-  def handle_event("update_content", %{"value" => content}, socket) do
-    {:noreply, assign(socket, current_content: content)}
+    {:noreply, assign(socket, show_preview: !socket.assigns.show_preview)}
   end
 
   def render(assigns) do
@@ -34,7 +22,7 @@ defmodule EvalioAppWeb.Components.Note.NoteInput do
     <div id={"note-input-#{@id}"}>
       <!-- Full-screen overlay with blur effect when editing -->
       <div class="fixed inset-0 bg-black/30 backdrop-blur-lg flex items-center justify-center transition-all transform duration-300 ease-in-out animate-in fade-in scale-[1.15] z-50">
-        <.card class="shadow-lg rounded-lg p-6 w-[800px] h-[600px] flex flex-col justify-between transform scale-100 transition-transform duration-300 ease-in-out bg-white resize">
+        <.card class="shadow-lg rounded-lg p-6 w-[600px] h-[400px] flex flex-col justify-between transform scale-100 transition-transform duration-300 ease-in-out bg-white resize">
           <.form for={@form} phx-submit="save_note" class="h-full flex flex-col">
             <div class="flex-grow">
               <.field field={@form[:title]}
@@ -58,7 +46,7 @@ defmodule EvalioAppWeb.Components.Note.NoteInput do
               </div>
               <%= if @show_preview do %>
                 <div class="prose prose-sm max-w-none h-[400px] overflow-y-auto p-4 bg-gray-50 rounded-md">
-                  <%= raw Earmark.as_html!(@preview_content) %>
+                  <%= raw Earmark.as_html!(@form[:content].value || "") %>
                 </div>
               <% else %>
                 <.field field={@form[:content]}
@@ -73,10 +61,7 @@ defmodule EvalioAppWeb.Components.Note.NoteInput do
 [Link](url)
 ![Image](url)
 ```code block```"
-                  phx-debounce="300"
-                  phx-change="update_content"
-                  phx-target={@myself}
-                  value={@current_content}
+                  phx-debounce="blur"
                   label=""
                   class="!border-none !outline-none !ring-0 shadow-3xl h-[400px] font-mono"
                 />
