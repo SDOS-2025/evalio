@@ -59,7 +59,9 @@ defmodule EvalioApp.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
       {:petal_components, "~> 2.8.2"},
-      {:bcrypt_elixir, "~> 3.0"}
+      {:bcrypt_elixir, "~> 3.0"},
+      {:earmark, "~> 1.4"},
+      {:phoenix_markdown, "~> 1.0"}
     ]
   end
 

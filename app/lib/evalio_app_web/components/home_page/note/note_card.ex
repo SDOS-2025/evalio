@@ -7,36 +7,73 @@ defmodule EvalioAppWeb.NoteCard do
   alias EvalioAppWeb.NoteTagMenu
   alias EvalioApp.Note
 
+
+  @impl true
+  def handle_event("toggle_preview", _params, socket) do
+    {:noreply, assign(socket, show_preview: !socket.assigns.show_preview)}
+  end
+
   def render(assigns) do
     ~H"""
     <div class="relative">
       <%= if @editing do %>
         <!-- Full-screen overlay with blur effect when editing -->
-        <div class="fixed inset-0 bg-black/30 backdrop-blur-lg flex items-center justify-center transition-all transform duration-300 ease-in-out animate-in fade-in scale-[1.15] z-50">
-          <.card class="shadow-lg rounded-lg p-6 w-[600px] h-[400px] flex flex-col justify-between transform scale-100 transition-transform duration-300 ease-in-out bg-white resize">
-            <.form for={@form} phx-submit="save_note" class="h-full flex flex-col">
-              <div class="flex-grow">
+      <div class="fixed inset-0 bg-black/30 backdrop-blur-lg flex items-center justify-center transition-all transform duration-300 ease-in-out animate-in fade-in scale-[1.15] z-50">
+        <.card class="shadow-lg rounded-lg p-6 w-[600px] h-[400px] flex flex-col justify-between transform scale-100 transition-transform duration-300 ease-in-out bg-white resize">
+          <.form for={@form} phx-submit="save_note" class="h-full flex flex-col">
+            <div class="flex-grow">
               <.field field={@form[:title]}
                 placeholder="Title"
                 phx-debounce="blur"
                 label=""
                 class="!border-none !outline-none !ring-0 shadow-3xl"
               />
-              <.field field={@form[:content]}
-                type="textarea"
-                placeholder="Content"
-                phx-debounce="blur"
-                label=""
-                class="!border-none !outline-none !ring-0 shadow-3xl h-[215px]"
-              />
+              <div class="flex justify-end items-center mt-2 mb-1">
+                <button
+                  type="button"
+                  phx-click="toggle_preview"
+                  phx-target={@myself}
+                  class="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                >
+                  <%= if @show_preview do %>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-gray-700">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+                    </svg>
+                  <% else %>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-gray-500">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                    </svg>
+                  <% end %>
+                </button>
               </div>
-              <div class="flex justify-end space-x-4 absolute bottom-[15px] right-6">
+              <%= if @show_preview do %>
+                <div class="prose prose-sm max-w-none h-[400px] overflow-y-auto p-4 bg-gray-50 rounded-md">
+                  <%= raw Earmark.as_html!(@form[:content].value || "") %>
+                </div>
+              <% else %>
+                <.field field={@form[:content]}
+                  type="textarea"
+                  placeholder="Content"
+                  phx-debounce="blur"
+                  label=""
+                  class="!border-none !outline-none !ring-0 shadow-3xl h-[215px] "
+                />
+              <% end %>
+            </div>
+            <div class="flex justify-between mt-4">
+              <div class="flex items-center space-x-2 text-sm text-gray-500 absolute bottom-[15px]">
+                <PetalComponents.Icon.icon name="hero-information-circle" class=" w-4 h-4" />
+                <span>Use Markdown for formatting</span>
+              </div>
+              <div class="flex space-x-4 justify-end space-x-4 absolute bottom-[15px] right-6">
                 <.button label="Cancel" color="white" phx-click="cancel_form" type="button" />
-                <.button label="Save" color = "black" class="px-3 py-2 rounded-md text-m font-medium bg-black text-white hover:bg-gray-700 hover:text-white transition-colors" />
+                <.button label="Save" color="black" class="px-3 py-2 rounded-md text-m font-medium bg-black text-white hover:bg-gray-700 hover:text-white transition-colors" />
               </div>
-            </.form>
-          </.card>
-        </div>
+            </div>
+          </.form>
+        </.card>
+      </div>
       <% end %>
 
       <%= if Map.has_key?(assigns, :note) && @note do %>
@@ -86,7 +123,9 @@ defmodule EvalioAppWeb.NoteCard do
           </div>
 
           <p class="text-gray-600 mt-2 line-clamp-3">
-            <%= @note.content %>
+            <div class="prose prose-sm max-w-none">
+              <%= raw Earmark.as_html!(@note.content) %>
+            </div>
           </p>
         </.card>
       <% end %>
@@ -96,12 +135,17 @@ defmodule EvalioAppWeb.NoteCard do
 
   @impl true
   def mount(socket) do
-    {:ok, assign(socket, show_buttons: false)}
+    {:ok, assign(socket, show_buttons: false, show_preview: false, current_content: "")}
   end
 
   @impl true
   def handle_event("change_color", %{"color" => color}, socket) do
     {:noreply, assign(socket, :selected_color, color)}
+  end
+
+  @impl true
+  def handle_event("update_content", %{"value" => content}, socket) do
+    {:noreply, assign(socket, current_content: content)}
   end
 
   @impl true
