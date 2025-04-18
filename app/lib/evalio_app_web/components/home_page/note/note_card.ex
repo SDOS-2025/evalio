@@ -61,16 +61,17 @@ defmodule EvalioAppWeb.NoteCard do
                 />
               <% end %>
             </div>
-            <div class="flex justify-between mt-4">
-              <div class="flex items-center space-x-2 text-sm text-gray-500 absolute bottom-[15px]">
-                <PetalComponents.Icon.icon name="hero-information-circle" class=" w-4 h-4" />
-                <span>Use Markdown for formatting</span>
-              </div>
-              <div class="flex space-x-4 justify-end space-x-4 absolute bottom-[15px] right-6">
-                <.button label="Cancel" color="white" phx-click="cancel_form" type="button" />
-                <.button label="Save" color="black" class="px-3 py-2 rounded-md text-m font-medium bg-black text-white hover:bg-gray-700 hover:text-white transition-colors" />
-              </div>
+            <div class="flex justify-between items-end mt-4">
+            <div class="flex items-center space-x-2 text-sm text-gray-500">
+              <PetalComponents.Icon.icon name="hero-information-circle" class="w-4 h-4" />
+              <span>Use Markdown for formatting</span>
             </div>
+            <div class="justify-end flex space-x-4 bottom-[15px]">
+              <.button label="Cancel" color="white" phx-click="cancel_form" type="button" />
+              <.button label="Save" color="black" class="px-3 py-2 rounded-md text-m font-medium bg-black text-white hover:bg-gray-700 hover:text-white transition-colors" />
+            </div>
+          </div>
+
           </.form>
         </.card>
       </div>
