@@ -1,6 +1,7 @@
 defmodule EvalioAppWeb.NoteTagMenu do
   use EvalioAppWeb, :live_component
   import PetalComponents
+  require Logger
 
   def render(assigns) do
     ~H"""
@@ -65,7 +66,13 @@ defmodule EvalioAppWeb.NoteTagMenu do
 
   @impl true
   def handle_event("change_tag", %{"tag" => tag, "id" => id}, socket) do
-    send(self(), {:update_note_tag, id, tag})
+    require Logger
+    Logger.info("NoteTagMenu: change_tag event received: id=#{id}, tag=#{tag}")
+
+    # Send the message to the parent component (NoteCard)
+    # The parent component ID is derived from the note ID
+    send_update(EvalioAppWeb.NoteCard, id: "note-#{id}", change_tag: {id, tag})
+
     {:noreply, socket}
   end
 end

@@ -41,7 +41,7 @@ defmodule EvalioAppWeb.NoteCard do
 
       <%= if Map.has_key?(assigns, :note) && @note do %>
         <!-- Pin button as a white circle with icon -->
-        <button phx-click="pin_note" phx-value-id={@note.id}
+        <button phx-click="pin_note" phx-value-id={@note.id} phx-target={@myself}
           class={"absolute -right-3 -top-3 w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-md border border-gray-200 hover:bg-gray-100 transition-all duration-300 ease-in-out #{if @show_buttons, do: "opacity-100 translate-x-0", else: "opacity-0 -translate-x-4"}"}>
           <svg width="12" height="18" viewBox="0 0 16 24" fill="none" xmlns="http://www.w3.org/2000/svg"
             class={"#{if @note.pinned, do: "text-black hover:text-black", else: "text-[#171717] hover:text-[#666666]"}"}>
@@ -51,13 +51,13 @@ defmodule EvalioAppWeb.NoteCard do
         </button>
 
         <!-- Edit button as a white circle with blue icon -->
-        <button phx-click="edit_note" phx-value-id={@note.id}
+        <button phx-click="edit_note" phx-value-id={@note.id} phx-target={@myself}
           class={"absolute -right-3 top-7 w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-md border border-gray-200 hover:bg-gray-100 transition-all duration-300 ease-in-out #{if @show_buttons, do: "opacity-100 translate-x-0", else: "opacity-0 -translate-x-4"}"}>
           <HeroiconsV1.Outline.pencil class="w-4 h-4 text-blue-500" />
         </button>
 
         <!-- Delete button as a white circle with red icon -->
-        <button phx-click="delete_note" phx-value-id={@note.id}
+        <button phx-click="delete_note" phx-value-id={@note.id} phx-target={@myself}
           class={"absolute -right-3 top-16 w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-md border border-gray-200 hover:bg-gray-100 transition-all duration-300 ease-in-out #{if @show_buttons, do: "opacity-100 translate-x-0", else: "opacity-0 -translate-x-4"}"}>
           <HeroiconsV1.Outline.trash class="w-4 h-4 text-red-500" />
         </button>
@@ -67,7 +67,7 @@ defmodule EvalioAppWeb.NoteCard do
           <div class="flex justify-between items-center">
             <div class="flex items-center">
               <%= if @note.pinned do %>
-                <button phx-click="pin_note" phx-value-id={@note.id} class="text-red-500 hover:text-red-700 transition-colors mr-1">
+                <button phx-click="pin_note" phx-value-id={@note.id} phx-target={@myself} class="text-red-500 hover:text-red-700 transition-colors mr-1">
                   <svg width="16" height="24" viewBox="0 0 16 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M4.00016 1V8.5L1.3335 13.5V16H14.6668V13.5L12.0002 8.5V1M8.00016 16V22.25M2.66683 1H13.3335" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
@@ -113,5 +113,65 @@ defmodule EvalioAppWeb.NoteCard do
   def handle_event("toggle_read_mode", _params, socket) do
     send(self(), {:toggle_read_mode, socket.assigns.note})
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("pin_note", %{"id" => id}, socket) do
+    require Logger
+    Logger.info("NoteCard: pin_note event received: id=#{id}")
+
+    # Forward the event to the parent LiveView
+    send(self(), {:pin_note, id})
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("edit_note", %{"id" => id}, socket) do
+    require Logger
+    Logger.info("NoteCard: edit_note event received: id=#{id}")
+
+    # Forward the event to the parent LiveView
+    send(self(), {:edit_note, id})
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("delete_note", %{"id" => id}, socket) do
+    require Logger
+    Logger.info("NoteCard: delete_note event received: id=#{id}")
+
+    # Forward the event to the parent LiveView
+    send(self(), {:delete_note, id})
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("change_tag", %{"tag" => tag, "id" => id}, socket) do
+    require Logger
+    Logger.info("NoteCard: change_tag event received: id=#{id}, tag=#{tag}")
+
+    # Send a message to the parent LiveView (NotesLive)
+    send(self(), {:update_note_tag, id, tag})
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def update(%{change_tag: {id, tag}} = assigns, socket) do
+    require Logger
+    Logger.info("NoteCard: change_tag update received: id=#{id}, tag=#{tag}")
+
+    # Send a message to the parent LiveView (NotesLive)
+    send(self(), {:update_note_tag, id, tag})
+
+    {:ok, assign(socket, assigns)}
+  end
+
+  @impl true
+  def update(assigns, socket) do
+    {:ok, assign(socket, assigns)}
   end
 end

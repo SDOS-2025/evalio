@@ -5,7 +5,11 @@ defmodule EvalioAppWeb.NoteContainer do
   alias EvalioAppWeb.NoteCard
 
   def render(assigns) do
-    filtered_notes = filter_notes(assigns.notes, assigns.tag_filter || "all")
+    filtered_notes = if Map.has_key?(assigns, :notes) do
+      filter_notes(assigns.notes, assigns.tag_filter || "all")
+    else
+      []
+    end
     sorted_notes = sort_notes(filtered_notes, assigns.sort_by || "newest_first")
     assigns = assign(assigns, :sorted_notes, sorted_notes)
 
@@ -21,9 +25,24 @@ defmodule EvalioAppWeb.NoteContainer do
   end
 
   def update(assigns, socket) do
-    filtered_notes = filter_notes(assigns.notes, assigns.tag_filter || "all")
+    filtered_notes = if Map.has_key?(assigns, :notes) do
+      filter_notes(assigns.notes, assigns.tag_filter || "all")
+    else
+      []
+    end
     sorted_notes = sort_notes(filtered_notes, assigns.sort_by || "newest_first")
     {:ok, assign(socket, assigns) |> assign(:sorted_notes, sorted_notes)}
+  end
+
+  def update(%{change_tag: {id, tag}} = assigns, socket) do
+    require Logger
+    Logger.info("NoteContainer: change_tag update received: id=#{id}, tag=#{tag}")
+
+    # Forward the update to the NotesLive component
+    send_update(EvalioAppWeb.NotesLive, id: "notes-live", update_note_tag: {id, tag})
+
+    # Return the socket unchanged since we're just forwarding the update
+    {:ok, socket}
   end
 
   defp filter_notes(notes, tag_filter) do
