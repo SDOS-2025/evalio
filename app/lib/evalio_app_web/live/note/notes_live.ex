@@ -27,7 +27,6 @@ defmodule EvalioAppWeb.NotesLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    # Load data from database
     notes = Notes.list_notes()
     reminders = Reminders.list_reminders()
     meetings = Meetings.list_meetings()
@@ -76,11 +75,8 @@ defmodule EvalioAppWeb.NotesLive do
         {:noreply, updated_socket}
 
       id ->
-        # Edit existing note
-        # Find the existing note to preserve its tag, created_at, and pinned status
         existing_note = Enum.find(socket.assigns.notes, &(&1.id == id))
 
-        # Create updated note while preserving the tag, created_at, and pinned status
         updated_note = %{
           Note.new(title, content, special_words) |
           id: id,
@@ -108,11 +104,9 @@ defmodule EvalioAppWeb.NotesLive do
 
   @impl true
   def handle_event("edit_note", %{"id" => id}, socket) do
-    # Find the note to edit
     note = Enum.find(socket.assigns.notes, &(&1.id == id))
 
     if note do
-      # Build form with existing note data
       form = build_form(%{"title" => note.title, "content" => note.content})
 
       {:noreply,
@@ -124,7 +118,6 @@ defmodule EvalioAppWeb.NotesLive do
          form: form
        )}
     else
-      # Note not found, just return the socket unchanged
       {:noreply, socket}
     end
   end
@@ -158,18 +151,14 @@ defmodule EvalioAppWeb.NotesLive do
     require Logger
     Logger.info("Updating note tag: id=#{id}, tag=#{tag}")
 
-    # Convert id to integer if it's a string
     id_int = if is_binary(id), do: String.to_integer(id), else: id
 
-    # Find the note in the current list
     note = Enum.find(socket.assigns.notes, &(&1.id == id_int))
 
     if note do
-      # Update the note's tag in the database
       case Notes.update_note_tag(note, tag) do
         {:ok, updated_note} ->
           Logger.info("Note tag updated successfully: #{inspect(updated_note)}")
-          # Update the notes list
           updated_notes = Enum.map(socket.assigns.notes, fn n ->
             if n.id == id_int do
               updated_note
@@ -178,7 +167,6 @@ defmodule EvalioAppWeb.NotesLive do
             end
           end)
 
-          # Send update to the NoteContainer component to refresh the UI
           send_update(EvalioAppWeb.NoteContainer, id: "note-container",
             notes: updated_notes,
             tag_filter: socket.assigns.tag_filter,
@@ -197,14 +185,12 @@ defmodule EvalioAppWeb.NotesLive do
 
   @impl true
   def handle_info({:update_reminder_tag, id, tag}, socket) do
-    # Forward the message to the ReminderContainer component
     send_update(EvalioAppWeb.ReminderContainer, id: "reminder-container", update_reminder_tag: {id, tag})
     {:noreply, socket}
   end
 
   @impl true
   def handle_info({:update_meeting_tag, id, tag}, socket) do
-    # Forward the message to the MeetingContainer component
     send_update(EvalioAppWeb.MeetingContainer, id: "meeting-container", update_meeting_tag: {id, tag})
     {:noreply, socket}
   end
@@ -216,14 +202,12 @@ defmodule EvalioAppWeb.NotesLive do
 
   @impl true
   def handle_info({:finish_delete, id}, socket) do
-    # Forward the message to the ReminderContainer component
     send_update(EvalioAppWeb.ReminderContainer, id: "reminder-container", delete_reminder_id: id)
     {:noreply, socket}
   end
 
   @impl true
   def handle_info({:finish_delete_meeting, id}, socket) do
-    # Forward the message to the MeetingContainer component
     send_update(EvalioAppWeb.MeetingContainer, id: "meeting-container", delete_meeting_id: id)
     {:noreply, socket}
   end
@@ -240,14 +224,11 @@ defmodule EvalioAppWeb.NotesLive do
 
   @impl true
   def handle_event("pin_note", %{"id" => id}, socket) do
-    # Find the note in the current list
     note = Enum.find(socket.assigns.notes, &(&1.id == id))
 
     if note do
-      # Toggle the pin status in the database
       case Notes.toggle_note_pin(note) do
         {:ok, updated_note} ->
-          # Update the notes list
           updated_notes = Enum.map(socket.assigns.notes, fn n ->
             if n.id == id do
               updated_note
@@ -287,7 +268,6 @@ defmodule EvalioAppWeb.NotesLive do
 
   @impl true
   def handle_info({"edit_reminder", id}, socket) do
-    # Forward the message to the ReminderContainer component
     send_update(EvalioAppWeb.ReminderContainer, id: "reminder-container", edit_reminder_id: id)
     {:noreply, socket}
   end
@@ -297,14 +277,11 @@ defmodule EvalioAppWeb.NotesLive do
     require Logger
     Logger.info("NotesLive: update_note_tag received: id=#{id}, tag=#{tag}")
 
-    # Convert id to integer if it's a string
     id_int = if is_binary(id), do: String.to_integer(id), else: id
 
-    # Find the note in the current list
     note = Enum.find(socket.assigns.notes, &(&1.id == id_int))
 
     if note do
-      # Update the note's tag in the database
       case Notes.update_note_tag(note, tag) do
         {:ok, updated_note} ->
           Logger.info("Note tag updated successfully: #{inspect(updated_note)}")
@@ -317,7 +294,6 @@ defmodule EvalioAppWeb.NotesLive do
             end
           end)
 
-          # Send update to the NoteContainer component to refresh the UI
           send_update(EvalioAppWeb.NoteContainer, id: "note-container",
             notes: updated_notes,
             tag_filter: socket.assigns.tag_filter,
@@ -477,17 +453,12 @@ defmodule EvalioAppWeb.NotesLive do
 
   @impl true
   def handle_info({:edit_note, id}, socket) do
-    require Logger
     Logger.info("Editing note: id=#{id}")
-
-    # Convert id to integer if it's a string
     id_int = if is_binary(id), do: String.to_integer(id), else: id
 
-    # Find the note in the current list
     note = Enum.find(socket.assigns.notes, &(&1.id == id_int))
 
     if note do
-      # Build form with existing note data
       form = build_form(%{"title" => note.title, "content" => note.content})
 
       {:noreply,
@@ -508,22 +479,16 @@ defmodule EvalioAppWeb.NotesLive do
   def handle_info({:delete_note, id}, socket) do
     require Logger
     Logger.info("Deleting note: id=#{id}")
-
-    # Convert id to integer if it's a string
     id_int = if is_binary(id), do: String.to_integer(id), else: id
 
-    # Find the note in the current list
     note = Enum.find(socket.assigns.notes, &(&1.id == id_int))
 
     if note do
-      # Delete the note from the database
       case Notes.delete_note(note) do
         {:ok, _} ->
           Logger.info("Note deleted successfully: id=#{id_int}")
-          # Update the notes list
           updated_notes = Enum.reject(socket.assigns.notes, &(&1.id == id_int))
 
-          # Send update to the NoteContainer component to refresh the UI
           send_update(EvalioAppWeb.NoteContainer, id: "note-container",
             notes: updated_notes,
             tag_filter: socket.assigns.tag_filter,
