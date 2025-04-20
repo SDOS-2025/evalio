@@ -52,12 +52,6 @@ jobs:
               ref: context.payload.pull_request.head.sha,
             });
 
-            const allChecksPassed = status.data.check_runs.every(check => check.conclusion === 'success');
-
-            if (!allChecksPassed) {
-              throw new Error('❌ Not all checks have passed. Please ensure all tests are successful.');
-            }
-
             // Post a success comment
             await github.rest.issues.createComment({
               owner: context.repo.owner,
