@@ -10,7 +10,7 @@ repos:
     hooks:
       - id: mix-format
         name: format files
-        entry: bash -c 'set -ex && cd app && mix format'
+        entry: bash -c 'cd app && mix format --check-formatted'
         language: system
         types: [elixir]
         pass_filenames: false
