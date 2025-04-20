@@ -77,7 +77,10 @@ defmodule EvalioApp.RemindersTest do
 
     test "update_reminder_tag/2 updates the reminder's tag" do
       reminder = reminder_fixture()
-      assert {:ok, %Reminder{} = updated_reminder} = Reminders.update_reminder_tag(reminder, "important")
+
+      assert {:ok, %Reminder{} = updated_reminder} =
+               Reminders.update_reminder_tag(reminder, "important")
+
       assert updated_reminder.tag == "important"
     end
   end

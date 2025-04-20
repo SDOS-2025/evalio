@@ -20,4 +20,4 @@ defmodule EvalioAppWeb.TagManager do
   def update_meeting_tag(meeting, tag) do
     Meeting.update_tag(meeting, tag)
   end
-end 
+end

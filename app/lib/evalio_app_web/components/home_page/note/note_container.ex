@@ -5,11 +5,13 @@ defmodule EvalioAppWeb.NoteContainer do
   alias EvalioAppWeb.NoteCard
 
   def render(assigns) do
-    filtered_notes = if Map.has_key?(assigns, :notes) do
-      filter_notes(assigns.notes, assigns.tag_filter || "all")
-    else
-      []
-    end
+    filtered_notes =
+      if Map.has_key?(assigns, :notes) do
+        filter_notes(assigns.notes, assigns.tag_filter || "all")
+      else
+        []
+      end
+
     sorted_notes = sort_notes(filtered_notes, assigns.sort_by || "newest_first")
     assigns = assign(assigns, :sorted_notes, sorted_notes)
 
@@ -25,11 +27,13 @@ defmodule EvalioAppWeb.NoteContainer do
   end
 
   def update(assigns, socket) do
-    filtered_notes = if Map.has_key?(assigns, :notes) do
-      filter_notes(assigns.notes, assigns.tag_filter || "all")
-    else
-      []
-    end
+    filtered_notes =
+      if Map.has_key?(assigns, :notes) do
+        filter_notes(assigns.notes, assigns.tag_filter || "all")
+      else
+        []
+      end
+
     sorted_notes = sort_notes(filtered_notes, assigns.sort_by || "newest_first")
     {:ok, assign(socket, assigns) |> assign(:sorted_notes, sorted_notes)}
   end
@@ -48,7 +52,7 @@ defmodule EvalioAppWeb.NoteContainer do
   defp filter_notes(notes, tag_filter) do
     case tag_filter do
       "all" -> notes
-      tag -> Enum.filter(notes, & &1.tag == tag)
+      tag -> Enum.filter(notes, &(&1.tag == tag))
     end
   end
 

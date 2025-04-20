@@ -33,8 +33,8 @@ defmodule EvalioAppWeb.SidePanel do
               Stats
             </button>
           </div>
-
-          <!-- Scrollable Content -->
+          
+    <!-- Scrollable Content -->
           <div class="overflow-y-auto flex-grow space-y-4">
             <!-- Calendar Card -->
             <Card.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl overflow-hidden p-4">
@@ -45,20 +45,16 @@ defmodule EvalioAppWeb.SidePanel do
                 meetings={@meetings}
               />
             </Card.card>
-
-            <!-- Reminders Container -->
+            
+    <!-- Reminders Container -->
             <.live_component
               module={ReminderContainer}
               id="reminder-container"
               reminders={@reminders}
             />
-
-            <!-- Meetings Container -->
-            <.live_component
-              module={MeetingContainer}
-              id="meeting-container"
-              meetings={@meetings}
-            />
+            
+    <!-- Meetings Container -->
+            <.live_component module={MeetingContainer} id="meeting-container" meetings={@meetings} />
           </div>
         </Container.container>
       </div>
@@ -81,9 +77,10 @@ defmodule EvalioAppWeb.SidePanel do
       updated_meeting = TagManager.update_meeting_tag(meeting, tag)
 
       # Update the meetings list
-      updated_meetings = Enum.map(socket.assigns.meetings, fn m ->
-        if m.id == id, do: updated_meeting, else: m
-      end)
+      updated_meetings =
+        Enum.map(socket.assigns.meetings, fn m ->
+          if m.id == id, do: updated_meeting, else: m
+        end)
 
       # Sort the meetings
       sorted_meetings = sort_meetings(updated_meetings)
@@ -98,10 +95,11 @@ defmodule EvalioAppWeb.SidePanel do
     updated_meetings = Enum.reject(socket.assigns.meetings, &(&1.id == id))
     sorted_meetings = sort_meetings(updated_meetings)
 
-    {:ok, assign(socket,
-      meetings: updated_meetings,
-      sorted_meetings: sorted_meetings
-    )}
+    {:ok,
+     assign(socket,
+       meetings: updated_meetings,
+       sorted_meetings: sorted_meetings
+     )}
   end
 
   def update(%{edit_meeting_id: id} = _assigns, socket) do

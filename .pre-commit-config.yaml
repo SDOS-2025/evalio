@@ -1,9 +1,30 @@
-
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:
-      - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-yaml
       - id: check-added-large-files
+
+  - repo: local
+    hooks:
+      - id: mix-format
+        name: format files
+        entry: bash -c 'set -ex && cd app && mix format'
+        language: system
+        types: [elixir]
+        pass_filenames: false
+
+      - id: mix-compile
+        name: compile project
+        entry: bash -c 'cd app && mix compile'
+        language: system
+        types: [elixir]
+        pass_filenames: false
+
+      - id: mix-test
+        name: run tests
+        entry: bash -c 'cd app && mix test'
+        language: system
+        types: [elixir]
+        pass_filenames: false

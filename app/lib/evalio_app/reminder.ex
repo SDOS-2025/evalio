@@ -11,6 +11,7 @@ defmodule EvalioApp.Reminder do
   def new(title, date, time) do
     id = generate_unique_id()
     Logger.info("Generated new reminder ID: #{id}")
+
     %__MODULE__{
       id: id,
       title: title,
@@ -43,4 +44,4 @@ defmodule EvalioApp.Reminder do
     Logger.info("Generated unique ID: #{id}")
     id
   end
-end 
+end

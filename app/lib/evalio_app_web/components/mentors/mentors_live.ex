@@ -7,11 +7,12 @@ defmodule EvalioAppWeb.MentorsLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket,
-      mentors: [],
-      search_text: "",
-      sort_by: "name_asc"
-    )}
+    {:ok,
+     assign(socket,
+       mentors: [],
+       search_text: "",
+       sort_by: "name_asc"
+     )}
   end
 
   @impl true
@@ -47,11 +48,13 @@ defmodule EvalioAppWeb.MentorsLive do
   end
 
   defp filter_mentors_by_search(mentors, ""), do: mentors
+
   defp filter_mentors_by_search(mentors, search_text) do
     search_text = String.downcase(search_text)
+
     Enum.filter(mentors, fn mentor ->
       String.contains?(String.downcase(mentor.name), search_text) ||
-      String.contains?(String.downcase(mentor.email), search_text)
+        String.contains?(String.downcase(mentor.email), search_text)
     end)
   end
 end

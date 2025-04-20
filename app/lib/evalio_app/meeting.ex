@@ -11,6 +11,7 @@ defmodule EvalioApp.Meeting do
   def new(title, date, time, link) do
     id = generate_unique_id()
     Logger.info("Generated new meeting ID: #{id}")
+
     %__MODULE__{
       id: id,
       title: title,
@@ -44,4 +45,4 @@ defmodule EvalioApp.Meeting do
     Logger.info("Generated unique ID: #{id}")
     id
   end
-end 
+end

@@ -21,6 +21,7 @@ defmodule EvalioApp.Accounts do
     cond do
       user && Bcrypt.verify_pass(password, user.password_hash) ->
         {:ok, user}
+
       true ->
         {:error, :invalid_credentials}
     end

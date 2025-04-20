@@ -11,39 +11,44 @@ defmodule EvalioAppWeb.ReminderContainer do
   def render(assigns) do
     ~H"""
     <div>
-    <Card.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl relative p-4 flex flex-col">
-      <div class="flex justify-between items-center">
-        <h4 class="text-xl font-bold text-gray-800 dark:text-gray-200">Reminders</h4>
-        <button phx-click="show_reminder_form" phx-target={@myself}>
-          <span class="text-2xl text-gray-600 dark:text-gray-300">+</span>
-        </button>
-      </div>
+      <Card.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl relative p-4 flex flex-col">
+        <div class="flex justify-between items-center">
+          <h4 class="text-xl font-bold text-gray-800 dark:text-gray-200">Reminders</h4>
+          <button phx-click="show_reminder_form" phx-target={@myself}>
+            <span class="text-2xl text-gray-600 dark:text-gray-300">+</span>
+          </button>
+        </div>
 
-      <div class="mt-4 flex-grow w-full max-h-[310px] overflow-y-auto bg-transparent rounded-lg px-0 py-2 space-y-2 transition-all duration-300 ease-in-out">
-        <%= for {reminder, index} <- Enum.with_index(@sorted_reminders) do %>
-          <div class="transition-all duration-300 ease-in-out">
-            <.live_component
-              module={ReminderCard}
-              id={"reminder-#{reminder.id}"}
-              reminder={reminder}
-              on_delete="delete_reminder"
-              on_edit="edit_reminder"
-            />
-          </div>
-        <% end %>
-      </div>
+        <div class="mt-4 flex-grow w-full max-h-[310px] overflow-y-auto bg-transparent rounded-lg px-0 py-2 space-y-2 transition-all duration-300 ease-in-out">
+          <%= for {reminder, index} <- Enum.with_index(@sorted_reminders) do %>
+            <div class="transition-all duration-300 ease-in-out">
+              <.live_component
+                module={ReminderCard}
+                id={"reminder-#{reminder.id}"}
+                reminder={reminder}
+                on_delete="delete_reminder"
+                on_edit="edit_reminder"
+              />
+            </div>
+          <% end %>
+        </div>
 
-      <%= if @show_reminder_form do %>
-        <div class="fixed inset-0 z-[9999]">
-          <div class="fixed inset-0 bg-black/30 backdrop-blur-lg"></div>
-          <div class="fixed inset-0 flex items-center justify-center">
-            <div class="relative z-[10000]">
-              <.live_component module={ReminderFormComponent} id="reminder_form" myself={@myself} reminder={@editing_reminder} />
+        <%= if @show_reminder_form do %>
+          <div class="fixed inset-0 z-[9999]">
+            <div class="fixed inset-0 bg-black/30 backdrop-blur-lg"></div>
+            <div class="fixed inset-0 flex items-center justify-center">
+              <div class="relative z-[10000]">
+                <.live_component
+                  module={ReminderFormComponent}
+                  id="reminder_form"
+                  myself={@myself}
+                  reminder={@editing_reminder}
+                />
+              </div>
             </div>
           </div>
-        </div>
-      <% end %>
-    </Card.card>
+        <% end %>
+      </Card.card>
     </div>
     """
   end
@@ -57,14 +62,16 @@ defmodule EvalioAppWeb.ReminderContainer do
       case Reminders.update_reminder_tag(reminder, tag) do
         {:ok, updated_reminder} ->
           # Update the reminders list
-          updated_reminders = Enum.map(socket.assigns.reminders, fn r ->
-            if r.id == id, do: updated_reminder, else: r
-          end)
+          updated_reminders =
+            Enum.map(socket.assigns.reminders, fn r ->
+              if r.id == id, do: updated_reminder, else: r
+            end)
 
           # Sort the reminders
           sorted_reminders = sort_reminders(updated_reminders)
 
           {:ok, assign(socket, reminders: updated_reminders, sorted_reminders: sorted_reminders)}
+
         {:error, _changeset} ->
           {:ok, socket}
       end
@@ -78,6 +85,7 @@ defmodule EvalioAppWeb.ReminderContainer do
     case Reminders.get_reminder!(id) do
       nil ->
         {:ok, socket}
+
       reminder ->
         # Delete from database
         case Reminders.delete_reminder(reminder) do
@@ -86,10 +94,12 @@ defmodule EvalioAppWeb.ReminderContainer do
             updated_reminders = Enum.reject(socket.assigns.reminders, &(&1.id == id))
             sorted_reminders = sort_reminders(updated_reminders)
 
-            {:ok, assign(socket,
-              reminders: updated_reminders,
-              sorted_reminders: sorted_reminders
-            )}
+            {:ok,
+             assign(socket,
+               reminders: updated_reminders,
+               sorted_reminders: sorted_reminders
+             )}
+
           {:error, _} ->
             {:ok, socket}
         end
@@ -146,13 +156,17 @@ defmodule EvalioAppWeb.ReminderContainer do
     case Reminders.get_reminder!(id) do
       nil ->
         {:noreply, socket}
+
       reminder ->
         case Reminders.delete_reminder(reminder) do
           {:ok, _} ->
             Logger.info("Reminder deleted successfully: #{id}")
             updated_reminders = Enum.reject(socket.assigns.reminders, &(&1.id == id))
             sorted_reminders = sort_reminders(updated_reminders)
-            {:noreply, assign(socket, reminders: updated_reminders, sorted_reminders: sorted_reminders)}
+
+            {:noreply,
+             assign(socket, reminders: updated_reminders, sorted_reminders: sorted_reminders)}
+
           {:error, _} ->
             Logger.error("Failed to delete reminder: #{id}")
             {:noreply, socket}
@@ -168,11 +182,11 @@ defmodule EvalioAppWeb.ReminderContainer do
         nil ->
           # Create new reminder
           case Reminders.create_reminder(%{
-            title: title,
-            date: date,
-            time: time,
-            tag: "none"
-          }) do
+                 title: title,
+                 date: date,
+                 time: time,
+                 tag: "none"
+               }) do
             {:ok, saved_reminder} ->
               updated_reminders = [saved_reminder | socket.assigns.reminders]
               sorted_reminders = sort_reminders(updated_reminders)
@@ -185,24 +199,28 @@ defmodule EvalioAppWeb.ReminderContainer do
                 |> assign(:editing_reminder, nil)
 
               {:noreply, socket}
+
             {:error, _changeset} ->
               {:noreply, socket}
           end
+
         reminder ->
           # Update existing reminder
           case Reminders.update_reminder(reminder, %{
-            title: title,
-            date: date,
-            time: time
-          }) do
+                 title: title,
+                 date: date,
+                 time: time
+               }) do
             {:ok, saved_reminder} ->
-              updated_reminders = Enum.map(socket.assigns.reminders, fn r ->
-                if r.id == reminder.id do
-                  saved_reminder
-                else
-                  r
-                end
-              end)
+              updated_reminders =
+                Enum.map(socket.assigns.reminders, fn r ->
+                  if r.id == reminder.id do
+                    saved_reminder
+                  else
+                    r
+                  end
+                end)
+
               sorted_reminders = sort_reminders(updated_reminders)
 
               socket =
@@ -213,6 +231,7 @@ defmodule EvalioAppWeb.ReminderContainer do
                 |> assign(:editing_reminder, nil)
 
               {:noreply, socket}
+
             {:error, _changeset} ->
               {:noreply, socket}
           end

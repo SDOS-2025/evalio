@@ -20,14 +20,14 @@ defmodule EvalioAppWeb.Components.Mentees.MenteeCard do
             </div>
             <div class="flex-1 min-w-0">
               <h3 class="text-base font-medium text-gray-900 truncate">
-                <%= "#{@mentee.first_name} #{@mentee.last_name}" %>
-                <span class="text-sm text-gray-500 font-normal">(<%= @mentee.pronouns %>)</span>
+                {"#{@mentee.first_name} #{@mentee.last_name}"}
+                <span class="text-sm text-gray-500 font-normal">({@mentee.pronouns})</span>
               </h3>
               <p class="text-sm text-gray-600 mt-1">
-                <%= @mentee.cohort %>-<%= @mentee.batch %>
+                {@mentee.cohort}-{@mentee.batch}
               </p>
               <div class="flex items-center mt-1">
-                <span class="text-sm text-gray-600"><%= @mentee.email %></span>
+                <span class="text-sm text-gray-600">{@mentee.email}</span>
               </div>
             </div>
           </div>
@@ -59,7 +59,9 @@ defmodule EvalioAppWeb.Components.Mentees.MenteeCard do
                     stroke-dashoffset={2 * :math.pi() * 40 * (1 - @mentee.attendance_percent / 100)}
                   />
                 </svg>
-                <span class="absolute text-xl font-semibold text-gray-700"><%= @mentee.attendance_percent %>%</span>
+                <span class="absolute text-xl font-semibold text-gray-700">
+                  {@mentee.attendance_percent}%
+                </span>
               </div>
               <p class="text-center mt-2 text-sm font-medium text-gray-600">Attendance</p>
             </div>
@@ -88,7 +90,9 @@ defmodule EvalioAppWeb.Components.Mentees.MenteeCard do
                     stroke-dashoffset={2 * :math.pi() * 40 * (1 - @mentee.assignment_percent / 100)}
                   />
                 </svg>
-                <span class="absolute text-xl font-semibold text-gray-700"><%= @mentee.assignment_percent %>%</span>
+                <span class="absolute text-xl font-semibold text-gray-700">
+                  {@mentee.assignment_percent}%
+                </span>
               </div>
               <p class="text-center mt-2 text-sm font-medium text-gray-600">Assignment</p>
             </div>
@@ -106,10 +110,10 @@ defmodule EvalioAppWeb.Components.Mentees.MenteeCard do
             </div>
             <div class="flex-1 min-w-0">
               <h3 class="text-base font-medium text-gray-900 truncate">
-                <%= "#{@mentee.first_name} #{@mentee.last_name}" %>
+                {"#{@mentee.first_name} #{@mentee.last_name}"}
               </h3>
               <p class="text-sm text-gray-600 mt-1">
-                <%= @mentee.cohort %>-<%= @mentee.batch %>
+                {@mentee.cohort}-{@mentee.batch}
               </p>
             </div>
           </div>

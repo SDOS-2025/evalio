@@ -1,4 +1,3 @@
-
 # this file needs refactoring
 
 defmodule EvalioAppWeb.Components.Note.NoteInput do
@@ -25,7 +24,8 @@ defmodule EvalioAppWeb.Components.Note.NoteInput do
         <.card class="shadow-lg rounded-lg p-6 w-[600px] h-[400px] flex flex-col justify-between transform scale-100 transition-transform duration-300 ease-in-out bg-white resize">
           <.form for={@form} phx-submit="save_note" class="h-full flex flex-col">
             <div class="flex-grow">
-              <.field field={@form[:title]}
+              <.field
+                field={@form[:title]}
                 placeholder="Title"
                 phx-debounce="blur"
                 label=""
@@ -46,21 +46,22 @@ defmodule EvalioAppWeb.Components.Note.NoteInput do
               </div>
               <%= if @show_preview do %>
                 <div class="prose prose-sm max-w-none h-[400px] overflow-y-auto p-4 bg-gray-50 rounded-md">
-                  <%= raw Earmark.as_html!(@form[:content].value || "") %>
+                  {raw(Earmark.as_html!(@form[:content].value || ""))}
                 </div>
               <% else %>
-                <.field field={@form[:content]}
+                <.field
+                  field={@form[:content]}
                   type="textarea"
                   placeholder="Content (Markdown supported)
-# Heading 1
-## Heading 2
-**Bold text**
-*Italic text*
-- List item
-1. Numbered list
-[Link](url)
-![Image](url)
-```code block```"
+    # Heading 1
+    ## Heading 2
+    **Bold text**
+    *Italic text*
+    - List item
+    1. Numbered list
+    [Link](url)
+    ![Image](url)
+    ```code block```"
                   phx-debounce="blur"
                   label=""
                   class="!border-none !outline-none !ring-0 shadow-3xl h-[400px] font-mono"
@@ -74,7 +75,11 @@ defmodule EvalioAppWeb.Components.Note.NoteInput do
               </div>
               <div class="flex space-x-4">
                 <.button label="Cancel" color="white" phx-click="cancel_form" type="button" />
-                <.button label="Save" color="black" class="px-3 py-2 rounded-md text-m font-medium bg-black text-white hover:bg-gray-700 hover:text-white transition-colors" />
+                <.button
+                  label="Save"
+                  color="black"
+                  class="px-3 py-2 rounded-md text-m font-medium bg-black text-white hover:bg-gray-700 hover:text-white transition-colors"
+                />
               </div>
             </div>
           </.form>

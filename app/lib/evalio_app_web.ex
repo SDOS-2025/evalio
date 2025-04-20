@@ -94,7 +94,7 @@ defmodule EvalioAppWeb do
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
-      
+
       # Routes generation with the ~p sigil
       unquote(verified_routes())
       use PetalComponents

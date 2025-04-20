@@ -16,11 +16,24 @@ defmodule EvalioApp.Mentee do
   - is_expanded: Boolean indicating if the mentee's card is expanded
   """
   require Logger
-  defstruct [:id, :first_name, :last_name, :email, :pronouns, :profile_picture,
-             :cohort, :batch, :attendance_percent, :assignment_percent, :is_expanded]
+
+  defstruct [
+    :id,
+    :first_name,
+    :last_name,
+    :email,
+    :pronouns,
+    :profile_picture,
+    :cohort,
+    :batch,
+    :attendance_percent,
+    :assignment_percent,
+    :is_expanded
+  ]
 
   def new(attrs) do
     Logger.info("Creating new mentee with ID: #{attrs[:id]}")
+
     %__MODULE__{
       id: attrs[:id],
       first_name: attrs[:first_name],
@@ -40,16 +53,18 @@ defmodule EvalioApp.Mentee do
   """
   def update(mentee, attrs) do
     Logger.info("Updating mentee with ID: #{mentee.id}")
-    %{mentee |
-      first_name: attrs[:first_name] || mentee.first_name,
-      last_name: attrs[:last_name] || mentee.last_name,
-      email: attrs[:email] || mentee.email,
-      pronouns: attrs[:pronouns] || mentee.pronouns,
-      profile_picture: attrs[:profile_picture] || mentee.profile_picture,
-      cohort: attrs[:cohort] || mentee.cohort,
-      batch: attrs[:batch] || mentee.batch,
-      attendance_percent: attrs[:attendance_percent] || mentee.attendance_percent,
-      assignment_percent: attrs[:assignment_percent] || mentee.assignment_percent
+
+    %{
+      mentee
+      | first_name: attrs[:first_name] || mentee.first_name,
+        last_name: attrs[:last_name] || mentee.last_name,
+        email: attrs[:email] || mentee.email,
+        pronouns: attrs[:pronouns] || mentee.pronouns,
+        profile_picture: attrs[:profile_picture] || mentee.profile_picture,
+        cohort: attrs[:cohort] || mentee.cohort,
+        batch: attrs[:batch] || mentee.batch,
+        attendance_percent: attrs[:attendance_percent] || mentee.attendance_percent,
+        assignment_percent: attrs[:assignment_percent] || mentee.assignment_percent
     }
   end
 
@@ -82,13 +97,14 @@ defmodule EvalioApp.Mentee do
   """
   def list_mentees do
     case Ecto.Adapters.SQL.query(EvalioApp.Repo, """
-      SELECT mentee_id, first_name, last_name, email, pronouns,
-             profile_picture, cohort, batch, attendance_percent, assignment_percent
-      FROM mentees
-      ORDER BY first_name, last_name;
-    """) do
+           SELECT mentee_id, first_name, last_name, email, pronouns,
+                  profile_picture, cohort, batch, attendance_percent, assignment_percent
+           FROM mentees
+           ORDER BY first_name, last_name;
+         """) do
       {:ok, %{rows: rows}} ->
         Enum.map(rows, &row_to_struct/1)
+
       {:error, error} ->
         Logger.error("Failed to fetch mentees: #{inspect(error)}")
         []
@@ -100,16 +116,22 @@ defmodule EvalioApp.Mentee do
   """
   def search_mentees(search_term) do
     search = "%#{search_term}%"
-    case Ecto.Adapters.SQL.query(EvalioApp.Repo, """
-      SELECT mentee_id, first_name, last_name, email, pronouns,
-             profile_picture, cohort, batch, attendance_percent, assignment_percent
-      FROM mentees
-      WHERE LOWER(first_name || ' ' || last_name) LIKE LOWER($1)
-         OR LOWER(email) LIKE LOWER($1)
-      ORDER BY first_name, last_name;
-    """, [search]) do
+
+    case Ecto.Adapters.SQL.query(
+           EvalioApp.Repo,
+           """
+             SELECT mentee_id, first_name, last_name, email, pronouns,
+                    profile_picture, cohort, batch, attendance_percent, assignment_percent
+             FROM mentees
+             WHERE LOWER(first_name || ' ' || last_name) LIKE LOWER($1)
+                OR LOWER(email) LIKE LOWER($1)
+             ORDER BY first_name, last_name;
+           """,
+           [search]
+         ) do
       {:ok, %{rows: rows}} ->
         Enum.map(rows, &row_to_struct/1)
+
       {:error, error} ->
         Logger.error("Failed to search mentees: #{inspect(error)}")
         []
@@ -117,7 +139,18 @@ defmodule EvalioApp.Mentee do
   end
 
   # Convert a database row to a Mentee struct
-  defp row_to_struct([id, first_name, last_name, email, pronouns, profile_picture, cohort, batch, attendance_percent, assignment_percent]) do
+  defp row_to_struct([
+         id,
+         first_name,
+         last_name,
+         email,
+         pronouns,
+         profile_picture,
+         cohort,
+         batch,
+         attendance_percent,
+         assignment_percent
+       ]) do
     %__MODULE__{
       id: id,
       first_name: first_name,

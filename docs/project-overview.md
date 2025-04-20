@@ -7,4 +7,3 @@
 | **Users of the application**  | The mentors and instructors organizing the boot camps, sessions, and learning programs. |
 | **Brief description of the project and key requirements**  | Our project aims to build a secure and interactive platform for multiple evaluators to make and manage notes and feedback on students. Key Requirements: A mentor is able to make notes & comments about a student and flag them as private or public. Senior mentors being able to view public notes & comments by other junior mentors. Mentors are able to organize their respective programs using to-dos and calendars. |
 | **Tech stack**  | Phoenix, Elixir, PostgreSQL, Python (more to be used along the way) |
-

@@ -3,7 +3,18 @@ defmodule EvalioApp.Note do
   Defines the Note struct and its functions.
   """
   require Logger
-  defstruct [:id, :title, :content, :editing, :special_words, :created_at, :last_edited_at, tag: "none", pinned: false]
+
+  defstruct [
+    :id,
+    :title,
+    :content,
+    :editing,
+    :special_words,
+    :created_at,
+    :last_edited_at,
+    tag: "none",
+    pinned: false
+  ]
 
   @doc """
   Creates a new note with the given title and content.
@@ -12,6 +23,7 @@ defmodule EvalioApp.Note do
     id = generate_unique_id()
     current_time = DateTime.utc_now() |> DateTime.truncate(:second)
     Logger.info("Generated new note ID: #{id}")
+
     %__MODULE__{
       id: id,
       title: title,
@@ -31,7 +43,15 @@ defmodule EvalioApp.Note do
   def update(note, title, content, special_words) do
     current_time = DateTime.utc_now() |> DateTime.truncate(:second)
     Logger.info("Updating note with ID: #{note.id}")
-    %{note | title: title, content: content, editing: true, special_words: special_words, last_edited_at: current_time}
+
+    %{
+      note
+      | title: title,
+        content: content,
+        editing: true,
+        special_words: special_words,
+        last_edited_at: current_time
+    }
   end
 
   @doc """

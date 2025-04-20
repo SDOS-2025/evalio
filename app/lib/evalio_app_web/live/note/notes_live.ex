@@ -35,19 +35,20 @@ defmodule EvalioAppWeb.NotesLive do
     Logger.info("Loaded reminders: #{inspect(reminders)}")
     Logger.info("Loaded meetings: #{inspect(meetings)}")
 
-    {:ok, assign(socket,
-      show_form: false,
-      form_type: nil,
-      notes: notes,
-      reminders: reminders,
-      meetings: meetings,
-      editing_id: nil,
-      sort_by: "newest_first",
-      tag_filter: "all",
-      search_text: "",
-      editing_index: nil,
-      reading_note: nil
-    )}
+    {:ok,
+     assign(socket,
+       show_form: false,
+       form_type: nil,
+       notes: notes,
+       reminders: reminders,
+       meetings: meetings,
+       editing_id: nil,
+       sort_by: "newest_first",
+       tag_filter: "all",
+       search_text: "",
+       editing_index: nil,
+       reading_note: nil
+     )}
   end
 
   @impl true
@@ -66,32 +67,37 @@ defmodule EvalioAppWeb.NotesLive do
         note = Note.new(title, content, special_words)
         updated_socket = NoteHelpers.add_note(socket, note)
         # Close the form after saving
-        updated_socket = assign(updated_socket,
-          show_form: false,
-          form_type: nil,
-          editing_id: nil,
-          form: build_form()
-        )
+        updated_socket =
+          assign(updated_socket,
+            show_form: false,
+            form_type: nil,
+            editing_id: nil,
+            form: build_form()
+          )
+
         {:noreply, updated_socket}
 
       id ->
         existing_note = Enum.find(socket.assigns.notes, &(&1.id == id))
 
         updated_note = %{
-          Note.new(title, content, special_words) |
-          id: id,
-          tag: existing_note.tag,
-          pinned: existing_note.pinned,
-          created_at: existing_note.created_at
+          Note.new(title, content, special_words)
+          | id: id,
+            tag: existing_note.tag,
+            pinned: existing_note.pinned,
+            created_at: existing_note.created_at
         }
 
         updated_socket = NoteHelpers.edit_note(socket, id, updated_note)
-        updated_socket = assign(updated_socket,
-          show_form: false,
-          form_type: nil,
-          editing_id: nil,
-          form: build_form()
-        )
+
+        updated_socket =
+          assign(updated_socket,
+            show_form: false,
+            form_type: nil,
+            editing_id: nil,
+            form: build_form()
+          )
+
         {:noreply, updated_socket}
     end
   end
@@ -159,20 +165,25 @@ defmodule EvalioAppWeb.NotesLive do
       case Notes.update_note_tag(note, tag) do
         {:ok, updated_note} ->
           Logger.info("Note tag updated successfully: #{inspect(updated_note)}")
-          updated_notes = Enum.map(socket.assigns.notes, fn n ->
-            if n.id == id_int do
-              updated_note
-            else
-              n
-            end
-          end)
 
-          send_update(EvalioAppWeb.NoteContainer, id: "note-container",
+          updated_notes =
+            Enum.map(socket.assigns.notes, fn n ->
+              if n.id == id_int do
+                updated_note
+              else
+                n
+              end
+            end)
+
+          send_update(EvalioAppWeb.NoteContainer,
+            id: "note-container",
             notes: updated_notes,
             tag_filter: socket.assigns.tag_filter,
-            sort_by: socket.assigns.sort_by)
+            sort_by: socket.assigns.sort_by
+          )
 
           {:noreply, assign(socket, notes: updated_notes)}
+
         {:error, changeset} ->
           Logger.error("Failed to update note tag: #{inspect(changeset.errors)}")
           {:noreply, socket}
@@ -185,13 +196,21 @@ defmodule EvalioAppWeb.NotesLive do
 
   @impl true
   def handle_info({:update_reminder_tag, id, tag}, socket) do
-    send_update(EvalioAppWeb.ReminderContainer, id: "reminder-container", update_reminder_tag: {id, tag})
+    send_update(EvalioAppWeb.ReminderContainer,
+      id: "reminder-container",
+      update_reminder_tag: {id, tag}
+    )
+
     {:noreply, socket}
   end
 
   @impl true
   def handle_info({:update_meeting_tag, id, tag}, socket) do
-    send_update(EvalioAppWeb.MeetingContainer, id: "meeting-container", update_meeting_tag: {id, tag})
+    send_update(EvalioAppWeb.MeetingContainer,
+      id: "meeting-container",
+      update_meeting_tag: {id, tag}
+    )
+
     {:noreply, socket}
   end
 
@@ -229,15 +248,17 @@ defmodule EvalioAppWeb.NotesLive do
     if note do
       case Notes.toggle_note_pin(note) do
         {:ok, updated_note} ->
-          updated_notes = Enum.map(socket.assigns.notes, fn n ->
-            if n.id == id do
-              updated_note
-            else
-              n
-            end
-          end)
+          updated_notes =
+            Enum.map(socket.assigns.notes, fn n ->
+              if n.id == id do
+                updated_note
+              else
+                n
+              end
+            end)
 
           {:noreply, assign(socket, notes: updated_notes)}
+
         {:error, _changeset} ->
           {:noreply, socket}
       end
@@ -286,20 +307,24 @@ defmodule EvalioAppWeb.NotesLive do
         {:ok, updated_note} ->
           Logger.info("Note tag updated successfully: #{inspect(updated_note)}")
           # Update the notes list
-          updated_notes = Enum.map(socket.assigns.notes, fn n ->
-            if n.id == id_int do
-              updated_note
-            else
-              n
-            end
-          end)
+          updated_notes =
+            Enum.map(socket.assigns.notes, fn n ->
+              if n.id == id_int do
+                updated_note
+              else
+                n
+              end
+            end)
 
-          send_update(EvalioAppWeb.NoteContainer, id: "note-container",
+          send_update(EvalioAppWeb.NoteContainer,
+            id: "note-container",
             notes: updated_notes,
             tag_filter: socket.assigns.tag_filter,
-            sort_by: socket.assigns.sort_by)
+            sort_by: socket.assigns.sort_by
+          )
 
           {:ok, assign(socket, assigns) |> assign(:notes, updated_notes)}
+
         {:error, changeset} ->
           Logger.error("Failed to update note tag: #{inspect(changeset.errors)}")
           {:ok, socket}
@@ -313,7 +338,6 @@ defmodule EvalioAppWeb.NotesLive do
   @impl true
   def render(assigns) do
     ~H"""
-
     <div id="notes-live">
       <div class="fixed top-0 left-0 right-0 z-40">
         <Topbar.topbar />
@@ -357,12 +381,7 @@ defmodule EvalioAppWeb.NotesLive do
               <div class="relative z-[201]">
                 <%= case @form_type do %>
                   <% "note" -> %>
-                    <.live_component
-                      module={NoteCard}
-                      id="note-form"
-                      form={@form}
-                      editing={true}
-                    />
+                    <.live_component module={NoteCard} id="note-form" form={@form} editing={true} />
                   <% "reminder" -> %>
                     <.live_component
                       module={ReminderFormComponent}
@@ -384,11 +403,7 @@ defmodule EvalioAppWeb.NotesLive do
         <% end %>
 
         <%= if @reading_note do %>
-          <.live_component
-            module={ReadingNote}
-            id="reading-note"
-            note={@reading_note}
-          />
+          <.live_component module={ReadingNote} id="reading-note" note={@reading_note} />
         <% end %>
       </div>
     </div>
@@ -396,11 +411,13 @@ defmodule EvalioAppWeb.NotesLive do
   end
 
   defp filter_notes_by_search(notes, ""), do: notes
+
   defp filter_notes_by_search(notes, search_text) do
     search_text = String.downcase(search_text)
+
     Enum.filter(notes, fn note ->
       String.contains?(String.downcase(note.title), search_text) ||
-      String.contains?(String.downcase(note.content), search_text)
+        String.contains?(String.downcase(note.content), search_text)
     end)
   end
 
@@ -426,21 +443,25 @@ defmodule EvalioAppWeb.NotesLive do
         {:ok, updated_note} ->
           Logger.info("Note pin toggled successfully: #{inspect(updated_note)}")
           # Update the notes list
-          updated_notes = Enum.map(socket.assigns.notes, fn n ->
-            if n.id == id_int do
-              updated_note
-            else
-              n
-            end
-          end)
+          updated_notes =
+            Enum.map(socket.assigns.notes, fn n ->
+              if n.id == id_int do
+                updated_note
+              else
+                n
+              end
+            end)
 
           # Send update to the NoteContainer component to refresh the UI
-          send_update(EvalioAppWeb.NoteContainer, id: "note-container",
+          send_update(EvalioAppWeb.NoteContainer,
+            id: "note-container",
             notes: updated_notes,
             tag_filter: socket.assigns.tag_filter,
-            sort_by: socket.assigns.sort_by)
+            sort_by: socket.assigns.sort_by
+          )
 
           {:noreply, assign(socket, notes: updated_notes)}
+
         {:error, changeset} ->
           Logger.error("Failed to toggle note pin: #{inspect(changeset.errors)}")
           {:noreply, socket}
@@ -489,12 +510,15 @@ defmodule EvalioAppWeb.NotesLive do
           Logger.info("Note deleted successfully: id=#{id_int}")
           updated_notes = Enum.reject(socket.assigns.notes, &(&1.id == id_int))
 
-          send_update(EvalioAppWeb.NoteContainer, id: "note-container",
+          send_update(EvalioAppWeb.NoteContainer,
+            id: "note-container",
             notes: updated_notes,
             tag_filter: socket.assigns.tag_filter,
-            sort_by: socket.assigns.sort_by)
+            sort_by: socket.assigns.sort_by
+          )
 
           {:noreply, assign(socket, notes: updated_notes)}
+
         {:error, changeset} ->
           Logger.error("Failed to delete note: #{inspect(changeset.errors)}")
           {:noreply, socket}

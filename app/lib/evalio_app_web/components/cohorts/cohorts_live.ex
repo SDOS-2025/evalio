@@ -7,11 +7,12 @@ defmodule EvalioAppWeb.CohortsLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket,
-      cohorts: [],
-      search_text: "",
-      sort_by: "name_asc"
-    )}
+    {:ok,
+     assign(socket,
+       cohorts: [],
+       search_text: "",
+       sort_by: "name_asc"
+     )}
   end
 
   @impl true
@@ -59,18 +60,18 @@ defmodule EvalioAppWeb.CohortsLive do
                         <div class="flex-shrink-0">
                           <div class="h-12 w-12 rounded-full bg-gray-300 flex items-center justify-center">
                             <span class="text-xl font-medium text-gray-600">
-                              <%= String.first(cohort.name) %>
+                              {String.first(cohort.name)}
                             </span>
                           </div>
                         </div>
                         <div class="ml-4">
-                          <h2 class="text-lg font-medium text-gray-900"><%= cohort.name %></h2>
-                          <p class="text-sm text-gray-500"><%= cohort.description %></p>
+                          <h2 class="text-lg font-medium text-gray-900">{cohort.name}</h2>
+                          <p class="text-sm text-gray-500">{cohort.description}</p>
                         </div>
                       </div>
                       <div class="flex items-center space-x-4">
                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                          <%= cohort.member_count %> Members
+                          {cohort.member_count} Members
                         </span>
                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                           Active
@@ -89,11 +90,13 @@ defmodule EvalioAppWeb.CohortsLive do
   end
 
   defp filter_cohorts_by_search(cohorts, ""), do: cohorts
+
   defp filter_cohorts_by_search(cohorts, search_text) do
     search_text = String.downcase(search_text)
+
     Enum.filter(cohorts, fn cohort ->
       String.contains?(String.downcase(cohort.name), search_text) ||
-      String.contains?(String.downcase(cohort.description), search_text)
+        String.contains?(String.downcase(cohort.description), search_text)
     end)
   end
 end

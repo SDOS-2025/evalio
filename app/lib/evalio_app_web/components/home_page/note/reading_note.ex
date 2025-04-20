@@ -17,23 +17,30 @@ defmodule EvalioAppWeb.Components.Note.ReadingNote do
               label="Close"
               class="!p-2"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+                class="w-6 h-6"
+              >
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </.button>
           </div>
 
           <div class="mb-6">
-            <h1 class="text-3xl font-bold mb-2"><%= @note.title %></h1>
+            <h1 class="text-3xl font-bold mb-2">{@note.title}</h1>
             <div class="flex items-center space-x-4 text-sm text-gray-500">
-              <span><%= format_date(@note.created_at) %></span>
+              <span>{format_date(@note.created_at)}</span>
               <span>•</span>
-              <span class="capitalize"><%= @note.tag %></span>
+              <span class="capitalize">{@note.tag}</span>
             </div>
           </div>
 
           <div class="prose prose-lg max-w-none">
-            <%= raw Earmark.as_html!(@note.content) %>
+            {raw(Earmark.as_html!(@note.content))}
           </div>
         </div>
       </div>

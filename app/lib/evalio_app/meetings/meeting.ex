@@ -36,12 +36,7 @@ defmodule EvalioApp.Meetings.Meeting do
   Updates a meeting with new title, date, time, and link.
   """
   def update(meeting, title, date, time, link) do
-    %{meeting |
-      title: title,
-      date: date,
-      time: time,
-      link: link
-    }
+    %{meeting | title: title, date: date, time: time, link: link}
   end
 
   @doc """

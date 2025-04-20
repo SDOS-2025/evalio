@@ -4,12 +4,14 @@ defmodule EvalioAppWeb.ReminderCard do
   require Logger
 
   def mount(socket) do
-    {:ok, assign(socket,
-      color_picker_mode: false,
-      selected_color: "bg-[#4CD964]",  # default green
-      transitioning: false,
-      deleting: false
-    )}
+    {:ok,
+     assign(socket,
+       color_picker_mode: false,
+       # default green
+       selected_color: "bg-[#4CD964]",
+       transitioning: false,
+       deleting: false
+     )}
   end
 
   def update(%{reminder: nil} = assigns, socket) do
@@ -23,10 +25,11 @@ defmodule EvalioAppWeb.ReminderCard do
 
     Logger.info("ReminderCard update - Reminder: #{inspect(reminder)}")
 
-    {:ok, socket
-      |> assign(assigns)
-      |> assign(:reminder, reminder)
-      |> assign(:selected_color, get_color_from_tag(reminder.tag))}
+    {:ok,
+     socket
+     |> assign(assigns)
+     |> assign(:reminder, reminder)
+     |> assign(:selected_color, get_color_from_tag(reminder.tag))}
   end
 
   # Fallback update function for any other case
@@ -40,7 +43,8 @@ defmodule EvalioAppWeb.ReminderCard do
       "urgent" -> "bg-[#FF6B6B]"
       "medium" -> "bg-[#FFB347]"
       "low" -> "bg-[#4CD964]"
-      _ -> "bg-[#4CD964]"  # default to green
+      # default to green
+      _ -> "bg-[#4CD964]"
     end
   end
 
@@ -55,63 +59,91 @@ defmodule EvalioAppWeb.ReminderCard do
         "absolute inset-0 flex h-full w-full transition-transform duration-300 ease-in-out",
         if(@color_picker_mode, do: "translate-x-0", else: "translate-x-full")
       ]}>
-        <div class="w-1/3 h-full bg-[#FF6B6B] cursor-pointer hover:opacity-90 transition-opacity"
-             phx-click="select_color"
-             phx-value-color="bg-[#FF6B6B]"
-             phx-value-tag="urgent"
-             phx-target={@myself}>
+        <div
+          class="w-1/3 h-full bg-[#FF6B6B] cursor-pointer hover:opacity-90 transition-opacity"
+          phx-click="select_color"
+          phx-value-color="bg-[#FF6B6B]"
+          phx-value-tag="urgent"
+          phx-target={@myself}
+        >
         </div>
-        <div class="w-1/3 h-full bg-[#FFB347] cursor-pointer hover:opacity-90 transition-opacity"
-             phx-click="select_color"
-             phx-value-color="bg-[#FFB347]"
-             phx-value-tag="medium"
-             phx-target={@myself}>
+        <div
+          class="w-1/3 h-full bg-[#FFB347] cursor-pointer hover:opacity-90 transition-opacity"
+          phx-click="select_color"
+          phx-value-color="bg-[#FFB347]"
+          phx-value-tag="medium"
+          phx-target={@myself}
+        >
         </div>
-        <div class="w-1/3 h-full bg-[#4CD964] cursor-pointer hover:opacity-90 transition-opacity"
-             phx-click="select_color"
-             phx-value-color="bg-[#4CD964]"
-             phx-value-tag="low"
-             phx-target={@myself}>
+        <div
+          class="w-1/3 h-full bg-[#4CD964] cursor-pointer hover:opacity-90 transition-opacity"
+          phx-click="select_color"
+          phx-value-color="bg-[#4CD964]"
+          phx-value-tag="low"
+          phx-target={@myself}
+        >
         </div>
       </div>
-
-      <!-- Regular Card Content -->
+      
+    <!-- Regular Card Content -->
       <div class={[
         "absolute inset-0 flex items-start justify-between px-3 py-3 transition-transform duration-300 ease-in-out",
         if(@color_picker_mode, do: "-translate-x-full", else: "translate-x-0")
       ]}>
         <!-- Colored Tag Stripe -->
-        <div class={["w-3 h-full absolute left-0 top-0 rounded-l-xl", @selected_color]}
-            phx-click="toggle_color_picker"
-            phx-target={@myself}
-            style="cursor: pointer;">
+        <div
+          class={["w-3 h-full absolute left-0 top-0 rounded-l-xl", @selected_color]}
+          phx-click="toggle_color_picker"
+          phx-target={@myself}
+          style="cursor: pointer;"
+        >
         </div>
 
         <div class="flex flex-col gap-1 ml-3">
-          <span class="text-sm text-[#171717]"><%= @reminder.title %></span>
+          <span class="text-sm text-[#171717]">{@reminder.title}</span>
           <span class="text-xs text-[#666666]">
-            <%= @reminder.time %> | <%= format_date(@reminder.date) %>
+            {@reminder.time} | {format_date(@reminder.date)}
           </span>
         </div>
-
-        <!-- Actions: Complete, Edit, Delete -->
+        
+    <!-- Actions: Complete, Edit, Delete -->
         <div class="flex items-center gap-3 ml-auto">
           <!-- Completion Checkbox -->
-          <div class="w-4 h-4 rounded border-2 border-[#171717] cursor-pointer hover:bg-[#EBEBEB]"
-               phx-click="toggle_completion"
-               phx-target={@myself}/>
-
-          <!-- Edit (Pencil Icon) -->
-          <button phx-click="edit_reminder" phx-target={@myself} class="text-[#171717] hover:text-[#999999]">
+          <div
+            class="w-4 h-4 rounded border-2 border-[#171717] cursor-pointer hover:bg-[#EBEBEB]"
+            phx-click="toggle_completion"
+            phx-target={@myself}
+          />
+          
+    <!-- Edit (Pencil Icon) -->
+          <button
+            phx-click="edit_reminder"
+            phx-target={@myself}
+            class="text-[#171717] hover:text-[#999999]"
+          >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+              />
             </svg>
           </button>
-
-          <!-- Delete (Trash Icon) -->
-          <button phx-click="start_delete" phx-target={@myself} class="text-[#171717] hover:text-[#999999]">
+          
+    <!-- Delete (Trash Icon) -->
+          <button
+            phx-click="start_delete"
+            phx-target={@myself}
+            class="text-[#171717] hover:text-[#999999]"
+          >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m2 0a2 2 0 01-2-2H9a2 2 0 01-2 2h10z" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m2 0a2 2 0 01-2-2H9a2 2 0 01-2 2h10z"
+              />
             </svg>
           </button>
         </div>
@@ -137,9 +169,10 @@ defmodule EvalioAppWeb.ReminderCard do
     # Update the reminder's tag in the parent component
     send(self(), {:update_reminder_tag, socket.assigns.reminder.id, tag})
 
-    {:noreply, socket
-      |> assign(selected_color: color)
-      |> assign(color_picker_mode: false)}
+    {:noreply,
+     socket
+     |> assign(selected_color: color)
+     |> assign(color_picker_mode: false)}
   end
 
   def handle_event("toggle_completion", _params, socket) do

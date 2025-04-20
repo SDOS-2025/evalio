@@ -10,10 +10,7 @@ defmodule EvalioAppWeb.Components.Mentees.MenteeContainer do
     <div class={["grid grid-cols-1 sm:grid-cols-2 gap-6 w-full", @class]}>
       <%= for mentee <- @mentees do %>
         <div class="w-full">
-          <MenteeCard.mentee_card
-            mentee={mentee}
-            expanded={mentee.is_expanded}
-          />
+          <MenteeCard.mentee_card mentee={mentee} expanded={mentee.is_expanded} />
         </div>
       <% end %>
     </div>

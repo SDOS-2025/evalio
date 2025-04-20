@@ -36,7 +36,12 @@ defmodule EvalioAppWeb.MeetingContainer do
           <div class="fixed inset-0 bg-black/30 backdrop-blur-lg"></div>
           <div class="fixed inset-0 flex items-center justify-center">
             <div class="relative z-[10000]">
-              <.live_component module={MeetingFormComponent} id="meeting_form" myself={@myself} meeting={@editing_meeting} />
+              <.live_component
+                module={MeetingFormComponent}
+                id="meeting_form"
+                myself={@myself}
+                meeting={@editing_meeting}
+              />
             </div>
           </div>
         </div>
@@ -54,14 +59,16 @@ defmodule EvalioAppWeb.MeetingContainer do
       case Meetings.update_meeting_tag(meeting, tag) do
         {:ok, updated_meeting} ->
           # Update the meetings list
-          updated_meetings = Enum.map(socket.assigns.meetings, fn m ->
-            if m.id == id, do: updated_meeting, else: m
-          end)
+          updated_meetings =
+            Enum.map(socket.assigns.meetings, fn m ->
+              if m.id == id, do: updated_meeting, else: m
+            end)
 
           # Sort the meetings
           sorted_meetings = sort_meetings(updated_meetings)
 
           {:ok, assign(socket, meetings: updated_meetings, sorted_meetings: sorted_meetings)}
+
         {:error, _changeset} ->
           {:ok, socket}
       end
@@ -75,6 +82,7 @@ defmodule EvalioAppWeb.MeetingContainer do
     case Meetings.get_meeting!(id) do
       nil ->
         {:ok, socket}
+
       meeting ->
         # Delete from database
         case Meetings.delete_meeting(meeting) do
@@ -83,10 +91,12 @@ defmodule EvalioAppWeb.MeetingContainer do
             updated_meetings = Enum.reject(socket.assigns.meetings, &(&1.id == id))
             sorted_meetings = sort_meetings(updated_meetings)
 
-            {:ok, assign(socket,
-              meetings: updated_meetings,
-              sorted_meetings: sorted_meetings
-            )}
+            {:ok,
+             assign(socket,
+               meetings: updated_meetings,
+               sorted_meetings: sorted_meetings
+             )}
+
           {:error, _} ->
             {:ok, socket}
         end
@@ -143,13 +153,17 @@ defmodule EvalioAppWeb.MeetingContainer do
     case Meetings.get_meeting!(id) do
       nil ->
         {:noreply, socket}
+
       meeting ->
         case Meetings.delete_meeting(meeting) do
           {:ok, _} ->
             Logger.info("Meeting deleted successfully: #{id}")
             updated_meetings = Enum.reject(socket.assigns.meetings, &(&1.id == id))
             sorted_meetings = sort_meetings(updated_meetings)
-            {:noreply, assign(socket, meetings: updated_meetings, sorted_meetings: sorted_meetings)}
+
+            {:noreply,
+             assign(socket, meetings: updated_meetings, sorted_meetings: sorted_meetings)}
+
           {:error, _} ->
             Logger.error("Failed to delete meeting: #{id}")
             {:noreply, socket}
@@ -157,7 +171,11 @@ defmodule EvalioAppWeb.MeetingContainer do
     end
   end
 
-  def handle_event("save_meeting", %{"date" => date, "time" => time, "title" => title, "link" => link}, socket) do
+  def handle_event(
+        "save_meeting",
+        %{"date" => date, "time" => time, "title" => title, "link" => link},
+        socket
+      ) do
     if date == "" or time == "" or title == "" or link == "" do
       {:noreply, socket}
     else
@@ -165,12 +183,12 @@ defmodule EvalioAppWeb.MeetingContainer do
         nil ->
           # Create new meeting
           case Meetings.create_meeting(%{
-            title: title,
-            date: date,
-            time: time,
-            link: link,
-            tag: "none"
-          }) do
+                 title: title,
+                 date: date,
+                 time: time,
+                 link: link,
+                 tag: "none"
+               }) do
             {:ok, saved_meeting} ->
               updated_meetings = [saved_meeting | socket.assigns.meetings]
               sorted_meetings = sort_meetings(updated_meetings)
@@ -183,25 +201,29 @@ defmodule EvalioAppWeb.MeetingContainer do
                 |> assign(:editing_meeting, nil)
 
               {:noreply, socket}
+
             {:error, _changeset} ->
               {:noreply, socket}
           end
+
         meeting ->
           # Update existing meeting
           case Meetings.update_meeting(meeting, %{
-            title: title,
-            date: date,
-            time: time,
-            link: link
-          }) do
+                 title: title,
+                 date: date,
+                 time: time,
+                 link: link
+               }) do
             {:ok, saved_meeting} ->
-              updated_meetings = Enum.map(socket.assigns.meetings, fn m ->
-                if m.id == meeting.id do
-                  saved_meeting
-                else
-                  m
-                end
-              end)
+              updated_meetings =
+                Enum.map(socket.assigns.meetings, fn m ->
+                  if m.id == meeting.id do
+                    saved_meeting
+                  else
+                    m
+                  end
+                end)
+
               sorted_meetings = sort_meetings(updated_meetings)
 
               socket =
@@ -212,6 +234,7 @@ defmodule EvalioAppWeb.MeetingContainer do
                 |> assign(:editing_meeting, nil)
 
               {:noreply, socket}
+
             {:error, _changeset} ->
               {:noreply, socket}
           end

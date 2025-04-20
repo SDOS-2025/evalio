@@ -3,12 +3,12 @@ name: Release Bot
 on:
   push:
     tags:
-      - 'v*' 
+      - 'v*'
 
-permissions: 
+permissions:
   contents: read
   issues: write
-  
+
 jobs:
   release:
     runs-on: ubuntu-latest

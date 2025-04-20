@@ -44,11 +44,12 @@ defmodule EvalioApp.Notes.Note do
   def update(note, title, content, special_words) do
     current_time = DateTime.utc_now() |> DateTime.truncate(:second)
 
-    %{note |
-      title: title,
-      content: content,
-      special_words: special_words,
-      last_edited_at: current_time
+    %{
+      note
+      | title: title,
+        content: content,
+        special_words: special_words,
+        last_edited_at: current_time
     }
   end
 
@@ -58,10 +59,7 @@ defmodule EvalioApp.Notes.Note do
   def update_tag(note, tag) do
     current_time = DateTime.utc_now() |> DateTime.truncate(:second)
 
-    %{note |
-      tag: tag,
-      last_edited_at: current_time
-    }
+    %{note | tag: tag, last_edited_at: current_time}
   end
 
   @doc """
@@ -70,9 +68,6 @@ defmodule EvalioApp.Notes.Note do
   def toggle_pin(note) do
     current_time = DateTime.utc_now() |> DateTime.truncate(:second)
 
-    %{note |
-      pinned: !note.pinned,
-      last_edited_at: current_time
-    }
+    %{note | pinned: !note.pinned, last_edited_at: current_time}
   end
 end

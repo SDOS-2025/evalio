@@ -81,7 +81,10 @@ defmodule EvalioApp.MeetingsTest do
 
     test "update_meeting_tag/2 updates the meeting's tag" do
       meeting = meeting_fixture()
-      assert {:ok, %Meeting{} = updated_meeting} = Meetings.update_meeting_tag(meeting, "important")
+
+      assert {:ok, %Meeting{} = updated_meeting} =
+               Meetings.update_meeting_tag(meeting, "important")
+
       assert updated_meeting.tag == "important"
     end
   end

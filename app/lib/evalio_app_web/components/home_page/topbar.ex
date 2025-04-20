@@ -10,7 +10,11 @@ defmodule EvalioAppWeb.Components.HomePage.Topbar do
         <div class="flex justify-between items-center py-4">
           <div class="flex items-center">
             <div class="flex-shrink-0">
-              <button phx-click="navigate" phx-value-to="/notes" class="text-3xl font-bold hover:text-gray-300 transition-colors">
+              <button
+                phx-click="navigate"
+                phx-value-to="/notes"
+                class="text-3xl font-bold hover:text-gray-300 transition-colors"
+              >
                 Eval.io
               </button>
             </div>
@@ -54,7 +58,10 @@ defmodule EvalioAppWeb.Components.HomePage.Topbar do
             <div class="ml-3 relative">
               <div class="flex items-center">
                 <span class="text-sm font-medium mr-2">Welcome, User</span>
-                <button phx-click="logout" class="px-3 py-1 rounded-md text-sm font-medium text-white bg-gray hover:bg-white hover:text-black">
+                <button
+                  phx-click="logout"
+                  class="px-3 py-1 rounded-md text-sm font-medium text-white bg-gray hover:bg-white hover:text-black"
+                >
                   Logout
                 </button>
               </div>

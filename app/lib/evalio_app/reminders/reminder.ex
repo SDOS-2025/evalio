@@ -34,11 +34,7 @@ defmodule EvalioApp.Reminders.Reminder do
   Updates a reminder with new title, date and time.
   """
   def update(reminder, title, date, time) do
-    %{reminder |
-      title: title,
-      date: date,
-      time: time
-    }
+    %{reminder | title: title, date: date, time: time}
   end
 
   @doc """
