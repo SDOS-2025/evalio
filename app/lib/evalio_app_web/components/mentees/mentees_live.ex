@@ -19,10 +19,10 @@ defmodule EvalioAppWeb.MenteesLive do
           [first, second, third, fourth | rest] = list
 
           [
-            %{first | is_expanded: true},
-            %{second | is_expanded: true},
-            %{third | is_expanded: true},
-            %{fourth | is_expanded: true}
+            %{first | is_expanded: false},
+            %{second | is_expanded: false},
+            %{third | is_expanded: false},
+            %{fourth | is_expanded: false}
             | rest
           ]
 
@@ -63,7 +63,7 @@ defmodule EvalioAppWeb.MenteesLive do
   def handle_event("toggle_expand", %{"mentee_id" => mentee_id}, socket) do
     mentees =
       Enum.map(socket.assigns.mentees, fn mentee ->
-        if mentee.id == mentee_id do
+        if to_string(mentee.id) == mentee_id do
           %{mentee | is_expanded: !mentee.is_expanded}
         else
           mentee
@@ -88,17 +88,17 @@ defmodule EvalioAppWeb.MenteesLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="min-h-screen bg-gray-50">
+    <div class="min-h-screen">
       <div class="fixed top-0 left-0 right-0 z-50">
         <Topbar.topbar />
       </div>
 
-      <div class="pt-16 px-4 sm:px-6 lg:px-8 w-full">
+      <div class="fixed left-0 top-0 pt-16 px-4 sm:px-6 lg:px-8 w-full">
         <div class="py-8">
           <div class="flex justify-between items-center">
             <div>
+              <p></p>
               <h1 class="text-3xl font-bold text-gray-900">Mentees</h1>
-              <p class="mt-2 text-sm text-gray-700">View and track your mentees' progress</p>
             </div>
             <div class="w-64">
               <.form for={%{}} phx-change="search" class="relative">

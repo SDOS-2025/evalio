@@ -7,32 +7,33 @@ defmodule EvalioAppWeb.Components.Mentees.MenteeCard do
 
   def mentee_card(assigns) do
     ~H"""
-    <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer">
-      <%= if @expanded do %>
-        <div class="p-4">
-          <div class="flex items-center space-x-4">
-            <div class="flex-shrink-0">
-              <img
-                src={@mentee.profile_picture}
-                class="h-16 w-16 rounded-full"
-                alt={"Avatar for #{@mentee.first_name}"}
-              />
-            </div>
-            <div class="flex-1 min-w-0">
-              <h3 class="text-base font-medium text-gray-900 truncate">
-                {"#{@mentee.first_name} #{@mentee.last_name}"}
-                <span class="text-sm text-gray-500 font-normal">({@mentee.pronouns})</span>
-              </h3>
-              <p class="text-sm text-gray-600 mt-1">
-                {@mentee.cohort}-{@mentee.batch}
-              </p>
-              <div class="flex items-center mt-1">
-                <span class="text-sm text-gray-600">{@mentee.email}</span>
-              </div>
-            </div>
+    <div class="bg-white rounded-lg shadow-sm hover:shadow-md border border-gray-200 transition-all duration-300 cursor-pointer">
+      <div class="p-4">
+        <div class="flex items-center space-x-4">
+          <div class="flex-shrink-0">
+            <img
+              src={@mentee.profile_picture}
+              class="h-16 w-16 rounded-full"
+              alt={"Avatar for #{@mentee.first_name}"}
+            />
+          </div>
+          <div class="flex-1 min-w-0">
+            <button
+              phx-click="toggle_expand"
+              phx-value-mentee_id={@mentee.id}
+              class="text-base font-medium text-gray-900 truncate text-left w-full focus:outline-none"
+            >
+              {"#{@mentee.first_name} #{@mentee.last_name}"}
+              <span class="text-sm text-gray-500 font-normal">({@mentee.pronouns})</span>
+            </button>
+            <p class="text-sm text-gray-600 mt-1">
+              {@mentee.cohort}-{@mentee.batch}
+            </p>
           </div>
         </div>
+      </div>
 
+      <div class={"transition-all duration-300 ease-in-out #{if @expanded, do: "max-h-[500px] opacity-100", else: "max-h-0 opacity-0 overflow-hidden"}"}>
         <div class="p-4 space-y-4 bg-gray-50 border-t">
           <div class="grid grid-cols-2 gap-4">
             <div class="relative">
@@ -98,27 +99,7 @@ defmodule EvalioAppWeb.Components.Mentees.MenteeCard do
             </div>
           </div>
         </div>
-      <% else %>
-        <div class="p-4">
-          <div class="flex items-center space-x-4">
-            <div class="flex-shrink-0">
-              <img
-                src={@mentee.profile_picture}
-                class="h-12 w-12 rounded-full"
-                alt={"Avatar for #{@mentee.first_name}"}
-              />
-            </div>
-            <div class="flex-1 min-w-0">
-              <h3 class="text-base font-medium text-gray-900 truncate">
-                {"#{@mentee.first_name} #{@mentee.last_name}"}
-              </h3>
-              <p class="text-sm text-gray-600 mt-1">
-                {@mentee.cohort}-{@mentee.batch}
-              </p>
-            </div>
-          </div>
-        </div>
-      <% end %>
+      </div>
     </div>
     """
   end
