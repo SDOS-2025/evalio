@@ -133,8 +133,7 @@ defmodule EvalioAppWeb.NoteCard do
             />
           </svg>
         </button>
-        
-    <!-- Edit button as a white circle with blue icon -->
+        <!-- Edit button as a white circle with blue icon -->
         <button
           phx-click="edit_note"
           phx-value-id={@note.id}
@@ -143,8 +142,7 @@ defmodule EvalioAppWeb.NoteCard do
         >
           <HeroiconsV1.Outline.pencil class="w-4 h-4 text-blue-500" />
         </button>
-        
-    <!-- Delete button as a white circle with red icon -->
+        <!-- Delete button as a white circle with red icon -->
         <button
           phx-click="delete_note"
           phx-value-id={@note.id}
@@ -153,9 +151,8 @@ defmodule EvalioAppWeb.NoteCard do
         >
           <HeroiconsV1.Outline.trash class="w-4 h-4 text-red-500" />
         </button>
-        
-    <!-- Normal note card -->
-        <.card class="shadow-lg rounded-lg p-4 w-[260px] h-[260px] flex flex-col justify-between">
+        <!-- Normal note card -->
+        <.card class="shadow-lg rounded-lg p-4 w-[300px] h-[300px] flex flex-col justify-between">
           <div class="flex justify-between items-center">
             <div class="flex items-center">
               <%= if @note.pinned do %>

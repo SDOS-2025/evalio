@@ -11,13 +11,9 @@ defmodule EvalioAppWeb.SidePanel do
   alias EvalioApp.Meeting
   alias EvalioAppWeb.MeetingTagMenu
   alias EvalioAppWeb.TagManager
-  alias EvalioAppWeb.CalendarComponent
-  alias EvalioAppWeb.ReminderContainer
-  alias EvalioAppWeb.MeetingContainer
   alias EvalioAppWeb.NoteCard
   alias EvalioApp.Note
   alias EvalioAppWeb.SidePanel
-  alias EvalioAppWeb.MeetingCard
 
   def render(assigns) do
     ~H"""
@@ -32,29 +28,6 @@ defmodule EvalioAppWeb.SidePanel do
             <button class="bg-transparent text-black dark:text-white border border-transparent outline-none shadow-none hover:border-gray-600 dark:hover:border-gray-400 focus:border-gray-600 dark:focus:border-gray-400 focus:ring-0 rounded-lg px-4 py-2 transition-colors duration-200">
               Stats
             </button>
-          </div>
-          
-    <!-- Scrollable Content -->
-          <div class="overflow-y-auto flex-grow space-y-4">
-            <!-- Calendar Card -->
-            <Card.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl overflow-hidden p-4">
-              <.live_component
-                module={CalendarComponent}
-                id="calendar"
-                reminders={@reminders}
-                meetings={@meetings}
-              />
-            </Card.card>
-            
-    <!-- Reminders Container -->
-            <.live_component
-              module={ReminderContainer}
-              id="reminder-container"
-              reminders={@reminders}
-            />
-            
-    <!-- Meetings Container -->
-            <.live_component module={MeetingContainer} id="meeting-container" meetings={@meetings} />
           </div>
         </Container.container>
       </div>

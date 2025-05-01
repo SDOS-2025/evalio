@@ -11,7 +11,7 @@ defmodule EvalioAppWeb.ReminderContainer do
   def render(assigns) do
     ~H"""
     <div>
-      <Card.card class="w-full max-w-[90%] mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl relative p-4 flex flex-col">
+      <Card.card class="w-400 mx-auto aspect-square bg-white dark:bg-gray-800 shadow-md rounded-2xl relative p-4 flex flex-col">
         <div class="flex justify-between items-center">
           <h4 class="text-xl font-bold text-gray-800 dark:text-gray-200">Reminders</h4>
           <button phx-click="show_reminder_form" phx-target={@myself}>
@@ -19,7 +19,7 @@ defmodule EvalioAppWeb.ReminderContainer do
           </button>
         </div>
 
-        <div class="mt-4 flex-grow w-full max-h-[310px] overflow-y-auto bg-transparent rounded-lg px-0 py-2 space-y-2 transition-all duration-300 ease-in-out">
+        <div class="mt-4 flex-grow w-[350px] max-h-[310px] overflow-y-auto bg-transparent rounded-lg px-0 py-2 space-y-2 transition-all duration-300 ease-in-out">
           <%= for {reminder, index} <- Enum.with_index(@sorted_reminders) do %>
             <div class="transition-all duration-300 ease-in-out">
               <.live_component

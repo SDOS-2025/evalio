@@ -2,6 +2,15 @@ defmodule EvalioAppWeb.Components.HomePage.Topbar do
   use Phoenix.Component
   import Phoenix.LiveView
   alias EvalioAppWeb.HomePage.SearchBar
+  alias EvalioAppWeb.ReminderContainer
+  alias EvalioAppWeb.MeetingContainer
+  alias EvalioAppWeb.CalendarComponent
+
+  attr :show_reminder, :boolean, default: false
+  attr :show_meeting, :boolean, default: false
+  attr :show_calendar, :boolean, default: false
+  attr :reminders, :list, default: []
+  attr :meetings, :list, default: []
 
   def topbar(assigns) do
     ~H"""
@@ -56,8 +65,8 @@ defmodule EvalioAppWeb.Components.HomePage.Topbar do
           </div>
           <div class="flex items-center">
             <div class="ml-3 relative">
-              <div class="flex items-center">
-                <span class="text-sm font-medium mr-2">Welcome, User</span>
+              <div class="flex items-center space-x-4">
+                <span class="text-sm font-medium text-white">Welcome, User</span>
                 <button
                   phx-click="logout"
                   class="px-3 py-1 rounded-md text-sm font-medium text-white bg-gray hover:bg-white hover:text-black"
@@ -65,6 +74,58 @@ defmodule EvalioAppWeb.Components.HomePage.Topbar do
                   Logout
                 </button>
               </div>
+              <!-- Hanging Buttons -->
+              <div class="absolute right-0 top-full mt-5 flex space-x-2 z-50">
+                <button
+                  phx-click="toggle_calendar"
+                  class="px-3 py-1 rounded-md text-sm font-medium bg-black text-white hover:bg-white hover:text-black shadow-md"
+                >
+                  Calendar
+                </button>
+                <button
+                  phx-click="toggle_reminder"
+                  class="px-3 py-1 rounded-md text-sm font-medium bg-black text-white hover:bg-white hover:text-black shadow-md"
+                >
+                  Reminder
+                </button>
+                <button
+                  phx-click="toggle_meeting"
+                  class="px-3 py-1 rounded-md text-sm font-medium bg-black text-white hover:bg-white hover:text-black shadow-md"
+                >
+                  Meeting
+                </button>
+              </div>
+              <!-- Calendar Container -->
+              <%= if @show_calendar do %>
+                <div class="absolute right-0 top-full mt-16 w-96 bg-white rounded-lg shadow-lg z-50">
+                  <.live_component
+                    module={CalendarComponent}
+                    id="calendar"
+                    reminders={@reminders}
+                    meetings={@meetings}
+                  />
+                </div>
+              <% end %>
+              <!-- Reminder Container -->
+              <%= if @show_reminder do %>
+                <div class="absolute right-0 top-full mt-16 w-96 bg-white rounded-lg shadow-lg z-50">
+                  <.live_component
+                    module={ReminderContainer}
+                    id="reminder-container"
+                    reminders={@reminders}
+                  />
+                </div>
+              <% end %>
+              <!-- Meeting Container -->
+              <%= if @show_meeting do %>
+                <div class="absolute right-0 top-full mt-16 w-96 bg-white rounded-lg shadow-lg z-50">
+                  <.live_component
+                    module={MeetingContainer}
+                    id="meeting-container"
+                    meetings={@meetings}
+                  />
+                </div>
+              <% end %>
             </div>
           </div>
         </div>

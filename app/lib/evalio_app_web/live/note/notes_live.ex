@@ -47,7 +47,10 @@ defmodule EvalioAppWeb.NotesLive do
        tag_filter: "all",
        search_text: "",
        editing_index: nil,
-       reading_note: nil
+       reading_note: nil,
+       show_reminder: false,
+       show_meeting: false,
+       show_calendar: false
      )}
   end
 
@@ -340,7 +343,13 @@ defmodule EvalioAppWeb.NotesLive do
     ~H"""
     <div id="notes-live">
       <div class="fixed top-0 left-0 right-0 z-40">
-        <Topbar.topbar />
+        <Topbar.topbar
+          show_reminder={@show_reminder}
+          show_meeting={@show_meeting}
+          show_calendar={@show_calendar}
+          reminders={@reminders}
+          meetings={@meetings}
+        />
       </div>
 
       <div class="pt-16">
@@ -362,15 +371,6 @@ defmodule EvalioAppWeb.NotesLive do
           <div class="fixed top-[107px] left-[760px] flex gap-4 z-30">
             <.live_component module={SortMenu} id="sort-menu" />
             <.live_component module={FilterMenu} id="filter-menu" />
-          </div>
-
-          <div class="z-30">
-            <.live_component
-              module={SidePanel}
-              id="side-panel"
-              reminders={@reminders}
-              meetings={@meetings}
-            />
           </div>
         </div>
 
@@ -527,5 +527,47 @@ defmodule EvalioAppWeb.NotesLive do
       Logger.error("Note not found: id=#{id_int}")
       {:noreply, socket}
     end
+  end
+
+  @impl true
+  def handle_event("toggle_calendar", _params, socket) do
+    new_show_calendar = !socket.assigns.show_calendar
+
+    {:noreply,
+     assign(socket, show_calendar: new_show_calendar, show_reminder: false, show_meeting: false)}
+  end
+
+  @impl true
+  def handle_event("toggle_reminder", _params, socket) do
+    new_show_reminder = !socket.assigns.show_reminder
+
+    {:noreply,
+     assign(socket, show_reminder: new_show_reminder, show_meeting: false, show_calendar: false)}
+  end
+
+  @impl true
+  def handle_event("toggle_meeting", _params, socket) do
+    new_show_meeting = !socket.assigns.show_meeting
+
+    {:noreply,
+     assign(socket, show_meeting: new_show_meeting, show_reminder: false, show_calendar: false)}
+  end
+
+  @impl true
+  def handle_event("search", %{"search" => search_text}, socket) do
+    send(self(), {:search_notes, search_text})
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info({:search_notes, search_text}, socket) do
+    notes =
+      if search_text == "" do
+        Notes.list_notes()
+      else
+        Notes.search_notes(search_text)
+      end
+
+    {:noreply, assign(socket, notes: notes)}
   end
 end
