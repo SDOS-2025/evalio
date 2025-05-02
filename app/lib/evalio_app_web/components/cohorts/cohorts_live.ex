@@ -4,9 +4,12 @@ defmodule EvalioAppWeb.CohortsLive do
   import PetalComponents
 
   alias EvalioAppWeb.Components.HomePage.Topbar
+  alias EvalioAppWeb.Components.Cohorts.CohortCard
+  alias EvalioAppWeb.Components.Cohorts.CohortContainer
 
   @impl true
   def mount(_params, _session, socket) do
+    # No DB loading, just assign empty list for now
     {:ok,
      assign(socket,
        cohorts: [],
@@ -37,66 +40,33 @@ defmodule EvalioAppWeb.CohortsLive do
 
   @impl true
   def render(assigns) do
+    # Hardcoded cohort cards for UI preview
+    cohort_cards = [
+      %{type: "AI", batch: "2024A", year: "2024", mentee_count: 32},
+      %{type: "DS", batch: "2023B", year: "2023", mentee_count: 28},
+      %{type: "Web", batch: "2022C", year: "2022", mentee_count: 25},
+      %{type: "ML", batch: "2024B", year: "2024", mentee_count: 30}
+    ]
+
     ~H"""
-    <div>
+    <div class="min-h-screen">
       <div class="fixed top-0 left-0 right-0 z-50">
         <Topbar.topbar />
       </div>
 
-      <div class="pt-16">
+      <div class="fixed left-0 top-0 pt-16 px-4 sm:px-6 lg:px-8 w-full">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="py-8">
             <h1 class="text-3xl font-bold text-gray-900">Cohorts</h1>
             <p class="mt-2 text-sm text-gray-700">Manage cohorts and their members.</p>
           </div>
 
-          <div class="bg-white shadow overflow-hidden sm:rounded-md">
-            <ul role="list" class="divide-y divide-gray-200">
-              <%= for cohort <- filter_cohorts_by_search(@cohorts, @search_text) do %>
-                <li>
-                  <div class="px-4 py-4 sm:px-6">
-                    <div class="flex items-center justify-between">
-                      <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                          <div class="h-12 w-12 rounded-full bg-gray-300 flex items-center justify-center">
-                            <span class="text-xl font-medium text-gray-600">
-                              {String.first(cohort.name)}
-                            </span>
-                          </div>
-                        </div>
-                        <div class="ml-4">
-                          <h2 class="text-lg font-medium text-gray-900">{cohort.name}</h2>
-                          <p class="text-sm text-gray-500">{cohort.description}</p>
-                        </div>
-                      </div>
-                      <div class="flex items-center space-x-4">
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                          {cohort.member_count} Members
-                        </span>
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                          Active
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-              <% end %>
-            </ul>
+          <div class="py-4">
+            <CohortContainer.cohort_container cohorts={cohort_cards} />
           </div>
         </div>
       </div>
     </div>
     """
-  end
-
-  defp filter_cohorts_by_search(cohorts, ""), do: cohorts
-
-  defp filter_cohorts_by_search(cohorts, search_text) do
-    search_text = String.downcase(search_text)
-
-    Enum.filter(cohorts, fn cohort ->
-      String.contains?(String.downcase(cohort.name), search_text) ||
-        String.contains?(String.downcase(cohort.description), search_text)
-    end)
   end
 end

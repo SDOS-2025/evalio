@@ -30,7 +30,7 @@ defmodule EvalioAppWeb.MeetingFormComponent do
               value={(@meeting && @meeting.title) || ""}
               label="Title"
               placeholder="Title"
-              class="w-full rounded-md border-gray-300 dark:border-gray-600 focus:border-gray-400 focus:ring-gray-400"
+              class="w-full rounded-md border-gray-300 dark:border-gray-600 focus:border-gray-400 focus:ring-gray-400 text-black"
               required
             />
           </div>
@@ -41,7 +41,7 @@ defmodule EvalioAppWeb.MeetingFormComponent do
               name="date"
               value={(@meeting && @meeting.date) || ""}
               label="Date"
-              class="w-full rounded-md border-gray-300 dark:border-gray-600 focus:border-gray-400 focus:ring-gray-400"
+              class="w-full rounded-md border-gray-300 dark:border-gray-600 focus:border-gray-400 focus:ring-gray-400 text-black"
               required
             />
           </div>
@@ -52,7 +52,7 @@ defmodule EvalioAppWeb.MeetingFormComponent do
               name="time"
               value={(@meeting && @meeting.time) || ""}
               label="Time"
-              class="w-full rounded-md border-gray-300 dark:border-gray-600 focus:border-gray-400 focus:ring-gray-400"
+              class="w-full rounded-md border-gray-300 dark:border-gray-600 focus:border-gray-400 focus:ring-gray-400 text-black"
               required
             />
           </div>
@@ -64,7 +64,7 @@ defmodule EvalioAppWeb.MeetingFormComponent do
               value={(@meeting && @meeting.link) || ""}
               label="Link"
               placeholder="Meeting Link"
-              class="w-full rounded-md border-gray-300 dark:border-gray-600 focus:border-gray-400 focus:ring-gray-400"
+              class="w-full rounded-md border-gray-300 dark:border-gray-600 focus:border-gray-400 focus:ring-gray-400 text-black"
             />
           </div>
 

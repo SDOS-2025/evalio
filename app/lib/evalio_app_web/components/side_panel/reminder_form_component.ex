@@ -17,7 +17,7 @@ defmodule EvalioAppWeb.ReminderFormComponent do
           {if @reminder, do: "Edit Reminder", else: "Add Reminder"}
         </h3>
 
-        <.form for={%{}} phx-submit="save_reminder" phx-target={@myself} class="space-y-4">
+        <.form for={@reminder} phx-submit="save_reminder" phx-target={@myself} class="space-y-4">
           <!-- Hidden ID field for editing existing reminders -->
           <%= if @reminder && @reminder.id do %>
             <Input.input type="hidden" name="id" value={@reminder.id} />
@@ -30,7 +30,7 @@ defmodule EvalioAppWeb.ReminderFormComponent do
               value={(@reminder && @reminder.title) || ""}
               label="Title"
               placeholder="Title"
-              class="w-full rounded-md border-gray-300 dark:border-gray-600 focus:border-gray-400 focus:ring-gray-400"
+              class="w-full rounded-md border-gray-300 dark:border-gray-600 focus:border-gray-400 focus:ring-gray-400 text-black"
               required
             />
           </div>
@@ -41,7 +41,7 @@ defmodule EvalioAppWeb.ReminderFormComponent do
               name="date"
               value={(@reminder && @reminder.date) || ""}
               label="Date"
-              class="w-full rounded-md border-gray-300 dark:border-gray-600 focus:border-gray-400 focus:ring-gray-400"
+              class="w-full rounded-md border-gray-300 dark:border-gray-600 focus:border-gray-400 focus:ring-gray-400 text-black"
               required
             />
           </div>
@@ -52,7 +52,7 @@ defmodule EvalioAppWeb.ReminderFormComponent do
               name="time"
               value={(@reminder && @reminder.time) || ""}
               label="Time"
-              class="w-full rounded-md border-gray-300 dark:border-gray-600 focus:border-gray-400 focus:ring-gray-400"
+              class="w-full rounded-md border-gray-300 dark:border-gray-600 focus:border-gray-400 focus:ring-gray-400 text-black"
               required
             />
           </div>
