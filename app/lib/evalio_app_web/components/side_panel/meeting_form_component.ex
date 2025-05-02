@@ -35,26 +35,68 @@ defmodule EvalioAppWeb.MeetingFormComponent do
             />
           </div>
 
-          <div class="mb-4 w-full">
-            <Input.input
-              type="date"
-              name="date"
-              value={(@meeting && @meeting.date) || ""}
-              label="Date"
-              class="w-full rounded-md border-gray-300 dark:border-gray-600 focus:border-gray-400 focus:ring-gray-400 text-black"
-              required
-            />
+          <div class="mb-4 w-full relative">
+            <div class="relative">
+              <Input.input
+                type="date"
+                name="date"
+                id="meeting-date"
+                value={(@meeting && @meeting.date) || ""}
+                label="Date"
+                class="w-full rounded-md border-gray-300 dark:border-gray-600 focus:border-gray-400 focus:ring-gray-400 text-black pl-10"
+                required
+              />
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                <svg
+                  class="h-5 w-5 text-gray-400 hover:text-gray-600 cursor-pointer"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  phx-click="focus_date"
+                  phx-target={@myself}
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+            </div>
           </div>
 
-          <div class="mb-4 w-full">
-            <Input.input
-              type="time"
-              name="time"
-              value={(@meeting && @meeting.time) || ""}
-              label="Time"
-              class="w-full rounded-md border-gray-300 dark:border-gray-600 focus:border-gray-400 focus:ring-gray-400 text-black"
-              required
-            />
+          <div class="mb-4 w-full relative">
+            <div class="relative">
+              <Input.input
+                type="time"
+                name="time"
+                id="meeting-time"
+                value={(@meeting && @meeting.time) || ""}
+                label="Time"
+                class="w-full rounded-md border-gray-300 dark:border-gray-600 focus:border-gray-400 focus:ring-gray-400 text-black pl-10"
+                required
+              />
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                <svg
+                  class="h-5 w-5 text-gray-400 hover:text-gray-600 cursor-pointer"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  phx-click="focus_time"
+                  phx-target={@myself}
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+            </div>
           </div>
 
           <div class="mb-4 w-full">
@@ -81,6 +123,18 @@ defmodule EvalioAppWeb.MeetingFormComponent do
       </Card.card>
     </div>
     """
+  end
+
+  @impl true
+  def handle_event("focus_date", _params, socket) do
+    # Push a JavaScript event to focus the date input
+    {:noreply, push_event(socket, "focus_date", %{})}
+  end
+
+  @impl true
+  def handle_event("focus_time", _params, socket) do
+    # Push a JavaScript event to focus the time input
+    {:noreply, push_event(socket, "focus_time", %{})}
   end
 
   @impl true
