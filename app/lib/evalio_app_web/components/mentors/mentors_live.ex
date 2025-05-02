@@ -6,7 +6,78 @@ defmodule EvalioAppWeb.MentorsLive do
 
   def mount(_params, _session, socket) do
     # Hardcoded mentor data for UI preview
-    mentors = [
+    mentors = get_mentors()
+
+    {:ok, assign(socket, mentors: mentors, search_text: "")}
+  end
+
+  @impl true
+  def handle_event("search", %{"search" => search_text}, socket) do
+    mentors =
+      get_mentors()
+      |> Enum.filter(fn mentor ->
+        String.contains?(
+          String.downcase("#{mentor.first_name} #{mentor.last_name} #{mentor.email}"),
+          String.downcase(search_text)
+        )
+      end)
+
+    {:noreply, assign(socket, search_text: search_text, mentors: mentors)}
+  end
+
+  @impl true
+  def handle_event("navigate", %{"to" => path}, socket) do
+    {:noreply, push_navigate(socket, to: path)}
+  end
+
+  @impl true
+  def handle_event("logout", _params, socket) do
+    {:noreply, push_navigate(socket, to: "/login")}
+  end
+
+  def render(assigns) do
+    ~H"""
+    <div class="min-h-screen">
+      <div class="fixed top-0 left-0 right-0 z-50">
+        <Topbar.topbar />
+      </div>
+
+      <div class="fixed left-0 top-0 pt-16 px-4 sm:px-6 lg:px-8 w-full">
+        <div class="py-8">
+          <div class="flex justify-between items-center">
+            <div>
+              <p></p>
+              <h1 class="text-3xl font-bold text-gray-900">Mentors</h1>
+            </div>
+          </div>
+        </div>
+        <!-- Search input -->
+        <div class="w-64 mb-6">
+          <.form for={%{}} phx-change="search" class="relative">
+            <input
+              type="text"
+              name="search"
+              value={@search_text}
+              placeholder="Search mentors..."
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              phx-debounce="300"
+            />
+          </.form>
+        </div>
+        <div class="w-full">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <%= for mentor <- @mentors do %>
+              <.mentor_card mentor={mentor} />
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  defp get_mentors do
+    [
       %{
         id: 1,
         first_name: "John",
@@ -98,46 +169,5 @@ defmodule EvalioAppWeb.MentorsLive do
         year_since: "2022"
       }
     ]
-
-    {:ok, assign(socket, mentors: mentors)}
-  end
-
-  @impl true
-  def handle_event("navigate", %{"to" => path}, socket) do
-    {:noreply, push_navigate(socket, to: path)}
-  end
-
-  @impl true
-  def handle_event("logout", _params, socket) do
-    {:noreply, push_navigate(socket, to: "/login")}
-  end
-
-  def render(assigns) do
-    ~H"""
-    <div class="min-h-screen">
-      <div class="fixed top-0 left-0 right-0 z-50">
-        <Topbar.topbar />
-      </div>
-
-      <div class="fixed left-0 top-0 pt-16 px-4 sm:px-6 lg:px-8 w-full">
-        <div class="py-8">
-          <div class="flex justify-between items-center">
-            <div>
-              <p></p>
-              <h1 class="text-3xl font-bold text-gray-900">Mentors</h1>
-            </div>
-          </div>
-        </div>
-
-        <div class="w-full">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <%= for mentor <- @mentors do %>
-              <.mentor_card mentor={mentor} />
-            <% end %>
-          </div>
-        </div>
-      </div>
-    </div>
-    """
   end
 end

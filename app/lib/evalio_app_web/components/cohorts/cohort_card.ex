@@ -5,13 +5,18 @@ defmodule EvalioAppWeb.Components.Cohorts.CohortCard do
   attr :batch, :string, required: true
   attr :year, :integer, required: true
   attr :mentee_count, :integer, required: true
+  attr :id, :integer, required: true
 
   def cohort_card(assigns) do
     ~H"""
     <div class="bg-white rounded-xl p-6 flex flex-col justify-between h-40 border border-gray-200 hover:border-blue-500 hover:shadow-md transition-all duration-200">
       <div class="flex justify-between items-start">
         <div>
-          <button class="focus:outline-none group">
+          <button
+            class="focus:outline-none group"
+            phx-click="open_cohort_modal"
+            phx-value-cohort={@id}
+          >
             <div class="text-xl font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-200">
               {@name} <span class="text-gray-500">-</span> <span class="font-mono">{@batch}</span>
             </div>
