@@ -37,6 +37,7 @@ defmodule EvalioAppWeb.Router do
     live "/mentees", MenteesLive, :index
     live "/mentors", MentorsLive, :index
     live "/cohorts", CohortsLive, :index
+    live "/sessions", SessionsLive, :index
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

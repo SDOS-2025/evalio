@@ -60,6 +60,13 @@ defmodule EvalioAppWeb.Components.HomePage.Topbar do
                 >
                   Cohorts
                 </button>
+                <button
+                  phx-click="navigate"
+                  phx-value-to="/sessions"
+                  class="px-3 py-2 rounded-md text-m font-medium bg-black text-white hover:bg-white hover:text-black transition-colors"
+                >
+                  Sessions
+                </button>
               </div>
             </div>
           </div>
