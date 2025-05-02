@@ -23,6 +23,8 @@ defmodule EvalioAppWeb.Router do
     live "/", AuthLive, :home
     live "/login", AuthLive, :login
     live "/signup", AuthLive, :signup
+
+    get "/auth/google/callback", AuthController, :python_callback
   end
 
   # Protected routes

@@ -45,6 +45,7 @@ This module provides Google OAuth authentication specifically for IIITD domain u
 
 ## Usage
 
+To run on CLI:
 1. Run the authentication script:
    ```bash
    python google_auth.py
@@ -55,6 +56,11 @@ This module provides Google OAuth authentication specifically for IIITD domain u
 3. A browser window will open asking you to sign in with your Google account
 
 4. After successful authentication, you'll see your user information displayed
+
+To run through phoenix:
+1. run python server using python3 google_auth_server.py
+
+2. run phoenix app using mix phx.server
 
 ## Viewing the Database
 
