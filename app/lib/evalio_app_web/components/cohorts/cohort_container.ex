@@ -7,17 +7,15 @@ defmodule EvalioAppWeb.Components.Cohorts.CohortContainer do
 
   def cohort_container(assigns) do
     ~H"""
-    <div class={["h-[calc(100vh-12rem)] overflow-y-auto bg-gray-500", @class]}>
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-6 w-full">
+    <div class={["min-h-[calc(100vh-12rem)] p-6 bg-white rounded-lg shadow-sm", @class]}>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         <%= for cohort <- @cohorts do %>
-          <div class="w-full mb-4">
-            <CohortCard.cohort_card
-              type={cohort.type}
-              batch={cohort.batch}
-              year={cohort.year}
-              mentee_count={cohort.mentee_count}
-            />
-          </div>
+          <CohortCard.cohort_card
+            name={cohort.name}
+            batch={cohort.batch}
+            year={cohort.year}
+            mentee_count={cohort.mentee_count}
+          />
         <% end %>
       </div>
     </div>

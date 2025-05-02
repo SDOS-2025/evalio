@@ -6,13 +6,15 @@ defmodule EvalioAppWeb.CohortsLive do
   alias EvalioAppWeb.Components.HomePage.Topbar
   alias EvalioAppWeb.Components.Cohorts.CohortCard
   alias EvalioAppWeb.Components.Cohorts.CohortContainer
+  alias EvalioApp.Cohort
 
   @impl true
   def mount(_params, _session, socket) do
-    # No DB loading, just assign empty list for now
+    cohorts = Cohort.list_cohorts()
+
     {:ok,
      assign(socket,
-       cohorts: [],
+       cohorts: cohorts,
        search_text: "",
        sort_by: "name_asc"
      )}
@@ -40,14 +42,6 @@ defmodule EvalioAppWeb.CohortsLive do
 
   @impl true
   def render(assigns) do
-    # Hardcoded cohort cards for UI preview
-    cohort_cards = [
-      %{type: "AI", batch: "2024A", year: "2024", mentee_count: 32},
-      %{type: "DS", batch: "2023B", year: "2023", mentee_count: 28},
-      %{type: "Web", batch: "2022C", year: "2022", mentee_count: 25},
-      %{type: "ML", batch: "2024B", year: "2024", mentee_count: 30}
-    ]
-
     ~H"""
     <div class="min-h-screen">
       <div class="fixed top-0 left-0 right-0 z-50">
@@ -62,7 +56,7 @@ defmodule EvalioAppWeb.CohortsLive do
           </div>
 
           <div class="py-4">
-            <CohortContainer.cohort_container cohorts={cohort_cards} />
+            <CohortContainer.cohort_container cohorts={@cohorts} />
           </div>
         </div>
       </div>

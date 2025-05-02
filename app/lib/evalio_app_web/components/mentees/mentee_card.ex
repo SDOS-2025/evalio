@@ -95,7 +95,7 @@ defmodule EvalioAppWeb.Components.Mentees.MenteeCard do
                   {@mentee.assignment_percent}%
                 </span>
               </div>
-              <p class="text-center mt-2 text-sm font-medium text-gray-600">Assignment</p>
+              <p class="text-center mt-2 text-sm font-medium text-gray-600">Assignments</p>
             </div>
           </div>
         </div>

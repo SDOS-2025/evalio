@@ -86,13 +86,13 @@ defmodule EvalioAppWeb.Components.HomePage.Topbar do
                   phx-click="toggle_reminder"
                   class="px-3 py-1 rounded-md text-sm font-medium bg-black text-white hover:bg-white hover:text-black shadow-md"
                 >
-                  Reminder
+                  Reminders
                 </button>
                 <button
                   phx-click="toggle_meeting"
                   class="px-3 py-1 rounded-md text-sm font-medium bg-black text-white hover:bg-white hover:text-black shadow-md"
                 >
-                  Meeting
+                  Meetings
                 </button>
               </div>
               <!-- Calendar Container -->
