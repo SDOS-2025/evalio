@@ -6,15 +6,18 @@ defmodule EvalioAppWeb.CohortsLive do
   alias EvalioAppWeb.Components.HomePage.Topbar
   alias EvalioAppWeb.Components.Cohorts.CohortCard
   alias EvalioAppWeb.Components.Cohorts.CohortContainer
+  alias EvalioApp.Cohort
 
   @impl true
   def mount(_params, _session, socket) do
-    # No DB loading, just assign empty list for now
+    cohorts = Cohort.list_cohorts()
+
     {:ok,
      assign(socket,
-       cohorts: [],
+       cohorts: cohorts,
        search_text: "",
-       sort_by: "name_asc"
+       sort_by: "name_asc",
+       selected_cohort: nil
      )}
   end
 
@@ -39,15 +42,21 @@ defmodule EvalioAppWeb.CohortsLive do
   end
 
   @impl true
-  def render(assigns) do
-    # Hardcoded cohort cards for UI preview
-    cohort_cards = [
-      %{type: "AI", batch: "2024A", year: "2024", mentee_count: 32},
-      %{type: "DS", batch: "2023B", year: "2023", mentee_count: 28},
-      %{type: "Web", batch: "2022C", year: "2022", mentee_count: 25},
-      %{type: "ML", batch: "2024B", year: "2024", mentee_count: 30}
-    ]
+  def handle_event("open_cohort_modal", %{"cohort" => cohort_id}, socket) do
+    cohort_id = String.to_integer(cohort_id)
 
+    selected_cohort =
+      if socket.assigns.selected_cohort && socket.assigns.selected_cohort.id == cohort_id do
+        nil
+      else
+        Enum.find(socket.assigns.cohorts, &(&1.id == cohort_id))
+      end
+
+    {:noreply, assign(socket, selected_cohort: selected_cohort)}
+  end
+
+  @impl true
+  def render(assigns) do
     ~H"""
     <div class="min-h-screen">
       <div class="fixed top-0 left-0 right-0 z-50">
@@ -62,7 +71,7 @@ defmodule EvalioAppWeb.CohortsLive do
           </div>
 
           <div class="py-4">
-            <CohortContainer.cohort_container cohorts={cohort_cards} />
+            <CohortContainer.cohort_container cohorts={@cohorts} selected_cohort={@selected_cohort} />
           </div>
         </div>
       </div>

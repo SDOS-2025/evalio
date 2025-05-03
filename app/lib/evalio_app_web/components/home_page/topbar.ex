@@ -60,6 +60,13 @@ defmodule EvalioAppWeb.Components.HomePage.Topbar do
                 >
                   Cohorts
                 </button>
+                <button
+                  phx-click="navigate"
+                  phx-value-to="/sessions"
+                  class="px-3 py-2 rounded-md text-m font-medium bg-black text-white hover:bg-white hover:text-black transition-colors"
+                >
+                  Sessions
+                </button>
               </div>
             </div>
           </div>
@@ -86,13 +93,13 @@ defmodule EvalioAppWeb.Components.HomePage.Topbar do
                   phx-click="toggle_reminder"
                   class="px-3 py-1 rounded-md text-sm font-medium bg-black text-white hover:bg-white hover:text-black shadow-md"
                 >
-                  Reminder
+                  Reminders
                 </button>
                 <button
                   phx-click="toggle_meeting"
                   class="px-3 py-1 rounded-md text-sm font-medium bg-black text-white hover:bg-white hover:text-black shadow-md"
                 >
-                  Meeting
+                  Meetings
                 </button>
               </div>
               <!-- Calendar Container -->
