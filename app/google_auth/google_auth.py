@@ -48,7 +48,8 @@ def init_db():
             verified_email BOOLEAN DEFAULT FALSE,
             locale VARCHAR(10),
             hd VARCHAR(255),
-            last_login TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+            last_login TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+            session_token TEXT
         )
     ''')
     
@@ -56,13 +57,11 @@ def init_db():
     cur.close()
     conn.close()
 
-def store_user_data(user_info):
-    """Store user information in the database."""
+def store_user_data(user_info, session_token=None):
+    """Store user information in the database, including session token if provided."""
     conn = get_db_connection()
     cur = conn.cursor()
-    
     try:
-        # Prepare data for insertion
         data = (
             user_info.get('id'),
             user_info.get('email'),
@@ -73,15 +72,14 @@ def store_user_data(user_info):
             user_info.get('verified_email', False),
             user_info.get('locale'),
             user_info.get('hd'),
-            datetime.now()
+            datetime.now(),
+            session_token
         )
-        
-        # Insert or update user data
         cur.execute('''
             INSERT INTO users 
                 (id, email, name, given_name, family_name, picture, 
-                 verified_email, locale, hd, last_login)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                 verified_email, locale, hd, last_login, session_token)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             ON CONFLICT (id) DO UPDATE SET
                 email = EXCLUDED.email,
                 name = EXCLUDED.name,
@@ -91,12 +89,29 @@ def store_user_data(user_info):
                 verified_email = EXCLUDED.verified_email,
                 locale = EXCLUDED.locale,
                 hd = EXCLUDED.hd,
-                last_login = EXCLUDED.last_login
+                last_login = EXCLUDED.last_login,
+                session_token = EXCLUDED.session_token
         ''', data)
-        
         conn.commit()
     except Exception as e:
         print(f"Error storing user data: {str(e)}")
+        conn.rollback()
+        raise
+    finally:
+        cur.close()
+        conn.close()
+
+def store_user_token(user_id, session_token):
+    """Update the session token for a user."""
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute('''
+            UPDATE users SET session_token = %s, last_login = %s WHERE id = %s
+        ''', (session_token, datetime.now(), user_id))
+        conn.commit()
+    except Exception as e:
+        print(f"Error updating user token: {str(e)}")
         conn.rollback()
         raise
     finally:
