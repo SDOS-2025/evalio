@@ -16,10 +16,11 @@ defmodule EvalioAppWeb.Components.Sessions.SessionCard do
       <div class="flex flex-col space-y-2">
         <div class="flex justify-between items-start">
           <div>
-            <h3 class="text-lg font-semibold text-gray-900">{@session.cohort}</h3>
+            <h3 class="text-lg font-semibold text-gray-900">{@session.topic}</h3>
             <p class="text-sm text-gray-500">{Calendar.strftime(@session.date, "%B %d, %Y")}</p>
           </div>
           <div class="text-right">
+            <p class="text-sm text-gray-500">{@session.cohort}</p>
             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
               {@session.duration} min
             </span>

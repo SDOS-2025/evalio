@@ -14,7 +14,8 @@ defmodule EvalioAppWeb.SessionsLive do
     sessions = [
       %Session{
         id: "1",
-        cohort: "System Design: L13",
+        topic: "System Design",
+        cohort: "WE-345",
         date: ~D[2024-03-15],
         duration: 60,
         transcript:
@@ -24,7 +25,8 @@ defmodule EvalioAppWeb.SessionsLive do
       },
       %Session{
         id: "2",
-        cohort: "Corporate Skills: L10",
+        topic: "Corporate Skills",
+        cohort: "WE-201",
         date: ~D[2024-03-10],
         duration: 90,
         transcript:
@@ -34,7 +36,8 @@ defmodule EvalioAppWeb.SessionsLive do
       },
       %Session{
         id: "3",
-        cohort: "GenAI: L11",
+        topic: "GenAI",
+        cohort: "WE-501",
         date: ~D[2024-03-05],
         duration: 45,
         transcript:
@@ -44,7 +47,8 @@ defmodule EvalioAppWeb.SessionsLive do
       },
       %Session{
         id: "4",
-        cohort: "System Design: L12",
+        topic: "System Design",
+        cohort: "WISE-501",
         date: ~D[2024-02-28],
         duration: 75,
         transcript:

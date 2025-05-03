@@ -23,6 +23,7 @@ defmodule EvalioApp.Session do
 
   defstruct [
     :id,
+    :topic,
     :cohort,
     :date,
     :duration,
@@ -36,6 +37,7 @@ defmodule EvalioApp.Session do
 
     %__MODULE__{
       id: attrs[:id],
+      topic: attrs[:topic],
       cohort: attrs[:cohort],
       date: attrs[:date],
       duration: attrs[:duration],
@@ -67,7 +69,7 @@ defmodule EvalioApp.Session do
   """
   def list_sessions do
     case Ecto.Adapters.SQL.query(EvalioApp.Repo, """
-           SELECT session_id, cohort, date, duration, transcript,
+           SELECT session_id, topic, cohort, date, duration, transcript,
                   num_attendees, attendance_percentage
            FROM sessions
            ORDER BY date DESC;
@@ -90,7 +92,7 @@ defmodule EvalioApp.Session do
     case Ecto.Adapters.SQL.query(
            EvalioApp.Repo,
            """
-             SELECT session_id, cohort, date, duration, transcript,
+             SELECT session_id, topic, cohort, date, duration, transcript,
                     num_attendees, attendance_percentage
              FROM sessions
              WHERE LOWER(cohort) LIKE LOWER($1)
@@ -115,7 +117,7 @@ defmodule EvalioApp.Session do
     case Ecto.Adapters.SQL.query(
            EvalioApp.Repo,
            """
-             SELECT session_id, cohort, date, duration, transcript,
+             SELECT session_id, topic, cohort, date, duration, transcript,
                     num_attendees, attendance_percentage
              FROM sessions
              WHERE session_id = $1;
@@ -148,6 +150,7 @@ defmodule EvalioApp.Session do
   # Convert a database row to a Session struct
   defp row_to_struct([
          id,
+         topic,
          cohort,
          date,
          duration,
@@ -157,6 +160,7 @@ defmodule EvalioApp.Session do
        ]) do
     %__MODULE__{
       id: id,
+      topic: topic,
       cohort: cohort,
       date: date,
       duration: duration,
