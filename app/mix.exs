@@ -61,7 +61,8 @@ defmodule EvalioApp.MixProject do
       {:petal_components, "~> 2.8.2"},
       {:bcrypt_elixir, "~> 3.0"},
       {:earmark, "~> 1.4"},
-      {:phoenix_markdown, "~> 1.0"}
+      {:phoenix_markdown, "~> 1.0"},
+      {:joken, "~> 2.5"}
     ]
   end
 

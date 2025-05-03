@@ -2,7 +2,10 @@ from flask import Flask, redirect, request, session
 from google_auth_oauthlib.flow import Flow
 import os
 import secrets
-from google_auth import init_db, store_user_data, verify_iiitd_domain
+from google_auth import init_db, store_user_data, verify_iiitd_domain, get_db_connection
+import jwt  # Add this import
+from datetime import datetime, timedelta
+import uuid
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
@@ -15,6 +18,7 @@ SCOPES = [
     'https://www.googleapis.com/auth/userinfo.profile'
 ]
 REDIRECT_URI = "http://127.0.0.1:5000/auth/google/callback"
+SECRET_KEY = "431265"  # Use a secure key and store it in an environment variable
 
 @app.route("/login/google")
 def login():
@@ -47,18 +51,56 @@ def callback():
     if not verify_iiitd_domain(user_info.get('email', '')):
         return "Error: Only @iiitd.ac.in email addresses are allowed.", 403
 
-    # Initialize DB and store user
+    # Generate a signed JWT token with standard claims
+    now = datetime.utcnow()
+    payload = {
+        "sub": user_info["id"],
+        "email": user_info["email"],
+        "name": user_info["name"],
+        "exp": now + timedelta(hours=1),  # Token expires in 1 hour
+        "iat": now,
+        "nbf": now,
+        "jti": str(uuid.uuid4()),
+        "iss": "google_auth_server",
+        "aud": "evalio_app"
+    }
+    token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
+
+    # Initialize DB and store user with session token
     try:
         init_db()
-        store_user_data(user_info)
+        store_user_data(user_info, session_token=token)
     except Exception as e:
         return f"Error storing user data: {str(e)}", 500
 
-    # For demo: create a simple token (in production, use JWT or similar)
-    token = user_info["id"]  # Or sign a JWT with user_info
-
     # Redirect back to Phoenix with the token
-    return redirect("http://127.0.0.1:4000/auth/google/callback?token={token}")
+    return redirect(f"http://127.0.0.1:4000/auth/google/callback?token={token}")
+
+from google_auth import get_db_connection
+@app.route("/api/session/validate")
+def validate_session():
+    token = request.args.get("token")
+    if not token:
+        return {"error": "Token required"}, 400
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT id, email, name, given_name, family_name, picture FROM users WHERE session_token = %s", (token,))
+        user = cur.fetchone()
+        if not user:
+            return {"error": "Invalid token"}, 401
+        user_info = {
+            "id": user[0],
+            "email": user[1],
+            "name": user[2],
+            "given_name": user[3],
+            "family_name": user[4],
+            "picture": user[5]
+        }
+        return user_info, 200
+    finally:
+        cur.close()
+        conn.close()
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)

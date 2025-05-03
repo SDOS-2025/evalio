@@ -1,36 +1,22 @@
 # Google Authentication
 
-This module provides Google OAuth authentication specifically for IIITD domain users (@iiitd.ac.in).
+This module provides Google OAuth authentication specifically for IIITD domain users (@iiitd.ac.in) and integrates with a Phoenix (Elixir) frontend.
 
 ## Setup Instructions
 
-1. Install the required Python packages:
+1. **Install the required Python packages:**
    ```bash
    pip install -r requirements.txt
    ```
+   This will install:
+   - Flask (for the Google Auth server)
+   - Flask-Session
+   - PyJWT
+   - google-auth, google-auth-oauthlib, google-api-python-client
+   - psycopg2-binary (for PostgreSQL)
+   - requests
 
-2. Set up Google OAuth credentials:
-   - Go to the [Google Cloud Console](https://console.cloud.google.com/)
-   - Create a new project or select an existing one
-   - Enable the Google+ API
-   - Go to Credentials
-   - Create OAuth 2.0 Client ID
-   - Choose "Desktop app" as the application type
-   - Download the credentials file and save it as `credentials.json` in this directory
-
-3. Set up PostgreSQL Database:
-   ```bash
-   # Install PostgreSQL (if not already installed)
-   brew install postgresql@14
-
-   # Start PostgreSQL service
-   brew services start postgresql@14
-
-   # Create the database
-   createdb google_auth_db
-   ```
-
-4. Configure Database Connection:
+2. **Configure Database Connection:**
    - Open `google_auth.py`
    - Update the `DB_CONFIG` dictionary if needed:
      ```python
@@ -45,22 +31,25 @@ This module provides Google OAuth authentication specifically for IIITD domain u
 
 ## Usage
 
-To run on CLI:
-1. Run the authentication script:
+### To run the Flask Google Auth server:
+1. Start the server:
    ```bash
-   python google_auth.py
+   python3 google_auth_server.py
    ```
+   The server will run on http://127.0.0.1:5000
 
-2. Enter your IIITD email address when prompted
+2. The main endpoints are:
+   - `/login/google` — Initiates Google OAuth login
+   - `/auth/google/callback` — Handles the OAuth callback and issues a JWT
+   - `/api/session/validate?token=...` — Validates a JWT and returns user info
 
-3. A browser window will open asking you to sign in with your Google account
-
-4. After successful authentication, you'll see your user information displayed
-
-To run through phoenix:
-1. run python server using python3 google_auth_server.py
-
-2. run phoenix app using mix phx.server
+### To run with the Phoenix app:
+1. Start the Flask server as above.
+2. In a separate terminal, start the Phoenix app:
+   ```bash
+   mix phx.server
+   ```
+3. The Phoenix app will redirect users to Google login via the Flask server, and use the `/api/session/validate` endpoint to validate sessions.
 
 ## Viewing the Database
 
@@ -81,12 +70,6 @@ You can view the stored data in several ways:
    \q
    ```
 
-2. Using pgAdmin (GUI Tool):
-   - Download and install [pgAdmin](https://www.pgadmin.org/download/)
-   - Connect to your PostgreSQL server
-   - Navigate to google_auth_db > Schemas > public > Tables
-   - Right-click on 'users' table and select "View/Edit Data"
-
 ## Database Schema
 
 The `users` table contains the following columns:
@@ -100,6 +83,7 @@ The `users` table contains the following columns:
 - `locale` (VARCHAR): Language/location settings
 - `hd` (VARCHAR): Hosted domain (iiitd.ac.in)
 - `last_login` (TIMESTAMP): Last authentication time
+- `session_token` (TEXT): JWT session token for the user
 
 ## Google OAuth API Fields
 
@@ -117,7 +101,8 @@ The Google OAuth API returns the following user information fields:
 
 ## Security Notes
 
-- The script stores authentication tokens in `token.pickle`
+- The script stores authentication tokens in `token.pickle` (for CLI usage)
 - Only @iiitd.ac.in email addresses are allowed
 - The credentials are verified to match the provided email address
 - Database passwords should be properly secured in production environments
+- JWT tokens are used for session management and are validated by the Phoenix app via the Flask server

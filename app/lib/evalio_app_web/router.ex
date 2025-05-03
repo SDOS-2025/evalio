@@ -12,6 +12,16 @@ defmodule EvalioAppWeb.Router do
     plug :put_secure_browser_headers
   end
 
+  pipeline :authenticated_browser do
+    plug :accepts, ["html"]
+    plug :fetch_session
+    plug :fetch_live_flash
+    plug :put_root_layout, html: {EvalioAppWeb.Layouts, :root}
+    plug :protect_from_forgery
+    plug :put_secure_browser_headers
+    plug EvalioAppWeb.Plugs.RequireAuthenticatedUser
+  end
+
   pipeline :api do
     plug :accepts, ["json"]
   end
@@ -25,11 +35,12 @@ defmodule EvalioAppWeb.Router do
     live "/signup", AuthLive, :signup
 
     get "/auth/google/callback", AuthController, :python_callback
+    get "/logout", AuthController, :logout
   end
 
   # Protected routes
   scope "/", EvalioAppWeb do
-    pipe_through :browser
+    pipe_through :authenticated_browser
 
     live "/notes", NotesLive, :index
     live "/notes/new", NotesLive, :new
