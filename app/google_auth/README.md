@@ -57,6 +57,7 @@ This module provides Google OAuth authentication specifically for IIITD domain u
    - `/auth/google/callback` — Handles the OAuth callback and issues a JWT
    - `/api/session/validate?token=...` — Validates a JWT and returns user info
    - `/api/create_gmeet` — (POST) Creates a Google Meet event (see below)
+   - `/api/create_gcal_event` — (POST) Creates a Google Calendar event for reminders (see below)
 
 ### Google Meet Creation API
 
@@ -81,6 +82,31 @@ This module provides Google OAuth authentication specifically for IIITD domain u
 - **Notes:**
   - The user must be authenticated and have granted `calendar.events` scope.
   - The endpoint uses the user's access and refresh tokens to create the event.
+
+### Google Calendar Event Creation API (Reminders Integration)
+
+- **Endpoint:** `/api/create_gcal_event` (POST)
+- **Description:** Creates a Google Calendar event (without a Meet link) for an authenticated user, used for reminders.
+- **Request Body (JSON):**
+  ```json
+  {
+    "title": "Reminder Title",
+    "start_time": "2024-06-01T10:00:00+05:30",  // ISO format
+    "end_time": "2024-06-01T11:00:00+05:30",    // ISO format
+    "token": "<Google OAuth access token>",
+    "refresh_token": "<Google OAuth refresh token>" // optional if stored
+  }
+  ```
+- **Response:**
+  ```json
+  {
+    "event_link": "https://calendar.google.com/calendar/event?eid=..."
+  }
+  ```
+- **Notes:**
+  - The user must be authenticated and have granted `calendar.events` scope.
+  - The endpoint uses the user's access and refresh tokens to create the event.
+  - This is used by the Phoenix app to sync reminders with the user's Google Calendar.
 
 ### To run with the Phoenix app:
 1. Start the Flask server as above.
