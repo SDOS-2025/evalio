@@ -11,6 +11,7 @@ defmodule EvalioAppWeb.Components.HomePage.Topbar do
   attr :show_calendar, :boolean, default: false
   attr :reminders, :list, default: []
   attr :meetings, :list, default: []
+  attr :current_user, :any, default: nil
 
   def topbar(assigns) do
     ~H"""
@@ -130,6 +131,7 @@ defmodule EvalioAppWeb.Components.HomePage.Topbar do
                     module={MeetingContainer}
                     id="meeting-container"
                     meetings={@meetings}
+                    current_user={@current_user}
                   />
                 </div>
               <% end %>
