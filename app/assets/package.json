@@ -1,0 +1,22 @@
+{
+  "name": "assets",
+  "version": "1.0.0",
+  "description": "",
+  "main": "tailwind.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "esbuild js/app.js --bundle --minify --target=es2017 --outdir=../priv/static/assets",
+    "watch": "esbuild js/app.js --bundle --sourcemap --target=es2017 --outdir=../priv/static/assets --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "esbuild": "^0.17.19"
+  },
+  "dependencies": {
+    "phoenix": "^1.7.21",
+    "phoenix_html": "^4.2.1",
+    "phoenix_live_view": "^1.0.10"
+  }
+}

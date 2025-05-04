@@ -41,6 +41,7 @@ defmodule EvalioAppWeb.MeetingContainer do
                 id="meeting_form"
                 myself={@myself}
                 meeting={@editing_meeting}
+                current_user={@current_user}
               />
             </div>
           </div>
@@ -130,6 +131,9 @@ defmodule EvalioAppWeb.MeetingContainer do
       |> assign(:sorted_meetings, sorted_meetings)
       |> assign(:show_meeting_form, assigns[:show_meeting_form] || false)
       |> assign_new(:editing_meeting, fn -> nil end)
+      |> assign_new(:current_user, fn -> assigns[:current_user] || %{} end)
+
+    Logger.info("Current user in MeetingContainer: #{inspect(socket.assigns[:current_user])}")
 
     {:ok, socket}
   end
@@ -179,8 +183,10 @@ defmodule EvalioAppWeb.MeetingContainer do
     if date == "" or time == "" or title == "" or link == "" do
       {:noreply, socket}
     else
-      case socket.assigns[:editing_meeting] do
-        nil ->
+      editing_meeting = socket.assigns[:editing_meeting]
+
+      cond do
+        editing_meeting == nil or Map.get(editing_meeting, :id) == nil ->
           # Create new meeting
           case Meetings.create_meeting(%{
                  title: title,
@@ -206,9 +212,9 @@ defmodule EvalioAppWeb.MeetingContainer do
               {:noreply, socket}
           end
 
-        meeting ->
+        true ->
           # Update existing meeting
-          case Meetings.update_meeting(meeting, %{
+          case Meetings.update_meeting(editing_meeting, %{
                  title: title,
                  date: date,
                  time: time,
@@ -217,7 +223,7 @@ defmodule EvalioAppWeb.MeetingContainer do
             {:ok, saved_meeting} ->
               updated_meetings =
                 Enum.map(socket.assigns.meetings, fn m ->
-                  if m.id == meeting.id do
+                  if m.id == editing_meeting.id do
                     saved_meeting
                   else
                     m
@@ -244,6 +250,80 @@ defmodule EvalioAppWeb.MeetingContainer do
 
   def handle_event("hide_meeting_form", _params, socket) do
     {:noreply, assign(socket, :show_meeting_form, false)}
+  end
+
+  def handle_event("create_gmeet", %{"title" => title, "date" => date, "time" => time}, socket) do
+    Logger.info("create_gmeet event triggered")
+    if date == "" or time == "" or title == "" do
+      Logger.info("Missing required fields for GMeet creation")
+      {:noreply, put_flash(socket, :error, "Please fill in title, date, and time before creating a Google Meet link.")}
+    else
+      user = socket.assigns[:current_user] || %{}
+      email = user["email"] || user[:email] || ""
+      Logger.info("Attempting to fetch tokens for email: #{email}")
+
+      tokens_url = "http://127.0.0.1:5000/api/user_tokens?email=#{email}"
+      Logger.info("Calling Flask tokens endpoint: #{tokens_url}")
+
+      case HTTPoison.get(tokens_url, [], hackney: [recv_timeout: 5000]) do
+        {:ok, %HTTPoison.Response{status_code: 200, body: tokens_body}} ->
+          Logger.info("Received tokens from Flask: #{tokens_body}")
+          %{"session_token" => session_token, "refresh_token" => refresh_token} = Jason.decode!(tokens_body)
+
+          start_time = "#{date}T#{time}:00+05:30"
+          end_time = "#{date}T#{add_one_hour(time)}:00+05:30"
+
+          body = %{
+            "title" => title,
+            "start_time" => start_time,
+            "end_time" => end_time,
+            "token" => session_token,
+            "refresh_token" => refresh_token
+          }
+
+          Logger.info("Calling Flask create_gmeet endpoint")
+          case HTTPoison.post("http://127.0.0.1:5000/api/create_gmeet", Jason.encode!(body), [{"Content-Type", "application/json"}]) do
+            {:ok, %HTTPoison.Response{status_code: 200, body: resp_body}} ->
+              Logger.info("Received meet link from Flask: #{resp_body}")
+              %{"meet_link" => meet_link} = Jason.decode!(resp_body)
+              updated_meeting =
+                case socket.assigns[:editing_meeting] do
+                  nil ->
+                    %{
+                      id: nil,
+                      title: title,
+                      date: date,
+                      time: time,
+                      link: meet_link,
+                      tag: "none"
+                    }
+                  meeting ->
+                    Map.merge(meeting, %{
+                      title: title,
+                      date: date,
+                      time: time,
+                      link: meet_link
+                    })
+                end
+              {:noreply, assign(socket, editing_meeting: updated_meeting)}
+            error ->
+              Logger.error("HTTPoison failed (create_gmeet): #{inspect(error)}")
+              {:noreply, put_flash(socket, :error, "Failed to create Google Meet link")}
+          end
+        {:ok, %HTTPoison.Response{status_code: status, body: body}} ->
+          Logger.error("Failed to fetch tokens: status=#{status}, body=#{body}")
+          {:noreply, put_flash(socket, :error, "Failed to fetch Google tokens for user. Please re-authenticate with Google.")}
+        error ->
+          Logger.error("HTTPoison failed (user_tokens): #{inspect(error)}")
+          {:noreply, put_flash(socket, :error, "Failed to fetch Google tokens for user. Please re-authenticate with Google.")}
+      end
+    end
+  end
+
+  defp add_one_hour(time_str) do
+    [h, m] = String.split(time_str, ":") |> Enum.map(&String.to_integer/1)
+    h = rem(h + 1, 24)
+    "#{String.pad_leading(Integer.to_string(h), 2, "0")}:#{String.pad_leading(Integer.to_string(m), 2, "0")}"
   end
 
   # Helper function to sort meetings

@@ -26,7 +26,7 @@ defmodule EvalioAppWeb.NotesLive do
   alias EvalioAppWeb.MeetingContainer
 
   @impl true
-  def mount(_params, _session, socket) do
+  def mount(_params, session, socket) do
     notes = Notes.list_notes()
     reminders = Reminders.list_reminders()
     meetings = Meetings.list_meetings()
@@ -34,6 +34,10 @@ defmodule EvalioAppWeb.NotesLive do
     Logger.info("Loaded notes: #{inspect(notes)}")
     Logger.info("Loaded reminders: #{inspect(reminders)}")
     Logger.info("Loaded meetings: #{inspect(meetings)}")
+
+    Logger.info("Session user: #{inspect(session["user"])}")
+
+    current_user = session["user"] || %{}
 
     {:ok,
      assign(socket,
@@ -50,7 +54,8 @@ defmodule EvalioAppWeb.NotesLive do
        reading_note: nil,
        show_reminder: false,
        show_meeting: false,
-       show_calendar: false
+       show_calendar: false,
+       current_user: current_user
      )}
   end
 
@@ -349,6 +354,7 @@ defmodule EvalioAppWeb.NotesLive do
           show_calendar={@show_calendar}
           reminders={@reminders}
           meetings={@meetings}
+          current_user={@current_user}
         />
       </div>
 
@@ -395,6 +401,7 @@ defmodule EvalioAppWeb.NotesLive do
                       id="meeting-form"
                       myself={@myself}
                       meeting={@editing_meeting}
+                      current_user={@current_user}
                     />
                 <% end %>
               </div>

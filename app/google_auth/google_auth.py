@@ -49,7 +49,8 @@ def init_db():
             locale VARCHAR(10),
             hd VARCHAR(255),
             last_login TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-            session_token TEXT
+            session_token TEXT,
+            refresh_token TEXT
         )
     ''')
     
@@ -58,7 +59,7 @@ def init_db():
     conn.close()
 
 def store_user_data(user_info, session_token=None):
-    """Store user information in the database, including session token if provided."""
+    """Store user information in the database, including session token and refresh token if provided."""
     conn = get_db_connection()
     cur = conn.cursor()
     try:
@@ -73,13 +74,14 @@ def store_user_data(user_info, session_token=None):
             user_info.get('locale'),
             user_info.get('hd'),
             datetime.now(),
-            session_token
+            session_token,
+            user_info.get('refresh_token')
         )
         cur.execute('''
             INSERT INTO users 
                 (id, email, name, given_name, family_name, picture, 
-                 verified_email, locale, hd, last_login, session_token)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                 verified_email, locale, hd, last_login, session_token, refresh_token)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             ON CONFLICT (id) DO UPDATE SET
                 email = EXCLUDED.email,
                 name = EXCLUDED.name,
@@ -90,7 +92,8 @@ def store_user_data(user_info, session_token=None):
                 locale = EXCLUDED.locale,
                 hd = EXCLUDED.hd,
                 last_login = EXCLUDED.last_login,
-                session_token = EXCLUDED.session_token
+                session_token = EXCLUDED.session_token,
+                refresh_token = EXCLUDED.refresh_token
         ''', data)
         conn.commit()
     except Exception as e:
@@ -140,6 +143,21 @@ def get_credentials():
 def verify_iiitd_domain(email):
     """Verifies if the email belongs to IIITD domain."""
     return email.endswith('@iiitd.ac.in')
+
+def get_user_tokens_by_email(email):
+    """Fetch session_token and refresh_token for a user by email."""
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute('SELECT session_token, refresh_token FROM users WHERE email = %s', (email,))
+        row = cur.fetchone()
+        if row:
+            return {'session_token': row[0], 'refresh_token': row[1]}
+        else:
+            return None
+    finally:
+        cur.close()
+        conn.close()
 
 def main():
     print("Welcome to IIITD Google Authentication")
