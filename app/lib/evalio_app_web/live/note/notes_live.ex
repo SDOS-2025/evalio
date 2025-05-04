@@ -539,9 +539,17 @@ defmodule EvalioAppWeb.NotesLive do
   @impl true
   def handle_event("toggle_calendar", _params, socket) do
     new_show_calendar = !socket.assigns.show_calendar
+    reminders = if new_show_calendar, do: Reminders.list_reminders(), else: socket.assigns.reminders
+    meetings = if new_show_calendar, do: Meetings.list_meetings(), else: socket.assigns.meetings
 
     {:noreply,
-     assign(socket, show_calendar: new_show_calendar, show_reminder: false, show_meeting: false)}
+     assign(socket,
+       show_calendar: new_show_calendar,
+       reminders: reminders,
+       meetings: meetings,
+       show_reminder: false,
+       show_meeting: false
+     )}
   end
 
   @impl true
