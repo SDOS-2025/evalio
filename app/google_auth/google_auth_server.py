@@ -169,6 +169,53 @@ def create_gmeet():
     print("Creating Google Meet event:", title, start_time, end_time)
     return jsonify({"meet_link": meet_link})
 
+@app.route("/api/create_gcal_event", methods=["POST"])
+def create_gcal_event():
+    print("create_gcal_event endpoint hit with data:", request.json)
+    data = request.json
+    title = data["title"]
+    start_time = data["start_time"]  # ISO format string
+    end_time = data["end_time"]      # ISO format string
+    token = data["token"]            # User's Google OAuth access token
+    refresh_token = data.get("refresh_token")  # Optional, if you store it
+
+    # Load client_id and client_secret from credentials.json
+    with open(CLIENT_SECRETS_FILE, "r") as f:
+        secrets_data = json.load(f)
+        if "installed" in secrets_data:
+            client_id = secrets_data["installed"]["client_id"]
+            client_secret = secrets_data["installed"]["client_secret"]
+        elif "web" in secrets_data:
+            client_id = secrets_data["web"]["client_id"]
+            client_secret = secrets_data["web"]["client_secret"]
+        else:
+            return jsonify({"error": "Invalid credentials.json format"}), 500
+
+    creds = Credentials(
+        token,
+        refresh_token=refresh_token,
+        token_uri="https://oauth2.googleapis.com/token",
+        client_id=client_id,
+        client_secret=client_secret,
+        scopes=[
+            "https://www.googleapis.com/auth/calendar.events"
+        ]
+    )
+
+    service = build("calendar", "v3", credentials=creds)
+    event = {
+        "summary": title,
+        "start": {"dateTime": start_time, "timeZone": "Asia/Kolkata"},
+        "end": {"dateTime": end_time, "timeZone": "Asia/Kolkata"}
+    }
+    created_event = service.events().insert(
+        calendarId="primary",
+        body=event
+    ).execute()
+    event_link = created_event.get("htmlLink")
+    print("Created Google Calendar event (no Meet):", title, start_time, end_time)
+    return jsonify({"event_link": event_link})
+
 @app.route("/api/user_tokens", methods=["GET"])
 def user_tokens():
     print("user_tokens endpoint hit with email:", request.args.get("email"))

@@ -121,6 +121,7 @@ defmodule EvalioAppWeb.Components.HomePage.Topbar do
                     module={ReminderContainer}
                     id="reminder-container"
                     reminders={@reminders}
+                    current_user={@current_user}
                   />
                 </div>
               <% end %>

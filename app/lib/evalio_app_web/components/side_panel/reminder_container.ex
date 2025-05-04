@@ -54,11 +54,10 @@ defmodule EvalioAppWeb.ReminderContainer do
   end
 
   def update(%{update_reminder_tag: {id, tag}} = assigns, socket) do
-    # Find the reminder in the current list
-    reminder = Enum.find(socket.assigns.reminders, &(&1.id == id))
+    # Fetch the latest reminder from the DB
+    reminder = Reminders.get_reminder!(id)
 
     if reminder do
-      # Update the reminder's tag in the database
       case Reminders.update_reminder_tag(reminder, tag) do
         {:ok, updated_reminder} ->
           # Update the reminders list
@@ -133,6 +132,7 @@ defmodule EvalioAppWeb.ReminderContainer do
       |> assign(:sorted_reminders, sorted_reminders)
       |> assign(:show_reminder_form, assigns[:show_reminder_form] || false)
       |> assign_new(:editing_reminder, fn -> nil end)
+      |> assign_new(:current_user, fn -> assigns[:current_user] || %{} end)
 
     {:ok, socket}
   end
@@ -174,7 +174,7 @@ defmodule EvalioAppWeb.ReminderContainer do
     end
   end
 
-  def handle_event("save_reminder", %{"date" => date, "time" => time, "title" => title}, socket) do
+  def handle_event("save_reminder", %{"date" => date, "time" => time, "title" => title} = params, socket) do
     if date == "" or title == "" or time == "" do
       {:noreply, socket}
     else
@@ -184,12 +184,48 @@ defmodule EvalioAppWeb.ReminderContainer do
           case Reminders.create_reminder(%{
                  title: title,
                  date: date,
-                 time: time,
+                 time: time <> ":00",
                  tag: "none"
                }) do
             {:ok, saved_reminder} ->
-              updated_reminders = [saved_reminder | socket.assigns.reminders]
+              # Reload reminders from DB to ensure consistency
+              updated_reminders = Reminders.list_reminders()
               sorted_reminders = sort_reminders(updated_reminders)
+
+              # Google Calendar integration
+              user = socket.assigns[:current_user] || %{}
+              email = user["email"] || user[:email] || ""
+              Logger.info("Current user in ReminderContainer: #{inspect(user)}")
+              Logger.info("Email used for Google tokens: #{email}")
+              tokens_url = "http://127.0.0.1:5000/api/user_tokens?email=#{email}"
+              require Logger
+              Logger.info("Fetching Google tokens for calendar event: #{email}")
+              case HTTPoison.get(tokens_url, [], hackney: [recv_timeout: 5000]) do
+                {:ok, %HTTPoison.Response{status_code: 200, body: tokens_body}} ->
+                  %{"session_token" => session_token, "refresh_token" => refresh_token} = Jason.decode!(tokens_body)
+                  start_time = "#{date}T#{time}:00+05:30"
+                  end_time = "#{date}T#{add_one_hour(time)}:00+05:30"
+                  body = %{
+                    "title" => title,
+                    "start_time" => start_time,
+                    "end_time" => end_time,
+                    "token" => session_token,
+                    "refresh_token" => refresh_token
+                  }
+                  Logger.info("Calling Flask create_gcal_event endpoint for reminder")
+                  case HTTPoison.post("http://127.0.0.1:5000/api/create_gcal_event", Jason.encode!(body), [{"Content-Type", "application/json"}]) do
+                    {:ok, %HTTPoison.Response{status_code: 200, body: resp_body}} ->
+                      Logger.info("Google Calendar event created for reminder: #{resp_body}")
+                      %{"event_link" => event_link} = Jason.decode!(resp_body)
+                      # Optionally, you could store or display event_link
+                    error ->
+                      Logger.error("HTTPoison failed (create_gcal_event for reminder): #{inspect(error)}")
+                  end
+                {:ok, %HTTPoison.Response{status_code: status, body: body}} ->
+                  Logger.error("Failed to fetch tokens for reminder: status=#{status}, body=#{body}")
+                error ->
+                  Logger.error("HTTPoison failed (user_tokens for reminder): #{inspect(error)}")
+              end
 
               socket =
                 socket
@@ -200,7 +236,8 @@ defmodule EvalioAppWeb.ReminderContainer do
 
               {:noreply, socket}
 
-            {:error, _changeset} ->
+            {:error, changeset} ->
+              Logger.error("Failed to create reminder: #{inspect(changeset.errors)}")
               {:noreply, socket}
           end
 
@@ -248,5 +285,11 @@ defmodule EvalioAppWeb.ReminderContainer do
     Enum.sort_by(reminders, fn reminder ->
       {reminder.date, reminder.time}
     end)
+  end
+
+  defp add_one_hour(time_str) do
+    [h, m] = String.split(time_str, ":") |> Enum.map(&String.to_integer/1)
+    h = rem(h + 1, 24)
+    "#{String.pad_leading(Integer.to_string(h), 2, "0")}:#{String.pad_leading(Integer.to_string(m), 2, "0")}"
   end
 end
