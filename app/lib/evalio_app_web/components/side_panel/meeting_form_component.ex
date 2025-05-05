@@ -163,7 +163,12 @@ defmodule EvalioAppWeb.MeetingFormComponent do
   @impl true
   def handle_event("create_gmeet", %{"title" => title, "date" => date, "time" => time}, socket) do
     if date == "" or time == "" or title == "" do
-      {:noreply, put_flash(socket, :error, "Please fill in title, date, and time before creating a Google Meet link.")}
+      {:noreply,
+       put_flash(
+         socket,
+         :error,
+         "Please fill in title, date, and time before creating a Google Meet link."
+       )}
     else
       user = socket.assigns[:current_user] || %{}
       email = user["email"]
@@ -172,9 +177,11 @@ defmodule EvalioAppWeb.MeetingFormComponent do
         {:noreply, put_flash(socket, :error, "User email not found. Please re-authenticate.")}
       else
         tokens_url = "http://127.0.0.1:5000/api/user_tokens?email=#{email}"
+
         case HTTPoison.get(tokens_url, [], hackney: [recv_timeout: 5000]) do
           {:ok, %HTTPoison.Response{status_code: 200, body: tokens_body}} ->
-            %{"session_token" => session_token, "refresh_token" => refresh_token} = Jason.decode!(tokens_body)
+            %{"session_token" => session_token, "refresh_token" => refresh_token} =
+              Jason.decode!(tokens_body)
 
             start_time = "#{date}T#{time}:00+05:30"
             end_time = "#{date}T#{add_one_hour(time)}:00+05:30"
@@ -187,21 +194,38 @@ defmodule EvalioAppWeb.MeetingFormComponent do
               "refresh_token" => refresh_token
             }
 
-            case HTTPoison.post("http://127.0.0.1:5000/api/create_gmeet", Jason.encode!(body), [{"Content-Type", "application/json"}]) do
+            case HTTPoison.post("http://127.0.0.1:5000/api/create_gmeet", Jason.encode!(body), [
+                   {"Content-Type", "application/json"}
+                 ]) do
               {:ok, %HTTPoison.Response{status_code: 200, body: resp_body}} ->
                 %{"meet_link" => meet_link} = Jason.decode!(resp_body)
                 updated_meeting = Map.put(socket.assigns[:meeting] || %{}, :link, meet_link)
                 {:noreply, assign(socket, meeting: updated_meeting)}
+
               error ->
                 IO.inspect({:error, "HTTPoison failed (create_gmeet)", error})
                 {:noreply, put_flash(socket, :error, "Failed to create Google Meet link")}
             end
+
           {:ok, %HTTPoison.Response{status_code: status, body: body}} ->
             IO.inspect({:error, "Failed to fetch tokens", status, body})
-            {:noreply, put_flash(socket, :error, "Failed to fetch Google tokens for user. Please re-authenticate with Google.")}
+
+            {:noreply,
+             put_flash(
+               socket,
+               :error,
+               "Failed to fetch Google tokens for user. Please re-authenticate with Google."
+             )}
+
           error ->
             IO.inspect({:error, "HTTPoison failed (user_tokens)", error})
-            {:noreply, put_flash(socket, :error, "Failed to fetch Google tokens for user. Please re-authenticate with Google.")}
+
+            {:noreply,
+             put_flash(
+               socket,
+               :error,
+               "Failed to fetch Google tokens for user. Please re-authenticate with Google."
+             )}
         end
       end
     end
@@ -214,6 +238,7 @@ defmodule EvalioAppWeb.MeetingFormComponent do
   defp add_one_hour(time_str) do
     [h, m] = String.split(time_str, ":") |> Enum.map(&String.to_integer/1)
     h = rem(h + 1, 24)
+
     "#{String.pad_leading(Integer.to_string(h), 2, "0")}:#{String.pad_leading(Integer.to_string(m), 2, "0")}"
   end
 end

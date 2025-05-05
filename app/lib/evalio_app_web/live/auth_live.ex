@@ -116,8 +116,11 @@ defmodule EvalioAppWeb.AuthLive do
                 href="http://127.0.0.1:5000/login/google"
                 class="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-black hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
               >
-                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google Logo" class="h-5 mr-2" />
-                Sign in with Google
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"
+                  alt="Google Logo"
+                  class="h-5 mr-2"
+                /> Sign in with Google
               </a>
             </div>
           </.form>

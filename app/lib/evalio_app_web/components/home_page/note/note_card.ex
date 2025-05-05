@@ -18,7 +18,7 @@ defmodule EvalioAppWeb.NoteCard do
       <%= if @editing do %>
         <!-- Full-screen overlay with blur effect when editing -->
         <div class="fixed inset-0 bg-black/30 backdrop-blur-lg flex items-center justify-center transition-all transform duration-300 ease-in-out animate-in fade-in scale-[1.15] z-50">
-          <.card class="shadow-lg rounded-lg p-6 w-[600px] h-[400px] flex flex-col justify-between transform scale-100 transition-transform duration-300 ease-in-out bg-white resize">
+          <.card class="shadow-lg rounded-lg p-6 w-[600px] h-[500px] flex flex-col justify-between transform scale-100 transition-transform duration-300 ease-in-out bg-white resize">
             <.form for={@form} phx-submit="save_note" class="h-full flex flex-col">
               <div class="flex-grow">
                 <.field

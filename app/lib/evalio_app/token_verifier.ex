@@ -9,6 +9,7 @@ defmodule EvalioApp.TokenVerifier do
 
   def verify_token(token) do
     signer = Joken.Signer.create("HS256", Application.get_env(:joken, :default_signer))
+
     case __MODULE__.verify_and_validate(token, signer) do
       {:ok, claims} -> {:ok, claims}
       {:error, reason} -> {:error, reason}

@@ -62,7 +62,8 @@ config :logger, :console,
 config :phoenix, :json_library, Jason
 
 config :joken,
-  default_signer: "431265" # Replace with the same key used in Flask
+  # Replace with the same key used in Flask
+  default_signer: "431265"
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

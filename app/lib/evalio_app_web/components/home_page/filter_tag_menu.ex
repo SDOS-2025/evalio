@@ -13,68 +13,35 @@ defmodule EvalioAppWeb.HomePage.FilterTagMenu do
           <button
             type="button"
             phx-click="filter_by_tag"
-            phx-value-tag="red"
+            phx-value-tag="urgent"
             class="group w-full px-4 py-2 flex items-center space-x-3 hover:bg-[#FF655F] transition-all text-gray-700"
             role="menuitem"
           >
             <div class="w-3 h-3 rounded-full bg-[#FF655F] transition-all group-hover:w-full group-hover:h-[20px]">
             </div>
-            <span class="text-sm transition-opacity group-hover:opacity-0">Red</span>
+            <span class="text-sm transition-opacity group-hover:opacity-0">Urgent</span>
           </button>
           <button
             type="button"
             phx-click="filter_by_tag"
-            phx-value-tag="orange"
-            class="group w-full px-4 py-2 flex items-center space-x-3 hover:bg-[#FF9F0B] transition-all text-gray-700"
-            role="menuitem"
-          >
-            <div class="w-3 h-3 rounded-full bg-[#FF9F0B] transition-all group-hover:w-full group-hover:h-[20px]">
-            </div>
-            <span class="text-sm transition-opacity group-hover:opacity-0">Orange</span>
-          </button>
-          <button
-            type="button"
-            phx-click="filter_by_tag"
-            phx-value-tag="yellow"
+            phx-value-tag="at risk"
             class="group w-full px-4 py-2 flex items-center space-x-3 hover:bg-[#FFD60D] transition-all text-gray-700"
             role="menuitem"
           >
             <div class="w-3 h-3 rounded-full bg-[#FFD60D] transition-all group-hover:w-full group-hover:h-[20px]">
             </div>
-            <span class="text-sm transition-opacity group-hover:opacity-0">Yellow</span>
+            <span class="text-sm transition-opacity group-hover:opacity-0">At Risk</span>
           </button>
           <button
             type="button"
             phx-click="filter_by_tag"
-            phx-value-tag="green"
+            phx-value-tag="on track"
             class="group w-full px-4 py-2 flex items-center space-x-3 hover:bg-[#32D74B] transition-all text-gray-700"
             role="menuitem"
           >
             <div class="w-3 h-3 rounded-full bg-[#32D74B] transition-all group-hover:w-full group-hover:h-[20px]">
             </div>
-            <span class="text-sm transition-opacity group-hover:opacity-0">Green</span>
-          </button>
-          <button
-            type="button"
-            phx-click="filter_by_tag"
-            phx-value-tag="blue"
-            class="group w-full px-4 py-2 flex items-center space-x-3 hover:bg-[#02B1FF] transition-all text-gray-700"
-            role="menuitem"
-          >
-            <div class="w-3 h-3 rounded-full bg-[#02B1FF] transition-all group-hover:w-full group-hover:h-[20px]">
-            </div>
-            <span class="text-sm transition-opacity group-hover:opacity-0">Blue</span>
-          </button>
-          <button
-            type="button"
-            phx-click="filter_by_tag"
-            phx-value-tag="purple"
-            class="group w-full px-4 py-2 flex items-center space-x-3 hover:bg-[#9849E8] transition-all text-gray-700"
-            role="menuitem"
-          >
-            <div class="w-3 h-3 rounded-full bg-[#9849E8] transition-all group-hover:w-full group-hover:h-[20px]">
-            </div>
-            <span class="text-sm transition-opacity group-hover:opacity-0">Purple</span>
+            <span class="text-sm transition-opacity group-hover:opacity-0">On Track</span>
           </button>
           <button
             type="button"

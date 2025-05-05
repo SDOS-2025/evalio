@@ -174,7 +174,11 @@ defmodule EvalioAppWeb.ReminderContainer do
     end
   end
 
-  def handle_event("save_reminder", %{"date" => date, "time" => time, "title" => title} = params, socket) do
+  def handle_event(
+        "save_reminder",
+        %{"date" => date, "time" => time, "title" => title} = params,
+        socket
+      ) do
     if date == "" or title == "" or time == "" do
       {:noreply, socket}
     else
@@ -200,11 +204,15 @@ defmodule EvalioAppWeb.ReminderContainer do
               tokens_url = "http://127.0.0.1:5000/api/user_tokens?email=#{email}"
               require Logger
               Logger.info("Fetching Google tokens for calendar event: #{email}")
+
               case HTTPoison.get(tokens_url, [], hackney: [recv_timeout: 5000]) do
                 {:ok, %HTTPoison.Response{status_code: 200, body: tokens_body}} ->
-                  %{"session_token" => session_token, "refresh_token" => refresh_token} = Jason.decode!(tokens_body)
+                  %{"session_token" => session_token, "refresh_token" => refresh_token} =
+                    Jason.decode!(tokens_body)
+
                   start_time = "#{date}T#{time}:00+05:30"
                   end_time = "#{date}T#{add_one_hour(time)}:00+05:30"
+
                   body = %{
                     "title" => title,
                     "start_time" => start_time,
@@ -212,17 +220,30 @@ defmodule EvalioAppWeb.ReminderContainer do
                     "token" => session_token,
                     "refresh_token" => refresh_token
                   }
+
                   Logger.info("Calling Flask create_gcal_event endpoint for reminder")
-                  case HTTPoison.post("http://127.0.0.1:5000/api/create_gcal_event", Jason.encode!(body), [{"Content-Type", "application/json"}]) do
+
+                  case HTTPoison.post(
+                         "http://127.0.0.1:5000/api/create_gcal_event",
+                         Jason.encode!(body),
+                         [{"Content-Type", "application/json"}]
+                       ) do
                     {:ok, %HTTPoison.Response{status_code: 200, body: resp_body}} ->
                       Logger.info("Google Calendar event created for reminder: #{resp_body}")
                       %{"event_link" => event_link} = Jason.decode!(resp_body)
-                      # Optionally, you could store or display event_link
+
+                    # Optionally, you could store or display event_link
                     error ->
-                      Logger.error("HTTPoison failed (create_gcal_event for reminder): #{inspect(error)}")
+                      Logger.error(
+                        "HTTPoison failed (create_gcal_event for reminder): #{inspect(error)}"
+                      )
                   end
+
                 {:ok, %HTTPoison.Response{status_code: status, body: body}} ->
-                  Logger.error("Failed to fetch tokens for reminder: status=#{status}, body=#{body}")
+                  Logger.error(
+                    "Failed to fetch tokens for reminder: status=#{status}, body=#{body}"
+                  )
+
                 error ->
                   Logger.error("HTTPoison failed (user_tokens for reminder): #{inspect(error)}")
               end
@@ -290,6 +311,7 @@ defmodule EvalioAppWeb.ReminderContainer do
   defp add_one_hour(time_str) do
     [h, m] = String.split(time_str, ":") |> Enum.map(&String.to_integer/1)
     h = rem(h + 1, 24)
+
     "#{String.pad_leading(Integer.to_string(h), 2, "0")}:#{String.pad_leading(Integer.to_string(m), 2, "0")}"
   end
 end
