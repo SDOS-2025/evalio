@@ -111,7 +111,7 @@ defmodule EvalioAppWeb.ReminderCard do
           <!-- Completion Checkbox -->
           <div
             class="w-4 h-4 rounded border-2 border-[#171717] cursor-pointer hover:bg-[#EBEBEB]"
-            phx-click="toggle_completion"
+            phx-click="start_delete"
             phx-target={@myself}
           />
           
